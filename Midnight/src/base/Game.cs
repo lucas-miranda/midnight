@@ -34,6 +34,8 @@ public class Game : Program {
 
 	protected sealed override void Draw(GameTime gameTime) {
 		base.Draw(gameTime);
+		Rendering.PreRender();
         Scene?.Render(new((float) gameTime.ElapsedGameTime.TotalSeconds));
+        Rendering.Render();
 	}
 }

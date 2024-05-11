@@ -20,6 +20,7 @@ public abstract class Program : Microsoft.Xna.Framework.Game {
         System.Console.WriteLine("=> Midnight created");
 	}
 
+    public static RenderingServer Rendering { get; private set; }
     public GraphicsDeviceManager GraphicsDeviceManager { get; }
 
 	protected override void Initialize() {
@@ -27,6 +28,7 @@ public abstract class Program : Microsoft.Xna.Framework.Game {
 		 * loading configuration stuff in the constructor
 		 */
         System.Console.WriteLine("=> Midnight Initialize");
+        Rendering = new(GraphicsDevice);
 		base.Initialize();
 	}
 
