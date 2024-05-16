@@ -6,25 +6,21 @@ namespace Midnight;
 
 public class Texture2D : Texture {
     public Texture2D(int width, int height)
-        : this(
-            new(
-                Program.Rendering.XnaDevice,
-                width,
-                height
-            )
-        ) {
+        : this(new(
+            Program.Rendering.XnaGraphicsDevice,
+            width,
+            height
+        )) {
     }
 
     public Texture2D(int width, int height, bool mipMap, SurfaceFormat format)
-        : this(
-            new(
-                Program.Rendering.XnaDevice,
-                width,
-                height,
-                mipMap,
-                (XnaGraphics.SurfaceFormat) format
-            )
-        ) {
+        : this(new(
+            Program.Rendering.XnaGraphicsDevice,
+            width,
+            height,
+            mipMap,
+            format.ToXna()
+        )) {
     }
 
     internal Texture2D(XnaGraphics.Texture2D xnaTexture) : base(xnaTexture) {
@@ -55,7 +51,7 @@ public class Texture2D : Texture {
     public static Texture2D Load(Stream stream) {
         Debug.AssertNotNull(stream);
         XnaGraphics.Texture2D xnaTexture = XnaGraphics.Texture2D.FromStream(
-            Program.Rendering.XnaDevice,
+            Program.Rendering.XnaGraphicsDevice,
             stream
         );
 
@@ -65,7 +61,7 @@ public class Texture2D : Texture {
     public static Texture2D Load(Stream stream, int width, int height, bool zoom) {
         Debug.AssertNotNull(stream);
         XnaGraphics.Texture2D xnaTexture = XnaGraphics.Texture2D.FromStream(
-            Program.Rendering.XnaDevice,
+            Program.Rendering.XnaGraphicsDevice,
             stream,
             width,
             height,
@@ -76,8 +72,6 @@ public class Texture2D : Texture {
     }
 
     public override void Reload() {
-
-
         using (FileStream stream = File.OpenRead(((IAsset) this).Filepath)) {
             Reload(stream);
         }
@@ -94,7 +88,7 @@ public class Texture2D : Texture {
 
         Write(
             0,
-            new RectangleInt(w, h),
+            new RectangleI(w, h),
             pixels,
             0,
             pixels.Length
@@ -119,7 +113,7 @@ public class Texture2D : Texture {
 
     public void Read<T>(
         int level,
-        RectangleInt? bounds,
+        RectangleI? bounds,
         T[] data,
         int startIndex,
         int elementCount
@@ -143,7 +137,7 @@ public class Texture2D : Texture {
 
     public void Write<T>(
         int level,
-        RectangleInt? bounds,
+        RectangleI? bounds,
         T[] data,
         int startIndex,
         int elementCount

@@ -14,7 +14,6 @@ public abstract class Texture : IAsset {
     public string Name { get; set; }
     public string[] Filepaths { get; protected set; } = new string[1];
     public string Filepath { get => Filepaths[0]; protected set => Filepaths[0] = value; }
-    public bool IsDisposed { get; private set; }
 
     public SurfaceFormat Format { get; private set; }
 
@@ -24,7 +23,6 @@ public abstract class Texture : IAsset {
     public abstract void Reload(Stream stream);
 
     public virtual void Dispose() {
-        IsDisposed = true;
         Underlying?.Dispose();
     }
 }

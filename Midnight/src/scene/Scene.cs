@@ -50,10 +50,10 @@ public class Scene {
         }
     }
 
-    internal void Render(DeltaTime dt) {
+    internal void Render(DeltaTime dt, RenderingServer r) {
         foreach (ComponentWrapper<IRenderable> wrapper in _renderComponents) {
             if (wrapper.Alive) {
-                wrapper.Reference.Render();
+                wrapper.Reference.Render(dt, r);
             }
         }
     }

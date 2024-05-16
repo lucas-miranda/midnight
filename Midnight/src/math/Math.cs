@@ -66,6 +66,14 @@ public static class Math {
         return Mini(Maxi(value, min), max);
     }
 
+    public static byte Clamp(byte value, byte min, byte max) {
+        return Mini(Maxi(value, min), max);
+    }
+
+    public static float Clamp01(float value) {
+        return Clamp(value, 0.0f, 1.0f);
+    }
+
     public static float Ceil(float value) {
         return System.MathF.Ceiling(value);
     }
@@ -102,6 +110,10 @@ public static class Math {
         return System.Math.Min(a, b);
     }
 
+    public static byte Mini(byte a, byte b) {
+        return System.Math.Min(a, b);
+    }
+
     /// <summary>Returns largest of two or more values.</summary>
     public static float Max(float a, float b) {
         return System.Math.Max(a, b);
@@ -109,6 +121,10 @@ public static class Math {
 
     /// <summary>Returns largest of two or more values.</summary>
     public static int Maxi(int a, int b) {
+        return System.Math.Max(a, b);
+    }
+
+    public static byte Maxi(byte a, byte b) {
         return System.Math.Max(a, b);
     }
 

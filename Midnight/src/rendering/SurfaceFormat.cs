@@ -13,7 +13,7 @@ public enum SurfaceFormat {
     /// <summary>
     /// Unsigned 16-bit BGR pixel format for store 5 bits for blue, 6 bits for green, and 5 bits for red.
     /// </summary>
-    Bgr565 = XnaGraphics.SurfaceFormat.Color,
+    Bgr565 = XnaGraphics.SurfaceFormat.Bgr565,
     /// <summary>
     /// Unsigned 16-bit BGRA pixel format where 5 bits reserved for each color and last bit is reserved for alpha.
     /// </summary>
@@ -108,4 +108,10 @@ public enum SurfaceFormat {
     /// BC7 block texture format where the R/G/B values are non-linear sRGB.
     /// </summary>
     Bc7SrgbEXT = XnaGraphics.SurfaceFormat.Bc7SrgbEXT,
+}
+
+public static class SurfaceFormatExtensions {
+    internal static XnaGraphics.SurfaceFormat ToXna(this SurfaceFormat usage) {
+        return (XnaGraphics.SurfaceFormat) usage;
+    }
 }

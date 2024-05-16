@@ -1,30 +1,29 @@
 using Midnight.Diagnostics;
-using Xna = Microsoft.Xna.Framework;
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Midnight;
 
-public class RenderingServer : IRenderable {
+public class RenderingServer {
     private XnaGraphics.SpriteBatch _batcher;
 
     internal RenderingServer(XnaGraphics.GraphicsDevice xnaDevice) {
         Debug.AssertNotNull(xnaDevice);
-        XnaDevice = xnaDevice;
+        XnaGraphicsDevice = xnaDevice;
 
-        _batcher = new(XnaDevice);
+        _batcher = new(XnaGraphicsDevice);
     }
 
-    internal XnaGraphics.GraphicsDevice XnaDevice { get; }
+    internal XnaGraphics.GraphicsDevice XnaGraphicsDevice { get; }
 
-    public void PreRender() {
+    public void Draw(Texture2D texture, Vector2 position, Color color) {
+        _batcher.Draw(texture.Underlying, position.ToXna(), color.ToXna());
+    }
+
+    internal void PrepareRender() {
         _batcher.Begin();
     }
 
-    public void Render() {
+    internal void Flush() {
         _batcher.End();
-    }
-
-    public void Draw(Texture2D texture) {
-        _batcher.Draw(texture.Underlying, Xna.Vector2.Zero, Xna.Color.White);
     }
 }

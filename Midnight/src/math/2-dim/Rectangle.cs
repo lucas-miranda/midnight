@@ -10,7 +10,7 @@ public struct Rectangle {
         Height = height;
     }
 
-    public RectangleInt ToRectInt() {
+    public RectangleI ToInt() {
         return new((int) X, (int) Y, (int) Width, (int) Height);
     }
 }

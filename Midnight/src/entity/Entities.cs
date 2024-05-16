@@ -12,6 +12,12 @@ public class Entities {
 
     public Scene Scene { get; }
 
+    public Entity Create() {
+        Entity e = new();
+        Register(e);
+        return e;
+    }
+
     public void Register(Entity entity) {
         _entries.Add(entity);
         entity.Uid = NextUid;

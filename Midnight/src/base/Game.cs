@@ -1,8 +1,10 @@
-using Microsoft.Xna.Framework;
-
 namespace Midnight;
 
 public class Game : Program {
+    public Game(GraphicsConfig? config = null) : base(config) {
+    }
+
+    public static new Game Current { get => (Game) Program.Current; }
 	public Scene Scene { get; private set; }
 
 	public void LoadScene<S>() where S : Scene, new() {
@@ -13,29 +15,25 @@ public class Game : Program {
 	    Scene = scene;
     }
 
-	protected sealed override void Initialize() {
-	    base.Initialize();
+	protected override void Setup() {
+	    //MainCanvas = new Canvas();
     }
 
-	protected override void LoadContent() {
-	    base.LoadContent();
+	protected override void Load() {
         Scene?.Prepare();
         Scene?.Start();
     }
 
-	protected override void UnloadContent() {
-	    base.UnloadContent();
+	protected override void Unload() {
     }
 
-	protected sealed override void Update(GameTime gameTime) {
-		base.Update(gameTime);
-        Scene?.Update(new((float) gameTime.ElapsedGameTime.TotalSeconds));
+	protected override void Update(DeltaTime dt) {
+        Scene?.Update(dt);
     }
 
-	protected sealed override void Draw(GameTime gameTime) {
-		base.Draw(gameTime);
-		Rendering.PreRender();
-        Scene?.Render(new((float) gameTime.ElapsedGameTime.TotalSeconds));
-        Rendering.Render();
+	protected override void Render(DeltaTime dt, RenderingServer r) {
+		Rendering.PrepareRender();
+        Scene?.Render(dt, Rendering);
+        Rendering.Flush();
 	}
 }
