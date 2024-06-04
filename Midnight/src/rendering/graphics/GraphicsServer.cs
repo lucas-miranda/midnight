@@ -9,9 +9,13 @@ public class GraphicsServer {
 		BackBuffer = new(XnaGDM);
     }
 
-    public GraphicsProfile Profile { get => (GraphicsProfile) XnaGDM.GraphicsProfile; }
     public Display Display { get; }
     public BackBuffer BackBuffer { get; }
+
+    public GraphicsProfile Profile {
+        get => (GraphicsProfile) XnaGDM.GraphicsProfile;
+        set => XnaGDM.GraphicsProfile = value.ToXna();
+    }
 
     internal Xna.GraphicsDeviceManager XnaGDM { get; }
 
@@ -21,8 +25,9 @@ public class GraphicsServer {
     }
 
     public void LoadConfig(GraphicsConfig config) {
-        Display.ApplyConfig(config.Display);
-        BackBuffer.ApplyConfig(config.BackBuffer);
+        Display.LoadConfig(config.Display);
+        BackBuffer.LoadConfig(config.BackBuffer);
+        Profile = config.Profile;
     }
 
     public void ApplyChanges() {
@@ -30,6 +35,6 @@ public class GraphicsServer {
     }
 
     public override string ToString() {
-        return $"Profile: {Profile}; Display: ({Display}); BackBuffer: ({BackBuffer});";
+        return $"Profile: {Profile};\nDisplay: ({Display});\nBackBuffer: ({BackBuffer});";
     }
 }

@@ -19,10 +19,12 @@ public class Entity {
     }
 
     public virtual void ComponentAdded(Component component) {
+        Scene?.ComponentAdded(component, this);
         component.EntityAdded(this);
     }
 
     public virtual void ComponentRemoved(Component component) {
+        Scene?.ComponentRemoved(component, this);
         component.EntityRemoved(this);
     }
 }

@@ -10,6 +10,8 @@ public abstract class Program : Xna.Game {
 
 	    // Modules
 
+        Resources = new();
+        Resources.LoadAll();
         Random.Init();
 
         // Graphics
@@ -28,7 +30,8 @@ public abstract class Program : Xna.Game {
     public static Program Current { get; private set; }
     public static RenderingServer Rendering { get; private set; }
     public static GraphicsServer Graphics { get; private set; }
-    public Color Background { get; set; } = new(Xna.Color.CornflowerBlue);
+    public static Embedded.Resources Resources { get; private set; }
+    public Color Background { get; set; } = new(0x46236EFF);
     public Canvas MainCanvas { get; protected set; }
 
 	protected sealed override void Initialize() {
@@ -44,6 +47,7 @@ public abstract class Program : Xna.Game {
 	protected sealed override void LoadContent() {
 		// Load textures, sounds, and so on in here...
 		base.LoadContent();
+        Rendering.LoadContent();
 		Load();
 		System.Console.WriteLine($"At LoadContent, graphics:\n{Graphics}");
 	}

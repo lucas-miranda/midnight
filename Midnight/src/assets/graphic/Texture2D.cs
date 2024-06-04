@@ -37,7 +37,6 @@ public class Texture2D : Texture {
         using (FileStream stream = File.OpenRead(filepath)) {
             Texture2D texture = Load(stream);
             texture.Filepath = filepath;
-            texture.Filepaths = new[] { filepath };
             return texture;
         }
     }

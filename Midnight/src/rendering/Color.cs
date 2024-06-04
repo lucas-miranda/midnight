@@ -1,8 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Xna = Microsoft.Xna.Framework;
 
 namespace Midnight;
 
-public struct Color {
+public struct Color : System.IEquatable<Color> {
     public static readonly Color
             White = new(0xFFFFFFFF),
             Black = new(0x000000FF),
@@ -16,6 +17,9 @@ public struct Color {
         G = System.Convert.ToByte((rgba & 0x00FF0000) >> 16);
         B = System.Convert.ToByte((rgba & 0x0000FF00) >> 8);
         A = System.Convert.ToByte(rgba & 0x000000FF);
+    }
+
+    public Color(uint rgb, uint a) : this((rgb << 8) | a) {
     }
 
     public Color(byte r, byte g, byte b, byte a) {
@@ -42,12 +46,6 @@ public struct Color {
     }
 
     public Color(int r, int g, int b) : this(r, g, b, byte.MaxValue) {
-    }
-
-    public Color(int rgb, int a) : this(rgb, rgb, rgb, a) {
-    }
-
-    public Color(int rgba) : this(rgba, rgba, rgba, rgba) {
     }
 
     internal Color(Xna.Color color) {
@@ -88,6 +86,14 @@ public struct Color {
         );
     }
 
+    public bool Equals(Color c) {
+        return !(R != c.R || G != c.G || B != c.B || A != c.A);
+    }
+
+    public override bool Equals([NotNullWhen(true)] object obj) {
+        return obj is Color v && Equals(v);
+    }
+
     public override int GetHashCode() {
         int hashCode = 486187739;
 
@@ -103,6 +109,14 @@ public struct Color {
 
     public override string ToString() {
         return string.Format(System.Globalization.CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", R, G, B, A);
+    }
+
+    public static bool operator ==(Color a, Color b) {
+        return !(a.R != b.R || a.G != b.G || a.B != b.B || a.A != b.A);
+    }
+
+    public static bool operator !=(Color a, Color b) {
+        return a.R != b.R || a.G != b.G || a.B != b.B || a.A != b.A;
     }
 
     internal Xna.Color ToXna() {

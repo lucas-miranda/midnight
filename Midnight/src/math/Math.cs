@@ -1,7 +1,8 @@
 namespace Midnight;
 
 public static class Math {
-    public const float PI       = (float) System.Math.PI,
+    public const float Epsilon  = 0.000001f,
+                       PI       = (float) System.Math.PI,
                        DoublePI = 2.0f * PI,
                        TriplePI = 3.0f * PI,
                        HalfPI   = PI / 2.0f,
@@ -14,20 +15,44 @@ public static class Math {
 
     #region Numeric
 
-    public static bool IsPowerOfTwo(int n) {
+    public static bool IsPower2(int n) {
         return (n & (n - 1)) == 0;
     }
 
-    public static bool IsPowerOfTwo(uint n) {
+    public static bool IsPower2(uint n) {
         return (n & (n - 1U)) == 0U;
     }
 
-    public static bool IsPowerOfTwo(long n) {
+    public static bool IsPower2(long n) {
         return (n & (n - 1L)) == 0L;
     }
 
-    public static bool IsPowerOfTwo(ulong n) {
+    public static bool IsPower2(ulong n) {
         return (n & (n - 1UL)) == 0UL;
+    }
+
+    public static int CeilPower2(int n) {
+        n--;
+        n |= n >> 1;
+        n |= n >> 2;
+        n |= n >> 4;
+        n |= n >> 8;
+        n |= n >> 16;
+        n++;
+        n += n == 0 ? 1 : 0;
+        return n;
+    }
+
+    public static uint CeilPower2(uint n) {
+        n--;
+        n |= n >> 1;
+        n |= n >> 2;
+        n |= n >> 4;
+        n |= n >> 8;
+        n |= n >> 16;
+        n++;
+        n += n == 0 ? 1U : 0U;
+        return n;
     }
 
     /// <summary>
@@ -74,6 +99,18 @@ public static class Math {
         return Clamp(value, 0.0f, 1.0f);
     }
 
+    public static float Abs(float value) {
+        return System.MathF.Abs(value);
+    }
+
+    public static double Abs(double value) {
+        return System.Math.Abs(value);
+    }
+
+    public static int Abs(int value) {
+        return System.Math.Abs(value);
+    }
+
     public static float Ceil(float value) {
         return System.MathF.Ceiling(value);
     }
@@ -117,6 +154,14 @@ public static class Math {
     /// <summary>Returns largest of two or more values.</summary>
     public static float Max(float a, float b) {
         return System.Math.Max(a, b);
+    }
+
+    public static float Max(float a, float b, float c) {
+        return Max(Max(a, b), c);
+    }
+
+    public static float Max(float a, float b, float c, float d) {
+        return Max(Max(a, b), Max(c, d));
     }
 
     /// <summary>Returns largest of two or more values.</summary>
@@ -219,4 +264,24 @@ public static class Math {
     }
 
     #endregion Geometry
+
+    #region Equality
+
+    public static bool ApproxEquals(float a, float b, float tolerance = Epsilon) {
+        return Abs(a - b) < tolerance;
+    }
+
+    public static bool ApproxEquals(double a, double b, double tolerance = Epsilon) {
+        return Abs(a - b) < tolerance;
+    }
+
+    public static bool ApproxZero(float a, float tolerance = Epsilon) {
+        return ApproxEquals(a, 0.0f, tolerance);
+    }
+
+    public static bool ApproxZero(double a, double tolerance = Epsilon) {
+        return ApproxEquals(a, 0.0, tolerance);
+    }
+
+    #endregion Equality
 }

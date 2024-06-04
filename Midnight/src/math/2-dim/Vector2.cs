@@ -1,11 +1,20 @@
+using System.Diagnostics.CodeAnalysis;
 using Xna = Microsoft.Xna.Framework;
 
 namespace Midnight;
 
-public struct Vector2 {
+public struct Vector2 : System.IEquatable<Vector2> {
     public static readonly Vector2
             Zero = new(0.0f, 0.0f),
-            One = new(1.0f, 1.0f);
+            One = new(1.0f, 1.0f),
+            Up = new(0.0f, -1.0f),
+            Right = new(1.0f, 0.0f),
+            Down = new(0.0f, 1.0f),
+            Left = new(-1.0f, 0.0f),
+            UpRight = Up + Right,
+            DownRight = Down + Right,
+            DownLeft = Down + Left,
+            UpLeft = Up + Left;
 
     public float X, Y;
 
@@ -17,16 +26,111 @@ public struct Vector2 {
     public Vector2(float xy) : this(xy, xy) {
     }
 
+    internal Vector2(Xna.Vector2 xnaVector2) : this(xnaVector2.X, xnaVector2.Y) {
+    }
+
+    public float Dot(Vector2 v) {
+        return X * v.X + Y * v.Y;
+    }
+
+    public Vector2 Normalized() {
+        if (ApproxZero()) {
+            return Zero;
+        }
+
+        return this / Length();
+    }
+
     public float Length() {
         return Math.Sqrt(X * X + Y * Y);
     }
 
+    public bool ApproxEquals(Vector2 v) {
+        return Math.ApproxEquals(X, v.X)
+            && Math.ApproxEquals(Y, v.Y);
+    }
+
+    public bool ApproxZero() {
+        return ApproxEquals(Zero);
+    }
+
+    public bool Equals(Vector2 v) {
+        return X == v.X && Y == v.Y;
+    }
+
+    public override bool Equals([NotNullWhen(true)] object obj) {
+        return obj is Vector2 v && Equals(v);
+    }
+
+    public override int GetHashCode() {
+        int hashCode = 486187739;
+
+        unchecked {
+            hashCode = hashCode * 23 + X.GetHashCode();
+            hashCode = hashCode * 23 + Y.GetHashCode();
+        }
+
+        return hashCode;
+    }
+
+    public override string ToString() {
+        return $"{X}, {Y}";
+    }
+
     public static Vector2 operator +(Vector2 a, Vector2 b) {
-        return new(b.X + a.X, b.Y + a.Y);
+        return new(a.X + b.X, a.Y + b.Y);
+    }
+
+    public static Vector2 operator +(Vector2 v, float n) {
+        return new(v.X + n, v.Y + n);
+    }
+
+    public static Vector2 operator +(float n, Vector2 v) {
+        return new(n + v.X, n + v.Y);
     }
 
     public static Vector2 operator -(Vector2 a, Vector2 b) {
-        return new(b.X - a.X, b.Y - a.Y);
+        return new(a.X - b.X, a.Y - b.Y);
+    }
+
+    public static Vector2 operator -(Vector2 v, float n) {
+        return new(v.X - n, v.Y - n);
+    }
+
+    public static Vector2 operator -(float n, Vector2 v) {
+        return new(n - v.X, n - v.Y);
+    }
+
+    public static Vector2 operator *(Vector2 a, Vector2 b) {
+        return new(a.X * b.X, a.Y * b.Y);
+    }
+
+    public static Vector2 operator *(Vector2 v, float n) {
+        return new(v.X * n, v.Y * n);
+    }
+
+    public static Vector2 operator *(float n, Vector2 v) {
+        return new(n * v.X, n * v.Y);
+    }
+
+    public static Vector2 operator /(Vector2 a, Vector2 b) {
+        return new(a.X / b.X, a.Y / b.Y);
+    }
+
+    public static Vector2 operator /(Vector2 v, float n) {
+        return new(v.X / n, v.Y / n);
+    }
+
+    public static Vector2 operator /(float n, Vector2 v) {
+        return new(n / v.X, n / v.Y);
+    }
+
+    public static bool operator ==(Vector2 a, Vector2 b) {
+        return a.X == b.X && a.Y == b.Y;
+    }
+
+    public static bool operator !=(Vector2 a, Vector2 b) {
+        return a.X != b.X || a.Y != b.Y;
     }
 
     internal Xna.Vector2 ToXna() {

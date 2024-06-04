@@ -48,7 +48,7 @@ public class BackBuffer {
         return $"FullScreen? {IsFullScreen}, MultiSampling? {MultiSampling}, Format: {Format}, Width: {Width}, Height: {Height}, DepthStencilFormat: {DepthStencilFormat}, VSync: {VSync}";
     }
 
-    internal void ApplyConfig(BackBufferConfig config) {
+    internal void LoadConfig(BackBufferConfig config) {
         IsFullScreen = config.IsFullScreen;
         MultiSampling = config.MultiSampling;
         Format = config.Format;

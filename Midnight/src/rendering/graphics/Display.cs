@@ -18,7 +18,7 @@ public class Display {
         return $"SupportedOrientations: {SupportedOrientations}";
     }
 
-    internal void ApplyConfig(DisplayConfig config) {
+    internal void LoadConfig(DisplayConfig config) {
         SupportedOrientations = config.SupportedOrientations;
     }
 }
