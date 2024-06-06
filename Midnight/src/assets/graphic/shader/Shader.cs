@@ -23,6 +23,7 @@ public class Shader : IAsset {
     public string[] Filepaths { get; protected set; } = new string[1];
     public string Filepath { get => Filepaths[0]; protected set => Filepaths[0] = value; }
     public int TechniqueCount { get => _techniques.Count; }
+    public bool IsDisposed { get; private set; }
 
     public ShaderTechnique CurrentTechnique {
         get => _currentTechnique;
@@ -101,13 +102,13 @@ public class Shader : IAsset {
         return shader;
     }
 
-    public void Apply() {
+    public IEnumerable<ShaderPass> Apply() {
         Debug.AssertNotNull(CurrentTechnique);
         PreApply();
 
-        foreach (XnaGraphics.EffectPass pass in CurrentTechnique.Underlying.Passes) {
+        foreach (ShaderPass pass in CurrentTechnique.Passes) {
             PrePass();
-            pass.Apply();
+            yield return pass;
             PassApplied();
         }
 
@@ -141,6 +142,7 @@ public class Shader : IAsset {
     }
 
     public void Dispose() {
+        IsDisposed = true;
     }
 
     protected virtual void Loaded() {

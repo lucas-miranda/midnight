@@ -66,8 +66,8 @@ public struct Vector2 : System.IEquatable<Vector2> {
         int hashCode = 486187739;
 
         unchecked {
-            hashCode = hashCode * 23 + X.GetHashCode();
-            hashCode = hashCode * 23 + Y.GetHashCode();
+            hashCode = hashCode * 1610612741 + X.GetHashCode();
+            hashCode = hashCode * 1610612741 + Y.GetHashCode();
         }
 
         return hashCode;

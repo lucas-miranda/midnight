@@ -60,9 +60,9 @@ public struct VertexPositionColorTexture : XnaGraphics.IVertexType, System.IEqua
         int hashCode = 486187739;
 
         unchecked {
-            hashCode = hashCode * 23 + Position.GetHashCode();
-            hashCode = hashCode * 23 + Color.GetHashCode();
-            hashCode = hashCode * 23 + TextureCoordinate.GetHashCode();
+            hashCode = hashCode * 1610612741 + Position.GetHashCode();
+            hashCode = hashCode * 1610612741 + Color.GetHashCode();
+            hashCode = hashCode * 1610612741 + TextureCoordinate.GetHashCode();
         }
 
         return hashCode;

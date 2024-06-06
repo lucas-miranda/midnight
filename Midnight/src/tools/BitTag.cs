@@ -107,8 +107,8 @@ public struct BitTag : System.IEquatable<BitTag>, IEnumerable<BitTag>, IEnumerab
 
     public override int GetHashCode() {
         var hashCode = 1861411795;
-        hashCode = hashCode * -1521134295 + base.GetHashCode();
-        hashCode = hashCode * -1521134295 + LiteralValue.GetHashCode();
+        hashCode = hashCode * 1610612741 + base.GetHashCode();
+        hashCode = hashCode * 1610612741 + LiteralValue.GetHashCode();
         return hashCode;
     }
 

@@ -50,10 +50,10 @@ public struct ColorF : System.IEquatable<ColorF> {
         int hashCode = 486187739;
 
         unchecked {
-            hashCode = hashCode * 23 + R.GetHashCode();
-            hashCode = hashCode * 23 + G.GetHashCode();
-            hashCode = hashCode * 23 + B.GetHashCode();
-            hashCode = hashCode * 23 + A.GetHashCode();
+            hashCode = hashCode * 1610612741 + R.GetHashCode();
+            hashCode = hashCode * 1610612741 + G.GetHashCode();
+            hashCode = hashCode * 1610612741 + B.GetHashCode();
+            hashCode = hashCode * 1610612741 + A.GetHashCode();
         }
 
         return hashCode;

@@ -3,7 +3,7 @@ namespace Midnight;
 public class SpriteDisplayer : GraphicDisplayer {
     private Texture2D _texture;
 
-    private VertexPositionColorTexture[] _vertices = new VertexPositionColorTexture[6] {
+    private VertexPositionColorTexture[] _vertices = new VertexPositionColorTexture[] {
         new(Vector3.Zero, Color.White, Vector2.Zero),
         new(Vector3.Zero, Color.White, Vector2.Right),
         new(Vector3.Zero, Color.White, Vector2.Down),
@@ -38,7 +38,8 @@ public class SpriteDisplayer : GraphicDisplayer {
             null,
             0,
             0,
-            Shader
+            Shader,
+            DrawSettings.Default
         );
     }
 

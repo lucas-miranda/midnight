@@ -64,10 +64,10 @@ public struct Vector4 : System.IEquatable<Vector4> {
         int hashCode = 486187739;
 
         unchecked {
-            hashCode = hashCode * 23 + X.GetHashCode();
-            hashCode = hashCode * 23 + Y.GetHashCode();
-            hashCode = hashCode * 23 + Z.GetHashCode();
-            hashCode = hashCode * 23 + W.GetHashCode();
+            hashCode = hashCode * 1610612741 + X.GetHashCode();
+            hashCode = hashCode * 1610612741 + Y.GetHashCode();
+            hashCode = hashCode * 1610612741 + Z.GetHashCode();
+            hashCode = hashCode * 1610612741 + W.GetHashCode();
         }
 
         return hashCode;

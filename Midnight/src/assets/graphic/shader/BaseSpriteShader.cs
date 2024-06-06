@@ -1,6 +1,6 @@
 namespace Midnight;
 
-public abstract class BaseSpriteShader : Shader {
+public abstract class BaseSpriteShader : Shader, ITextureShader {
     [System.Flags]
     public enum DirtyFlags {
         None                    = 0,
@@ -53,8 +53,17 @@ public abstract class BaseSpriteShader : Shader {
     }
 
     public virtual Texture2D Texture {
-        get => ColorParam.GetTexture2D();
-        set => ColorParam.Set(value);
+        get => TextureParam.GetTexture2D();
+        set => TextureParam.Set(value);
+    }
+
+    Texture ITextureShader.Texture {
+        get => Texture;
+        set {
+            if (value is Texture2D tex2D) {
+                Texture = tex2D;
+            }
+        }
     }
 
     protected ShaderParameter WorldViewProjParam { get; private set; }
@@ -77,7 +86,9 @@ public abstract class BaseSpriteShader : Shader {
 
         // default values
         // TODO  add reset()
+        WorldViewProj = Matrix.Identity;
         Color = Color.White;
+        Texture = null;
     }
 
     protected override void PreApply() {

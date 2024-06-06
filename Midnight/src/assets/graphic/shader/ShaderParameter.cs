@@ -105,6 +105,10 @@ public class ShaderParameter {
     }
 
     public Texture2D GetTexture2D() {
+        if (Underlying == null || Underlying.GetValueTexture2D() == null) {
+            return null;
+        }
+
         return new(Underlying.GetValueTexture2D());
     }
 
@@ -203,7 +207,7 @@ public class ShaderParameter {
     }
 
     public void Set(Texture2D value) {
-        Underlying.SetValue(value.Underlying);
+        Underlying.SetValue(value?.Underlying);
     }
 
     public void Set(Color value) {

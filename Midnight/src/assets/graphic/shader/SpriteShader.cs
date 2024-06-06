@@ -43,8 +43,6 @@ public class SpriteShader : BaseSpriteShader {
             CurrentTechnique = Technique(SelectTechnique());
             Dirty -= DirtyFlags.TechniqueIndex;
         }
-
-        System.Console.WriteLine($"Applying with technique: {CurrentTechnique}");
     }
 
     protected virtual int SelectTechnique() {
