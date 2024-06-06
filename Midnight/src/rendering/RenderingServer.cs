@@ -4,7 +4,6 @@ using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 namespace Midnight;
 
 public sealed class RenderingServer {
-
     internal RenderingServer(XnaGraphics.GraphicsDevice xnaDevice) {
         Debug.AssertNotNull(xnaDevice);
         XnaGraphicsDevice = xnaDevice;
@@ -22,19 +21,20 @@ public sealed class RenderingServer {
         int[] indices,
         int minIndex,
         int primitivesCount,
-        //bool isHollow,
+
         //Vector2 position,
         //float rotation,
         //Vector2 scale,
         //Color color,
         //Vector2 origin,
         //Vector2 scroll,
+
         Shader shader,
         DrawSettings? settings
+
         //IShaderParameters shaderParameters,
         //float layerDepth = 1.0f
     ) {
-        // triangle strip
         Batcher.Push(
             texture,
             vertexData,
@@ -49,15 +49,8 @@ public sealed class RenderingServer {
     }
 
     public void Draw(Texture texture, VertexPositionColorTexture[] vertexData) {
-        // triangle strip
         Draw(texture, vertexData, 0, vertexData.Length, null, 0, vertexData.Length / 2, null, null);
     }
-
-    /*
-    public void Draw(Texture2D texture, Vector2 position, Color color) {
-        //_batcher.Draw(texture.Underlying, position.ToXna(), color.ToXna());
-    }
-    */
 
     internal void LoadContent() {
         SpriteShader shader = Shader.Load<SpriteShader>(Embedded.Resources.Shaders.Sprite);
@@ -77,14 +70,13 @@ public sealed class RenderingServer {
         );
 
         Batcher.DefaultShader = shader;
+        Batcher.LoadContent();
     }
 
     internal void PrepareRender() {
-        //_batcher.Begin();
     }
 
     internal void Flush() {
-        //_batcher.End();
         Batcher.Flush(this);
     }
 }

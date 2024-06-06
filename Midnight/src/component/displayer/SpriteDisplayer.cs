@@ -28,8 +28,6 @@ public class SpriteDisplayer : GraphicDisplayer {
     public Shader Shader { get; set; }
 
     public override void Render(DeltaTime dt, RenderingServer r) {
-        //r.Draw(Texture, Vector2.Zero, Color.White);
-
         r.Draw(
             Texture,
             _vertices,

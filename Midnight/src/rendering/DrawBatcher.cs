@@ -6,11 +6,19 @@ using Midnight.Diagnostics;
 namespace Midnight;
 
 public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
+    private const int INITIAL_BUFFERS_SIZE = 300;
+
     private List<int> _groupsRemoval = new();
     private Dictionary<int, BatchGroup> _groups = new();
     private Shader _defaultShader;
+    private XnaGraphics.DynamicVertexBuffer _vertexBuffer;
+    private XnaGraphics.DynamicIndexBuffer _indexBuffer;
+    private XnaGraphics.VertexDeclaration _vertexDeclaration;
 
     public DrawBatcher() {
+        // fetch VertexDeclaration from V
+        XnaGraphics.IVertexType type = System.Activator.CreateInstance(typeof(V)) as XnaGraphics.IVertexType;
+        _vertexDeclaration = type.VertexDeclaration;
     }
 
     public Shader DefaultShader {
@@ -24,6 +32,9 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
             _defaultShader = value;
         }
     }
+
+    internal XnaGraphics.DynamicVertexBuffer VertexBuffer { get => _vertexBuffer; }
+    internal XnaGraphics.DynamicIndexBuffer IndexBuffer { get => _indexBuffer; }
 
     public void Push(
         Texture texture,
@@ -70,7 +81,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
     public void Flush(RenderingServer r) {
         foreach (KeyValuePair<int, BatchGroup> group in _groups) {
-            group.Value.Flush(r);
+            group.Value.Flush(r, this);
 
             if (!group.Value.IsValid) {
                 _groupsRemoval.Add(group.Key);
@@ -85,6 +96,10 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
             _groupsRemoval.Clear();
         }
+    }
+
+    internal void LoadContent() {
+        CreateBuffers(INITIAL_BUFFERS_SIZE);
     }
 
     private int CalculateGroupId(Texture texture, Shader shader, DrawSettings settings) {
@@ -102,9 +117,46 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
         return hashCode;
     }
 
+    private void CreateBuffers(int length) {
+        if (_vertexBuffer != null) {
+            _vertexBuffer.Dispose();
+        }
 
-    private class BatchGroup {
-        private V[] _vertices = new V[4];
+        _vertexBuffer = new(
+            Program.Rendering.XnaGraphicsDevice,
+            _vertexDeclaration,
+            length,
+            XnaGraphics.BufferUsage.WriteOnly
+        );
+
+        if (_indexBuffer != null) {
+            _indexBuffer.Dispose();
+        }
+
+        _indexBuffer = new(
+            Program.Rendering.XnaGraphicsDevice,
+            XnaGraphics.IndexElementSize.ThirtyTwoBits,
+            _vertexBuffer.VertexCount,
+            XnaGraphics.BufferUsage.WriteOnly
+        );
+
+        // pre-initialize index buffer
+        System.Span<int> indices = stackalloc int[_indexBuffer.IndexCount];
+
+        for (int i = 0; i < indices.Length; i++) {
+            indices[i] = i;
+        }
+
+        _indexBuffer.SetData(
+            0,
+            indices.ToArray(),
+            0,
+            indices.Length
+        );
+    }
+
+    private sealed class BatchGroup {
+        private V[] _vertices = new V[8];
         private int _verticesIndex;
         private Shader _shader;
 
@@ -142,11 +194,13 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
         public void Extend(IList<V> vertices) {
             EnsureCapacity(vertices.Count);
+
             vertices.CopyTo(_vertices, _verticesIndex);
+
             _verticesIndex += vertices.Count;
         }
 
-        public void Flush(RenderingServer r) {
+        public void Flush(RenderingServer r, DrawBatcher<V> batcher) {
             if (!IsValid) {
                 return;
             }
@@ -170,22 +224,28 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
                 texShader.Texture = Texture;
             }
 
+            // apply draw settings
             Settings.Apply();
 
-            // each pass must reapply and render
-            int primitiveCount = Settings.Primitive.CalculateCount(_verticesIndex);
+            // load buffers
+            LoadBuffers(r, batcher);
 
+            // each pass must apply each pass while draw vertices
+            int primitiveCount = Settings.Primitive.CalculateCount(_verticesIndex);
             foreach (ShaderPass pass in Shader.Apply()) {
                 pass.Apply();
 
-                r.XnaGraphicsDevice.DrawUserPrimitives(
+                r.XnaGraphicsDevice.DrawIndexedPrimitives(
                     Settings.Primitive.ToXna(),
-                    _vertices,
+                    0,
+                    0,
+                    _verticesIndex,
                     0,
                     primitiveCount
                 );
             }
 
+            // reset
             _verticesIndex = 0;
         }
 
@@ -195,6 +255,29 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
         private void EnsureCapacity(int additional) {
             System.Array.Resize(ref _vertices, Math.CeilPower2(_verticesIndex + additional));
+        }
+
+        private void LoadBuffers(RenderingServer r, DrawBatcher<V> batcher) {
+            // ensure vertices will fit at vertex buffer
+            if (_verticesIndex > batcher.VertexBuffer.VertexCount) {
+                // need resize buffers
+                batcher.CreateBuffers(Math.CeilPower2(_verticesIndex) * 2);
+            }
+
+            // -> vertex buffer
+            batcher.VertexBuffer.SetData(
+                0,
+                Vertices,
+                0,
+                _verticesIndex,
+                batcher._vertexDeclaration.VertexStride,
+                XnaGraphics.SetDataOptions.None
+            );
+
+            r.XnaGraphicsDevice.SetVertexBuffer(batcher.VertexBuffer);
+
+            // -> index buffer
+            r.XnaGraphicsDevice.Indices = batcher.IndexBuffer;
         }
     }
 }
