@@ -77,6 +77,10 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return $"{X}, {Y}";
     }
 
+    public static Vector2 operator -(Vector2 v) {
+        return new(-v.X, -v.Y);
+    }
+
     public static Vector2 operator +(Vector2 a, Vector2 b) {
         return new(a.X + b.X, a.Y + b.Y);
     }

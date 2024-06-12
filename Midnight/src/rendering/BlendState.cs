@@ -1,8 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Midnight;
 
-public struct BlendState {
+public struct BlendState : System.IEquatable<BlendState> {
     public static readonly BlendState
             Additive = new(XnaGraphics.BlendState.Additive),
             AlphaBlend = new(XnaGraphics.BlendState.AlphaBlend),
@@ -85,6 +86,25 @@ public struct BlendState {
     }
 
     internal XnaGraphics.BlendState Underlying { get; }
+
+    public bool Equals(BlendState s) {
+        return !(AlphaBlendFunction != s.AlphaBlendFunction
+            || AlphaDestinationBlend != s.AlphaDestinationBlend
+            || AlphaSourceBlend != s.AlphaSourceBlend
+            || ColorBlendFunction != s.ColorBlendFunction
+            || ColorDestinationBlend != s.ColorDestinationBlend
+            || ColorSourceBlend != s.ColorSourceBlend
+            || ColorWriteChannels != s.ColorWriteChannels
+            || ColorWriteChannels1 != s.ColorWriteChannels1
+            || ColorWriteChannels2 != s.ColorWriteChannels2
+            || ColorWriteChannels3 != s.ColorWriteChannels3
+            || BlendFactor != s.BlendFactor
+            || MultiSampleMask != s.MultiSampleMask);
+    }
+
+    public override bool Equals([NotNullWhen(true)] object obj) {
+        return obj is BlendState s && Equals(s);
+    }
 
     public override int GetHashCode() {
         int hashCode = 486187739;

@@ -1,7 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
 
 namespace Midnight;
 
-public record struct DrawSettings {
+public struct DrawSettings : System.IEquatable<DrawSettings> {
     public static readonly DrawSettings Default = new();
 
     public DrawSettings() {
@@ -29,5 +30,44 @@ public record struct DrawSettings {
 
         xnaGD.DepthStencilState = DepthStencil.Underlying;
         xnaGD.RasterizerState = Rasterizer.Underlying;
+    }
+
+    public bool Equals(DrawSettings s) {
+        if (Samplers.Length != s.Samplers.Length) {
+            return false;
+        }
+
+        for (int i = 0; i < Samplers.Length; i++) {
+            if (!Samplers[i].Equals(s.Samplers[i])) {
+                return false;
+            }
+        }
+
+        return !(Blend.Equals(s.Blend)
+            || DepthStencil.Equals(s.DepthStencil)
+            || Rasterizer.Equals(s.Rasterizer)
+            || Primitive.Equals(s.Primitive));
+    }
+
+    public override bool Equals([NotNullWhen(true)] object obj) {
+        return obj is RasterizerState s && Equals(s);
+    }
+
+    public override int GetHashCode() {
+        int hashCode = 486187739;
+
+        unchecked {
+            hashCode = hashCode * 1610612741 + Blend.GetHashCode();
+
+            for (int i = 0; i < Samplers.Length; i++) {
+                hashCode = hashCode * 1610612741 + Samplers[i].GetHashCode();
+            }
+
+            hashCode = hashCode * 1610612741 + DepthStencil.GetHashCode();
+            hashCode = hashCode * 1610612741 + Rasterizer.GetHashCode();
+            hashCode = hashCode * 1610612741 + Primitive.GetHashCode();
+        }
+
+        return hashCode;
     }
 }

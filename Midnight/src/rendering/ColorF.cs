@@ -4,7 +4,23 @@ using Xna = Microsoft.Xna.Framework;
 namespace Midnight;
 
 public struct ColorF : System.IEquatable<ColorF> {
+    public static readonly ColorF
+            White = Color.White.Normalized(),
+            Black = Color.Black.Normalized(),
+            Red = Color.Red.Normalized(),
+            Green = Color.Green.Normalized(),
+            Blue = Color.Blue.Normalized(),
+            Magenta = Color.Magenta.Normalized(),
+            Cyan = Color.Cyan.Normalized(),
+            Yellow = Color.Yellow.Normalized(),
+            Transparent = Color.Transparent.Normalized(),
+            TransparentBlack = Color.TransparentBlack.Normalized();
+
     public float R, G, B, A;
+
+    public ColorF() {
+        R = G = B = A = 1.0f;
+    }
 
     public ColorF(float r, float g, float b, float a) {
         R = r;
@@ -61,6 +77,14 @@ public struct ColorF : System.IEquatable<ColorF> {
 
     public override string ToString() {
         return string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:F2};{1:F2};{2:F2};{3:F2};", R, G, B, A);
+    }
+
+    public static implicit operator ColorF(int n) {
+        return new Color((uint) n).Normalized();
+    }
+
+    public static implicit operator ColorF(uint n) {
+        return new Color(n).Normalized();
     }
 
     public static bool operator ==(ColorF a, ColorF b) {

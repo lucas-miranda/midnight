@@ -1,8 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Midnight;
 
-public struct RasterizerState {
+public struct RasterizerState : System.IEquatable<RasterizerState> {
     public static readonly RasterizerState
             CullCW = new(XnaGraphics.RasterizerState.CullClockwise),
             CullCCW = new(XnaGraphics.RasterizerState.CullCounterClockwise),
@@ -51,6 +52,19 @@ public struct RasterizerState {
     }
 
     internal XnaGraphics.RasterizerState Underlying { get; }
+
+    public bool Equals(RasterizerState s) {
+        return !(CullMode != s.CullMode
+            || DepthBias != s.DepthBias
+            || FillMode != s.FillMode
+            || MultiSampleAntiAlias != s.MultiSampleAntiAlias
+            || ScissorTestEnable != s.ScissorTestEnable
+            || SlopeScaleDepthBias != s.SlopeScaleDepthBias);
+    }
+
+    public override bool Equals([NotNullWhen(true)] object obj) {
+        return obj is RasterizerState s && Equals(s);
+    }
 
     public override int GetHashCode() {
         int hashCode = 486187739;

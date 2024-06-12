@@ -25,18 +25,32 @@ public class SpriteDisplayer : GraphicDisplayer {
         }
     }
 
-    public Shader Shader { get; set; }
+    public ShaderMaterial Material { get; set; }
 
     public override void Render(DeltaTime dt, RenderingServer r) {
+        Transform2D trans = Entity.Components.Get<Transform2D>();
+        trans.FlushMatrix();
+
+        VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[_vertices.Length];
+
+        for (int i = 0; i < vertices.Length; i++) {
+            var v = _vertices[i];
+            vertices[i] = new(
+                trans.Apply(v.Position),
+                v.Color,
+                v.TextureCoordinate
+            );
+        }
+
         r.Draw(
             Texture,
-            _vertices,
+            vertices,
             0,
-            _vertices.Length,
+            vertices.Length,
             null,
             0,
             0,
-            Shader,
+            Material,
             DrawSettings.Default
         );
     }

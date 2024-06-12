@@ -29,7 +29,7 @@ public sealed class RenderingServer {
         //Vector2 origin,
         //Vector2 scroll,
 
-        Shader shader,
+        ShaderMaterial material,
         DrawSettings? settings
 
         //IShaderParameters shaderParameters,
@@ -43,7 +43,7 @@ public sealed class RenderingServer {
             indices,
             minIndex,
             primitivesCount,
-            null,
+            material,
             settings
         );
     }
@@ -69,7 +69,7 @@ public sealed class RenderingServer {
             ref proj
         );
 
-        Batcher.DefaultShader = shader;
+        Batcher.DefaultMaterial = new SpriteShaderMaterial(shader);
         Batcher.LoadContent();
     }
 

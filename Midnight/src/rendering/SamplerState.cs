@@ -1,8 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Midnight;
 
-public struct SamplerState {
+public struct SamplerState : System.IEquatable<SamplerState> {
     public static readonly SamplerState
             AnisotropicClamp = new(XnaGraphics.SamplerState.AnisotropicClamp),
             AnisotropicWrap = new(XnaGraphics.SamplerState.AnisotropicWrap),
@@ -67,6 +68,20 @@ public struct SamplerState {
     }
 
     internal XnaGraphics.SamplerState Underlying { get; }
+
+    public bool Equals(SamplerState s) {
+        return !(AddressU != s.AddressU
+            || AddressV != s.AddressV
+            || AddressW != s.AddressW
+            || Filter != s.Filter
+            || MaxAnisotropy != s.MaxAnisotropy
+            || MaxMipLevel != s.MaxMipLevel
+            || MipLODBias != s.MipLODBias);
+    }
+
+    public override bool Equals([NotNullWhen(true)] object obj) {
+        return obj is SamplerState s && Equals(s);
+    }
 
     public override int GetHashCode() {
         int hashCode = 486187739;

@@ -10,7 +10,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
     private List<int> _groupsRemoval = new();
     private Dictionary<int, BatchGroup> _groups = new();
-    private Shader _defaultShader;
+    private ShaderMaterial _defaultMaterial;
     private XnaGraphics.DynamicVertexBuffer _vertexBuffer;
     private XnaGraphics.DynamicIndexBuffer _indexBuffer;
     private XnaGraphics.VertexDeclaration _vertexDeclaration;
@@ -21,15 +21,15 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
         _vertexDeclaration = type.VertexDeclaration;
     }
 
-    public Shader DefaultShader {
-        get => _defaultShader;
+    public ShaderMaterial DefaultMaterial {
+        get => _defaultMaterial;
         set {
             if (value == null) {
                 // TODO  Load default Shader
-                throw new System.ArgumentNullException(nameof(value), "Default Shader can't be null.");
+                throw new System.ArgumentNullException(nameof(value), "Default ShaderMaterial can't be null.");
             }
 
-            _defaultShader = value;
+            _defaultMaterial = value;
         }
     }
 
@@ -51,35 +51,54 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
         //Color color,
         //Vector2 origin,
         //Vector2 scroll,
-        Shader shader,
+        ShaderMaterial material,
         DrawSettings? settings
         //IShaderParameters shaderParameters,
         //float layerDepth = 1.0f
     ) {
-        if (shader == null) {
-            shader = DefaultShader;
+        //System.Console.WriteLine("Push:");
+        if (material == null) {
+            material = DefaultMaterial;
+            //System.Console.WriteLine($"- Uses DefaultMaterial (hash: {material.GetHashCode()})");
+        } else {
+            //System.Console.WriteLine($"- Uses Custom Material (hash: {material.GetHashCode()}");
         }
 
         if (settings == null) {
             settings = DrawSettings.Default;
+            //System.Console.WriteLine($"- Uses DefaultSettings (hash: {settings.GetHashCode()}");
+        } else {
+            //System.Console.WriteLine($"- Uses Custom Settings (hash: {settings.GetHashCode()}");
         }
 
-        int groupId = CalculateGroupId(texture, shader, settings.Value);
+        int groupId;
+
+        if (texture != null) {
+            groupId = CalculateGroupId(texture, material, settings.Value);
+        } else {
+            groupId = CalculateGroupId(material, settings.Value);
+        }
+
+        //System.Console.WriteLine("Group Id: " + groupId);
 
         if (!_groups.TryGetValue(groupId, out BatchGroup group)) {
             group = new() {
                 Texture = texture,
-                Shader = shader,
+                Material = material.Duplicate(),
                 Settings = settings.Value,
             };
 
             _groups.Add(groupId, group);
+
+            System.Console.WriteLine($"Creating batch group (total: {_groups.Count})");
         }
 
+        //System.Console.WriteLine("Push!");
         group.Extend(vertexData);
     }
 
     public void Flush(RenderingServer r) {
+        //System.Console.WriteLine($"Flushing {_groups.Count} groups...");
         foreach (KeyValuePair<int, BatchGroup> group in _groups) {
             group.Value.Flush(r, this);
 
@@ -94,6 +113,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
                 _groups.Remove(id);
             }
 
+            System.Console.WriteLine($"Removing {_groupsRemoval.Count} invalid batch group (total remaining: {_groups.Count})");
             _groupsRemoval.Clear();
         }
     }
@@ -102,15 +122,28 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
         CreateBuffers(INITIAL_BUFFERS_SIZE);
     }
 
-    private int CalculateGroupId(Texture texture, Shader shader, DrawSettings settings) {
+    private int CalculateGroupId(Texture texture, ShaderMaterial material, DrawSettings settings) {
         Debug.AssertNotNull(texture);
-        Debug.AssertNotNull(shader);
+        Debug.AssertNotNull(material);
         Debug.AssertNotNull(settings);
         int hashCode = 1861411795;
 
         unchecked {
             hashCode = hashCode * 1610612741 + texture.GetHashCode();
-            hashCode = hashCode * 1610612741 + shader.GetHashCode();
+            hashCode = hashCode * 1610612741 + material.GetHashCode();
+            hashCode = hashCode * 1610612741 + settings.GetHashCode();
+        }
+
+        return hashCode;
+    }
+
+    private int CalculateGroupId(ShaderMaterial material, DrawSettings settings) {
+        Debug.AssertNotNull(material);
+        Debug.AssertNotNull(settings);
+        int hashCode = 1861411795;
+
+        unchecked {
+            hashCode = hashCode * 1610612741 + material.GetHashCode();
             hashCode = hashCode * 1610612741 + settings.GetHashCode();
         }
 
@@ -156,9 +189,15 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
     }
 
     private sealed class BatchGroup {
+        /// <summary>
+        /// After <see cref="Flush"/> being called this many times without any draw data, it'll be automatically invalidated.
+        /// </summary>
+        public const int UnusedTimesUntilPrune = 100;
+
         private V[] _vertices = new V[8];
         private int _verticesIndex;
-        private Shader _shader;
+        private ShaderMaterial _material;
+        private int _unusedTimes;
 
 #if DEBUG
         private System.Type _shaderTexType;
@@ -166,21 +205,21 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
         public Texture Texture { get; set; }
 
-        public Shader Shader {
-            get => _shader;
+        public ShaderMaterial Material {
+            get => _material;
             set {
-                _shader = value;
+                _material = value;
 
 #if DEBUG
-                if (_shader != null && _shader is ITextureShader texShader) {
+                if (_material != null && _material is ITextureUniform texUniform) {
                     // cache shader expected texture type
                     // so we can verify it later on
-                    _shaderTexType = texShader.GetType()
-                                              .GetProperty(
-                                                   "Texture",
-                                                   BindingFlags.Public | BindingFlags.Instance
-                                               )
-                                              .PropertyType;
+                    _shaderTexType = texUniform.GetType()
+                                               .GetProperty(
+                                                    "Texture",
+                                                    BindingFlags.Public | BindingFlags.Instance
+                                                )
+                                               .PropertyType;
                 } else {
                     _shaderTexType = null;
                 }
@@ -212,16 +251,24 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
             }
 
             if (_verticesIndex <= 0) {
+                _unusedTimes += 1;
+
+                if (_unusedTimes >= UnusedTimesUntilPrune) {
+                    Invalidate();
+                }
+
                 return;
             }
 
+            _unusedTimes = 0;
+
             // adjust texture, if needed
-            if (Shader is ITextureShader texShader && Texture != null) {
+            if (Material is ITextureUniform texUniform && Texture != null) {
                 r.XnaGraphicsDevice.Textures[0] = Texture.Underlying;
 #if DEBUG
                 Debug.Assert(Texture.GetType().IsAssignableTo(_shaderTexType));
 #endif
-                texShader.Texture = Texture;
+                texUniform.Texture = Texture; // ?
             }
 
             // apply draw settings
@@ -232,7 +279,8 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
             // each pass must apply each pass while draw vertices
             int primitiveCount = Settings.Primitive.CalculateCount(_verticesIndex);
-            foreach (ShaderPass pass in Shader.Apply()) {
+            foreach (ShaderPass pass in Material.Apply()) {
+                //System.Console.WriteLine("Using technique: " + Material.BaseShader.CurrentTechnique.Name);
                 pass.Apply();
 
                 r.XnaGraphicsDevice.DrawIndexedPrimitives(

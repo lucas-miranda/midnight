@@ -115,6 +115,10 @@ public class Shader : IAsset {
         Applied();
     }
 
+    public virtual ShaderMaterial CreateMaterial() {
+        return new(this);
+    }
+
     public ShaderTechnique Technique(int id) {
         return _techniques[id];
     }

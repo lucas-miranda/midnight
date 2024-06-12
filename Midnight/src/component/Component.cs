@@ -1,7 +1,7 @@
 
 namespace Midnight;
 
-public class Component {
+public abstract class Component {
     public Entity Entity { get; private set; }
 
     public virtual void EntityAdded(Entity entity) {

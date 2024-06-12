@@ -19,6 +19,12 @@ public struct Vector3 : System.IEquatable<Vector3> {
     public Vector3(float xyz) : this(xyz, xyz, xyz) {
     }
 
+    public Vector3(Vector2 vec2, float z) : this(vec2.X, vec2.Y, z) {
+    }
+
+    public Vector3(Vector2 vec2) : this(vec2.X, vec2.Y, 0.0f) {
+    }
+
     internal Vector3(Xna.Vector3 xnaVector3) : this(xnaVector3.X, xnaVector3.Y, xnaVector3.Z) {
     }
 
@@ -74,6 +80,10 @@ public struct Vector3 : System.IEquatable<Vector3> {
 
     public override string ToString() {
         return $"{X}, {Y}, {Z}";
+    }
+
+    public static Vector3 operator -(Vector3 v) {
+        return new(-v.X, -v.Y, -v.Z);
     }
 
     public static Vector3 operator +(Vector3 a, Vector3 b) {

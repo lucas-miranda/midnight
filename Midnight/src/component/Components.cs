@@ -34,6 +34,14 @@ public class Components : IEnumerable<Component> {
         return true;
     }
 
+    public C Get<C>() where C : Component {
+        if (!TryGetStorage(typeof(C), out List<Component> storage) || storage.Count == 0) {
+            return null;
+        }
+
+        return storage[0] as C;
+    }
+
     public void Clear() {
         foreach (List<Component> storage in _entries.Values) {
             foreach (Component component in storage) {

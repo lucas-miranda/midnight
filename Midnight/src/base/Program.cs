@@ -31,7 +31,7 @@ public abstract class Program : Xna.Game {
     public static RenderingServer Rendering { get; private set; }
     public static GraphicsServer Graphics { get; private set; }
     public static Embedded.Resources Resources { get; private set; }
-    public Color Background { get; set; } = new(0x46236EFF);
+    public Color Background { get; set; } = new(0x834EBFFF);
     public Canvas MainCanvas { get; protected set; }
 
 	protected sealed override void Initialize() {

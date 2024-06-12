@@ -1,8 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Midnight;
 
-public struct DepthStencilState {
+public struct DepthStencilState : System.IEquatable<DepthStencilState> {
     public static readonly DepthStencilState
             Default = new(XnaGraphics.DepthStencilState.Default),
             DepthRead = new(XnaGraphics.DepthStencilState.DepthRead),
@@ -103,6 +104,28 @@ public struct DepthStencilState {
     }
 
     internal XnaGraphics.DepthStencilState Underlying { get; }
+
+    public bool Equals(DepthStencilState s) {
+        return !(DepthBufferEnable != s.DepthBufferEnable
+            || DepthBufferWriteEnable != s.DepthBufferWriteEnable
+            || CCWStencilDepthBufferFail != s.CCWStencilDepthBufferFail
+            || CCWStencilFail != s.CCWStencilFail
+            || CCWStencilFunction != s.CCWStencilFunction
+            || CCWStencilPass != s.CCWStencilPass
+            || DepthBufferFunction != s.DepthBufferFunction
+            || ReferenceStencil != s.ReferenceStencil
+            || StencilDepthBufferFail != s.StencilDepthBufferFail
+            || StencilFail != s.StencilFail
+            || StencilFunction != s.StencilFunction
+            || StencilMask != s.StencilMask
+            || StencilPass != s.StencilPass
+            || StencilWriteMask != s.StencilWriteMask
+            || TwoSidedStencilMode != s.TwoSidedStencilMode);
+    }
+
+    public override bool Equals([NotNullWhen(true)] object obj) {
+        return obj is DepthStencilState s && Equals(s);
+    }
 
     public override int GetHashCode() {
         int hashCode = 486187739;

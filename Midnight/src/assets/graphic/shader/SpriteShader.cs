@@ -19,7 +19,7 @@ public class SpriteShader : BaseSpriteShader {
             base.Texture = value;
 
             Settings = Settings with {
-                TextureEnabled = true,
+                TextureEnabled = value != null,
             };
         }
     }
@@ -34,6 +34,10 @@ public class SpriteShader : BaseSpriteShader {
             Dirty |= DirtyFlags.TechniqueIndex;
             _settings = value;
         }
+    }
+
+    public override SpriteShaderMaterial CreateMaterial() {
+        return new(this);
     }
 
     protected override void PreApply() {

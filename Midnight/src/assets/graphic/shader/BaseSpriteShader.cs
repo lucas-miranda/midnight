@@ -95,8 +95,6 @@ public abstract class BaseSpriteShader : Shader, ITextureShader {
         base.PreApply();
 
         if (Dirty.Has(DirtyFlags.WorldViewProjection)) {
-            //Matrix viewProj = Matrix.Multiply(ref _view, ref _projection);
-            //WorldViewProj = Matrix.Multiply(ref _world, ref viewProj);
             Matrix worldView = Matrix.Multiply(ref _world, ref _view);
             WorldViewProj = Matrix.Multiply(ref worldView, ref _projection);
             Dirty -= DirtyFlags.WorldViewProjection;

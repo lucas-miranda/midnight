@@ -116,6 +116,56 @@ public struct Matrix {
         );
     }
 
+    public static Matrix Translation(Vector3 translation) {
+        return new(
+            new(1.0f,       0.0f,       0.0f,       translation.X),
+            new(0.0f,       1.0f,       0.0f,       translation.Y),
+            new(0.0f,       0.0f,       1.0f,       translation.Z),
+            new(0.0f,       0.0f,       0.0f,       1.0f)
+        );
+    }
+
+    public static Matrix Translation(Vector2 translation, float z) {
+        return Translation(new Vector3(translation, z));
+    }
+
+    public static Matrix Translation(Vector2 translation) {
+        return Translation(new Vector3(translation));
+    }
+
+    public static Matrix Translation(float xyz) {
+        return Translation(new Vector3(xyz));
+    }
+
+    public static Matrix Scaling(Vector3 scale) {
+        return new(
+            new(scale.X,    0.0f,       0.0f,       0.0f),
+            new(0.0f,       scale.Y,    0.0f,       0.0f),
+            new(0.0f,       0.0f,       scale.Z,    0.0f),
+            new(0.0f,       0.0f,       0.0f,       1.0f)
+        );
+    }
+    public static Matrix Scaling(Vector2 scale, float z) {
+        return Scaling(new Vector3(scale, z));
+    }
+
+    public static Matrix Scaling(Vector2 scale) {
+        return Scaling(new Vector3(scale, 1.0f));
+    }
+
+    public static Matrix Scaling(float xyz) {
+        return Scaling(new Vector3(xyz));
+    }
+
+    public static Matrix Rotation(float angle) {
+        return new(
+            new(Math.Cos(angle),    -Math.Sin(angle),   0.0f,       0.0f),
+            new(Math.Sin(angle),    Math.Cos(angle),    0.0f,       0.0f),
+            new(0.0f,               0.0f,               1.0f,       0.0f),
+            new(0.0f,               0.0f,               0.0f,       1.0f)
+        );
+    }
+
     public float Determinant() {
         // using Laplace Expansion
         // ref: https://en.wikipedia.org/wiki/Laplace_expansion
@@ -253,6 +303,34 @@ public struct Matrix {
         return $"{Row0},   {Row1},   {Row2},   {Row3}";
     }
 
+    public static Matrix operator -(Matrix m) {
+        return new(-m.Row0, -m.Row1, -m.Row2, -m.Row3);
+    }
+
+    public static Matrix operator +(Matrix a, Matrix b) {
+        return new(a.Row0 + b.Row0, a.Row1 + b.Row1, a.Row2 + b.Row2, a.Row3 + b.Row3);
+    }
+
+    public static Matrix operator +(float n, Matrix m) {
+        return new(n + m.Row0, n + m.Row1, n + m.Row2, n + m.Row3);
+    }
+
+    public static Matrix operator +(Matrix m, float n) {
+        return new(m.Row0 + n, m.Row1 + n, m.Row2 + n, m.Row3 + n);
+    }
+
+    public static Matrix operator -(Matrix a, Matrix b) {
+        return new(a.Row0 - b.Row0, a.Row1 - b.Row1, a.Row2 - b.Row2, a.Row3 - b.Row3);
+    }
+
+    public static Matrix operator -(float n, Matrix m) {
+        return new(n - m.Row0, n - m.Row1, n - m.Row2, n - m.Row3);
+    }
+
+    public static Matrix operator -(Matrix m, float n) {
+        return new(m.Row0 - n, m.Row1 - n, m.Row2 - n, m.Row3 - n);
+    }
+
     public static Matrix operator *(Matrix a, Matrix b) {
         return Multiply(ref a, ref b);
     }
@@ -271,6 +349,14 @@ public struct Matrix {
             m.Row0.Y * v.X + m.Row1.Y * v.Y + m.Row2.Y * v.Z + m.Row3.Y * 1.0f,
             m.Row0.Z * v.X + m.Row1.Z * v.Y + m.Row2.Z * v.Z + m.Row3.Z * 1.0f
         );
+    }
+
+    public static Matrix operator *(float n, Matrix m) {
+        return new(n * m.Row0, n * m.Row1, n * m.Row2, n * m.Row3);
+    }
+
+    public static Matrix operator *(Matrix m, float n) {
+        return new(m.Row0 * n, m.Row1 * n, m.Row2 * n, m.Row3 * n);
     }
 
     internal Xna.Matrix ToXna() {

@@ -7,10 +7,20 @@ public struct Color : System.IEquatable<Color> {
     public static readonly Color
             White = new(0xFFFFFFFF),
             Black = new(0x000000FF),
+            Red = new(0xFF0000FF),
+            Green = new(0x00FF00FF),
+            Blue = new(0x0000FFFF),
+            Magenta = new(0xFF00FFFF),
+            Cyan = new(0x00FFFFFF),
+            Yellow = new(0xFFFF00FF),
             Transparent = new(0xFFFFFF00),
             TransparentBlack = new(0x00000000);
 
     public byte R, G, B, A;
+
+    public Color() {
+        R = G = B = A = byte.MaxValue;
+    }
 
     public Color(uint rgba) {
         R = System.Convert.ToByte((rgba & 0xFF000000) >> 24);
@@ -30,12 +40,6 @@ public struct Color : System.IEquatable<Color> {
     }
 
     public Color(byte r, byte g, byte b) : this(r, g, b, byte.MaxValue) {
-    }
-
-    public Color(byte rgb, byte a) : this(rgb, rgb, rgb, a) {
-    }
-
-    public Color(byte rgba) : this(rgba, rgba, rgba, rgba) {
     }
 
     public Color(int r, int g, int b, int a) {
@@ -109,6 +113,14 @@ public struct Color : System.IEquatable<Color> {
 
     public override string ToString() {
         return string.Format(System.Globalization.CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", R, G, B, A);
+    }
+
+    public static implicit operator Color(int n) {
+        return new((uint) n);
+    }
+
+    public static implicit operator Color(uint n) {
+        return new(n);
     }
 
     public static bool operator ==(Color a, Color b) {

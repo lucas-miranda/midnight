@@ -20,6 +20,21 @@ public struct Vector4 : System.IEquatable<Vector4> {
     public Vector4(float xyzw) : this(xyzw, xyzw, xyzw, xyzw) {
     }
 
+    public Vector4(Vector2 vec2, float z, float w) : this(vec2.X, vec2.Y, z, w) {
+    }
+
+    public Vector4(Vector2 vec2, float z) : this(vec2.X, vec2.Y, z, 0.0f) {
+    }
+
+    public Vector4(Vector2 vec2) : this(vec2.X, vec2.Y, 0.0f, 0.0f) {
+    }
+
+    public Vector4(Vector3 vec3, float w) : this(vec3.X, vec3.Y, vec3.Z, w) {
+    }
+
+    public Vector4(Vector3 vec3) : this(vec3.X, vec3.Y, vec3.Z, 0.0f) {
+    }
+
     internal Vector4(Xna.Vector4 xnaVector4)
         : this(xnaVector4.X, xnaVector4.Y, xnaVector4.Z, xnaVector4.W)
     {
@@ -75,6 +90,10 @@ public struct Vector4 : System.IEquatable<Vector4> {
 
     public override string ToString() {
         return $"{X}, {Y}, {Z}, {W}";
+    }
+
+    public static Vector4 operator -(Vector4 v) {
+        return new(-v.X, -v.Y, -v.Z, -v.W);
     }
 
     public static Vector4 operator +(Vector4 a, Vector4 b) {

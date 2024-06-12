@@ -13,49 +13,34 @@ public class Scene {
 
     public Entities Entities { get; }
 
+    /// <summary>
+    /// Prepare anything before Start().
+    /// </summary>
     public virtual void Prepare() {
     }
 
+    /// <summary>
+    /// Start anything which was prepared at Prepare().
+    /// </summary>
     public virtual void Start() {
     }
 
+    public virtual void Update(DeltaTime dt) {
+        UpdateComponents(dt);
+    }
+
+    public virtual void Render(DeltaTime dt, RenderingServer r) {
+        RenderComponents(dt, r);
+    }
+
+    // TODO: REMOVE ME
     public void ShuffleUpdate() {
         Random.Shuffle(_updateComponents);
     }
 
+    // TODO: REMOVE ME
     public void ShuffleRender() {
         Random.Shuffle(_renderComponents);
-    }
-
-    internal void Update(DeltaTime dt) {
-        for (int i = 0; i < _updateComponents.Count; i++) {
-            ComponentWrapper<IUpdatable> wrapper = _updateComponents[i];
-
-            if (!wrapper.Alive) {
-                _updateComponents.RemoveAt(i);
-                i -= 1;
-                continue;
-            }
-
-            wrapper.Reference.Update(dt);
-        }
-
-        for (int i = 0; i < _renderComponents.Count; i++) {
-            ComponentWrapper<IRenderable> wrapper = _renderComponents[i];
-
-            if (!wrapper.Alive) {
-                _renderComponents.RemoveAt(i);
-                i -= 1;
-            }
-        }
-    }
-
-    internal void Render(DeltaTime dt, RenderingServer r) {
-        foreach (ComponentWrapper<IRenderable> wrapper in _renderComponents) {
-            if (wrapper.Alive) {
-                wrapper.Reference.Render(dt, r);
-            }
-        }
     }
 
     internal void EntityAdded(Entity entity) {
@@ -98,6 +83,37 @@ public class Scene {
                     Remove(wrapper);
                     break;
                 }
+            }
+        }
+    }
+
+    private void UpdateComponents(DeltaTime dt) {
+        for (int i = 0; i < _updateComponents.Count; i++) {
+            ComponentWrapper<IUpdatable> wrapper = _updateComponents[i];
+
+            if (!wrapper.Alive) {
+                _updateComponents.RemoveAt(i);
+                i -= 1;
+                continue;
+            }
+
+            wrapper.Reference.Update(dt);
+        }
+
+        for (int i = 0; i < _renderComponents.Count; i++) {
+            ComponentWrapper<IRenderable> wrapper = _renderComponents[i];
+
+            if (!wrapper.Alive) {
+                _renderComponents.RemoveAt(i);
+                i -= 1;
+            }
+        }
+    }
+
+    private void RenderComponents(DeltaTime dt, RenderingServer r) {
+        foreach (ComponentWrapper<IRenderable> wrapper in _renderComponents) {
+            if (wrapper.Alive) {
+                wrapper.Reference.Render(dt, r);
             }
         }
     }
