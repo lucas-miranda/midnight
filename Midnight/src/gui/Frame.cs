@@ -20,25 +20,32 @@ public class Frame : Object, IContainer {
         new(Vector3.Zero, Color.White, Vector2.DownRight),
     };
 
+    private Color _backgroundColor = Color.White,
+                  _borderColor = Color.Black;
+
     public Frame() {
         Size = new(200, 150);
-
-        BackgroundMaterial = new SpriteShaderMaterial((SpriteShader) Game.Rendering.Batcher.DefaultMaterial.BaseShader) {
-            ColorF = ColorF.White,
-        };
-
-        BorderMaterial = new SpriteShaderMaterial((SpriteShader) Game.Rendering.Batcher.DefaultMaterial.BaseShader) {
-            ColorF = ColorF.Black,
-        };
-
-        System.Console.WriteLine($"Bg Mat: {BackgroundMaterial.GetHashCode()}; Border Mat: {BorderMaterial.GetHashCode()}");
     }
 
     public Container Container { get; } = new();
     public ShaderMaterial BackgroundMaterial { get; set; }
     public ShaderMaterial BorderMaterial { get; set; }
-    public Color Background { get; set; }
-    public Color Border { get; set; } = Color.Black;
+
+    public Color BackgroundColor {
+        get => _backgroundColor;
+        set {
+            _backgroundColor = value;
+            UpdateVertices();
+        }
+    }
+
+    public Color BorderColor {
+        get => _borderColor;
+        set {
+            _borderColor = value;
+            UpdateVertices();
+        }
+    }
 
     public override void Render(DeltaTime dt, RenderingServer r) {
         r.Draw(
@@ -83,20 +90,24 @@ public class Frame : Object, IContainer {
     }
 
     protected override void SizeChanged() {
+        UpdateVertices();
+    }
+
+    private void UpdateVertices() {
         // border
-        _borderVertices[0].Position = Vector3.Zero;
-        _borderVertices[1].Position = new(Size.X, 0.0f, 0.0f);
-        _borderVertices[2].Position = new(Size, 0.0f);
-        _borderVertices[3].Position = new(0.0f, Size.Y, 0.0f);
-        _borderVertices[4].Position = Vector3.Zero;
+        _borderVertices[0] = new(Vector3.Zero, BorderColor, Vector2.Zero);
+        _borderVertices[1] = new(new(Size.X, 0.0f, 0.0f), BorderColor, Vector2.Right);
+        _borderVertices[2] = new(new(Size, 0.0f), BorderColor, Vector2.DownRight);
+        _borderVertices[3] = new(new(0.0f, Size.Y, 0.0f), BorderColor, Vector2.Down);
+        _borderVertices[4] = new(Vector3.Zero, BorderColor, Vector2.Zero);
 
         // background
-        _backgroundVertices[0].Position = Vector3.Zero;
-        _backgroundVertices[1].Position = new(Size.X, 0.0f, 0.0f);
-        _backgroundVertices[2].Position = new(0.0f, Size.Y, 0.0f);
+        _backgroundVertices[0] = new(Vector3.Zero, BackgroundColor, Vector2.Zero);
+        _backgroundVertices[1] = new(new(Size.X, 0.0f, 0.0f), BackgroundColor, Vector2.Right);
+        _backgroundVertices[2] = new(new(0.0f, Size.Y, 0.0f), BackgroundColor, Vector2.Down);
 
-        _backgroundVertices[3].Position = new(0.0f, Size.Y, 0.0f);
-        _backgroundVertices[4].Position = new(Size.X, 0.0f, 0.0f);
-        _backgroundVertices[5].Position = new(Size, 0.0f);
+        _backgroundVertices[3] = new(new(0.0f, Size.Y, 0.0f), BackgroundColor, Vector2.Down);
+        _backgroundVertices[4] = new(new(Size.X, 0.0f, 0.0f), BackgroundColor, Vector2.Right);
+        _backgroundVertices[5] = new(new(Size, 0.0f), BackgroundColor, Vector2.DownRight);
     }
 }

@@ -32,6 +32,14 @@ public class BackBuffer {
         set => XnaGDM.PreferredBackBufferHeight = value;
     }
 
+    public Size2I Size {
+        get => new(Width, Height);
+        set {
+            Width = value.Width;
+            Height = value.Height;
+        }
+    }
+
     public DepthFormat DepthStencilFormat {
         get => (DepthFormat) XnaGDM.PreferredDepthStencilFormat;
         set => XnaGDM.PreferredDepthStencilFormat = value.ToXna();
@@ -45,7 +53,7 @@ public class BackBuffer {
     internal Xna.GraphicsDeviceManager XnaGDM { get; }
 
     public override string ToString() {
-        return $"FullScreen? {IsFullScreen}, MultiSampling? {MultiSampling}, Format: {Format}, Width: {Width}, Height: {Height}, DepthStencilFormat: {DepthStencilFormat}, VSync: {VSync}";
+        return $"FullScreen? {IsFullScreen}, MultiSampling? {MultiSampling}, Format: {Format}, Size: {Size}, DepthStencilFormat: {DepthStencilFormat}, VSync: {VSync}";
     }
 
     internal void LoadConfig(BackBufferConfig config) {

@@ -98,11 +98,17 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
     }
 
     public void Flush(RenderingServer r) {
-        //System.Console.WriteLine($"Flushing {_groups.Count} groups...");
         foreach (KeyValuePair<int, BatchGroup> group in _groups) {
+            // TODO  remove me
+            // TODO  iterate through active Shaders and place WVP, extracted from MainCamera
+            if (group.Value.Material.BaseShader is IWVPShader wvpShader && r.MainCamera != null) {
+                wvpShader.WorldViewProjection = r.MainCamera.ViewProjection;
+            }
+
             group.Value.Flush(r, this);
 
             if (!group.Value.IsValid) {
+                // add to removal
                 _groupsRemoval.Add(group.Key);
             }
         }

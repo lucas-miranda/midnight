@@ -88,11 +88,11 @@ public static class Math {
     }
 
     public static int Clamp(int value, int min, int max) {
-        return Mini(Maxi(value, min), max);
+        return Min(Max(value, min), max);
     }
 
     public static byte Clamp(byte value, byte min, byte max) {
-        return Mini(Maxi(value, min), max);
+        return Min(Max(value, min), max);
     }
 
     public static float Clamp01(float value) {
@@ -115,7 +115,7 @@ public static class Math {
         return System.MathF.Ceiling(value);
     }
 
-    public static int Ceili(float value) {
+    public static int CeilI(float value) {
         return (int) System.MathF.Ceiling(value);
     }
 
@@ -123,7 +123,7 @@ public static class Math {
         return System.MathF.Floor(value);
     }
 
-    public static int Floori(float value) {
+    public static int FloorI(float value) {
         return (int) System.MathF.Floor(value);
     }
 
@@ -133,7 +133,7 @@ public static class Math {
     }
 
     /// <summary>Returns value rounded to the nearest integer.</summary>
-    public static int Roundi(float value) {
+    public static int RoundI(float value) {
         return (int) System.MathF.Round(value);
     }
 
@@ -143,11 +143,11 @@ public static class Math {
     }
 
     /// <summary>Returns the smallest of two or more values.</summary>
-    public static int Mini(int a, int b) {
+    public static int Min(int a, int b) {
         return System.Math.Min(a, b);
     }
 
-    public static byte Mini(byte a, byte b) {
+    public static byte Min(byte a, byte b) {
         return System.Math.Min(a, b);
     }
 
@@ -164,12 +164,11 @@ public static class Math {
         return Max(Max(a, b), Max(c, d));
     }
 
-    /// <summary>Returns largest of two or more values.</summary>
-    public static int Maxi(int a, int b) {
+    public static int Max(int a, int b) {
         return System.Math.Max(a, b);
     }
 
-    public static byte Maxi(byte a, byte b) {
+    public static byte Max(byte a, byte b) {
         return System.Math.Max(a, b);
     }
 

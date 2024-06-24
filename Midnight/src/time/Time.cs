@@ -6,7 +6,7 @@ public static class Time {
         public const int AsMilli = 1000;
 
         public static int ToMilli(float sec) {
-            return Math.Floori(sec * AsMilli);
+            return Math.FloorI(sec * AsMilli);
         }
     }
 

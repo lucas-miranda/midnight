@@ -1,6 +1,6 @@
 namespace Midnight;
 
-public abstract class BaseSpriteShader : Shader, ITextureShader {
+public abstract class BaseSpriteShader : Shader, IWVPShader, ITextureShader {
     [System.Flags]
     public enum DirtyFlags {
         None                    = 0,
@@ -37,9 +37,12 @@ public abstract class BaseSpriteShader : Shader, ITextureShader {
         }
     }
 
-    public virtual Matrix WorldViewProj {
+    public virtual Matrix WorldViewProjection {
         get => WorldViewProjParam.GetMatrix();
-        set => WorldViewProjParam.Set(value);
+        set {
+            WorldViewProjParam.Set(value);
+            Dirty -= DirtyFlags.WorldViewProjection;
+        }
     }
 
     public virtual Color Color {
@@ -86,7 +89,7 @@ public abstract class BaseSpriteShader : Shader, ITextureShader {
 
         // default values
         // TODO  add reset()
-        WorldViewProj = Matrix.Identity;
+        WorldViewProjection = Matrix.Identity;
         Color = Color.White;
         Texture = null;
     }
@@ -96,8 +99,7 @@ public abstract class BaseSpriteShader : Shader, ITextureShader {
 
         if (Dirty.Has(DirtyFlags.WorldViewProjection)) {
             Matrix worldView = Matrix.Multiply(ref _world, ref _view);
-            WorldViewProj = Matrix.Multiply(ref worldView, ref _projection);
-            Dirty -= DirtyFlags.WorldViewProjection;
+            WorldViewProjection = Matrix.Multiply(ref worldView, ref _projection);
         }
     }
 }

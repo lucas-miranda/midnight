@@ -4,13 +4,25 @@ using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 namespace Midnight;
 
 public sealed class RenderingServer {
+    private Camera _mainCamera;
+
     internal RenderingServer(XnaGraphics.GraphicsDevice xnaDevice) {
         Debug.AssertNotNull(xnaDevice);
         XnaGraphicsDevice = xnaDevice;
+        MainCamera = new();
         Batcher = new();
     }
 
     public DrawBatcher<VertexPositionColorTexture> Batcher { get; }
+
+    public Camera MainCamera {
+        get => _mainCamera;
+        set {
+            _mainCamera = value;
+            _mainCamera?.RequestRecalculate();
+        }
+    }
+
     internal XnaGraphics.GraphicsDevice XnaGraphicsDevice { get; }
 
     public void Draw(
@@ -55,8 +67,9 @@ public sealed class RenderingServer {
     internal void LoadContent() {
         SpriteShader shader = Shader.Load<SpriteShader>(Embedded.Resources.Shaders.Sprite);
 
-        BackBuffer backbuffer = Program.Graphics.BackBuffer;
+        //BackBuffer backbuffer = Program.Graphics.BackBuffer;
 
+        /*
         // TODO  calculate view bounds from something else,
         //       backbuffer and view can have different sizes
         Matrix world = Matrix.Identity;
@@ -68,6 +81,7 @@ public sealed class RenderingServer {
             ref view,
             ref proj
         );
+        */
 
         Batcher.DefaultMaterial = new SpriteShaderMaterial(shader);
         Batcher.LoadContent();
@@ -77,6 +91,7 @@ public sealed class RenderingServer {
     }
 
     internal void Flush() {
+        MainCamera?.Recalculate();
         Batcher.Flush(this);
     }
 }

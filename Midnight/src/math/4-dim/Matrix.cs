@@ -1,9 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using Xna = Microsoft.Xna.Framework;
 using Midnight.Diagnostics;
 
 namespace Midnight;
 
-public struct Matrix {
+public struct Matrix : System.IEquatable<Matrix> {
     public static Matrix Identity = new(
             new(1, 0, 0, 0),
             new(0, 1, 0, 0),
@@ -297,6 +298,31 @@ public struct Matrix {
             Row2.X, Row2.Y, Row2.Z, Row2.W,
             Row3.X, Row3.Y, Row3.Z, Row3.W,
         });
+    }
+
+    public bool Equals(Matrix m) {
+        return Row0.Equals(m.Row0)
+            && Row1.Equals(m.Row1)
+            && Row2.Equals(m.Row2)
+            && Row3.Equals(m.Row3);
+
+    }
+
+    public override bool Equals([NotNullWhen(true)] object obj) {
+        return obj is Matrix m && Equals(m);
+    }
+
+    public override int GetHashCode() {
+        int hashCode = 486187739;
+
+        unchecked {
+            hashCode = hashCode * 1610612741 + Row0.GetHashCode();
+            hashCode = hashCode * 1610612741 + Row1.GetHashCode();
+            hashCode = hashCode * 1610612741 + Row2.GetHashCode();
+            hashCode = hashCode * 1610612741 + Row3.GetHashCode();
+        }
+
+        return hashCode;
     }
 
     public override string ToString() {
