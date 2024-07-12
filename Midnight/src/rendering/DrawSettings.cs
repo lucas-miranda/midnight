@@ -10,6 +10,7 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
         Samplers = new SamplerState[] { SamplerState.PointClamp };
         DepthStencil = DepthStencilState.Default;
         Rasterizer = RasterizerState.CullNone;
+        Primitive = PrimitiveType.TriangleList;
     }
 
     public BlendState Blend { get; init; }

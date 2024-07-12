@@ -24,12 +24,11 @@ public class Texture2D : Texture {
     }
 
     internal Texture2D(XnaGraphics.Texture2D xnaTexture) : base(xnaTexture) {
-        Width = Underlying.Width;
-        Height = Underlying.Height;
     }
 
-    public int Width { get; private set; }
-    public int Height { get; private set; }
+    public Size2I Size => new(Underlying.Width, Underlying.Height);
+    public int Width => Size.Width;
+    public int Height => Size.Height;
 
     internal override XnaGraphics.Texture2D Underlying { get => (XnaGraphics.Texture2D) base.Underlying; }
 

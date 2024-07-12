@@ -27,7 +27,7 @@ public sealed class RenderingServer {
 
     public void Draw(
         Texture texture,
-        VertexPositionColorTexture[] vertexData,
+        System.Span<VertexPositionColorTexture> vertexData,
         int minVertexIndex,
         int verticesLength,
         int[] indices,
@@ -65,25 +65,10 @@ public sealed class RenderingServer {
     }
 
     internal void LoadContent() {
+        // set default shader material for Batcher
         SpriteShader shader = Shader.Load<SpriteShader>(Embedded.Resources.Shaders.Sprite);
-
-        //BackBuffer backbuffer = Program.Graphics.BackBuffer;
-
-        /*
-        // TODO  calculate view bounds from something else,
-        //       backbuffer and view can have different sizes
-        Matrix world = Matrix.Identity;
-        Matrix proj = Matrix.Ortho(backbuffer.Width, backbuffer.Height, -100, 100);
-        Matrix view = Matrix.LookAt(Vector3.Zero, new(0.0f, 0.0f, 1.0f), new(0.0f, -1.0f, 0.0f));
-
-        shader.ChangeTransform(
-            ref world,
-            ref view,
-            ref proj
-        );
-        */
-
         Batcher.DefaultMaterial = new SpriteShaderMaterial(shader);
+
         Batcher.LoadContent();
     }
 

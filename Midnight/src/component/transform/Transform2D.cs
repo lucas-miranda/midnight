@@ -12,7 +12,7 @@ public class Transform2D : Component {
                     _rotationOrigin;
 
     private float _rotation, _scaleRotation;
-    private bool _hasChanges;
+    private bool _hasChanges = true;
     private Matrix _matrix;
 
     /// <summary>

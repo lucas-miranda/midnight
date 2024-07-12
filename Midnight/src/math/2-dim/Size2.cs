@@ -5,7 +5,8 @@ namespace Midnight;
 
 public struct Size2 : System.IEquatable<Size2> {
     public static readonly Size2
-            Zero = new(0.0f, 0.0f),
+            Empty = new(0.0f, 0.0f),
+            Zero = Empty,
             One = new(1.0f, 1.0f),
             UnitWidth = new(1.0f, 0.0f),
             UnitHeight = new(0.0f, 1.0f);
@@ -87,6 +88,10 @@ public struct Size2 : System.IEquatable<Size2> {
         return new(n + s.Width, n + s.Height);
     }
 
+    public static Size2 operator +(Size2 a, Size2I b) {
+        return new(a.Width + b.Width, a.Height + b.Height);
+    }
+
     public static Size2 operator -(Size2 a, Size2 b) {
         return new(a.Width - b.Width, a.Height - b.Height);
     }
@@ -97,6 +102,10 @@ public struct Size2 : System.IEquatable<Size2> {
 
     public static Size2 operator -(float n, Size2 s) {
         return new(n - s.Width, n - s.Height);
+    }
+
+    public static Size2 operator -(Size2 a, Size2I b) {
+        return new(a.Width - b.Width, a.Height - b.Height);
     }
 
     public static Size2 operator *(Size2 a, Size2 b) {
@@ -111,6 +120,10 @@ public struct Size2 : System.IEquatable<Size2> {
         return new(n * s.Width, n * s.Height);
     }
 
+    public static Size2 operator *(Size2 a, Size2I b) {
+        return new(a.Width * b.Width, a.Height * b.Height);
+    }
+
     public static Size2 operator /(Size2 a, Size2 b) {
         return new(a.Width / b.Width, a.Height / b.Height);
     }
@@ -121,6 +134,10 @@ public struct Size2 : System.IEquatable<Size2> {
 
     public static Size2 operator /(float n, Size2 s) {
         return new(n / s.Width, n / s.Height);
+    }
+
+    public static Size2 operator /(Size2 a, Size2I b) {
+        return new(a.Width / b.Width, a.Height / b.Height);
     }
 
     public static bool operator ==(Size2 a, Size2 b) {

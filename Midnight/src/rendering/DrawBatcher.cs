@@ -38,7 +38,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
     public void Push(
         Texture texture,
-        V[] vertexData,
+        System.Span<V> vertexData,
         int _minVertexIndex,
         int _verticesLength,
         int[] _indices,
@@ -198,7 +198,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
         /// <summary>
         /// After <see cref="Flush"/> being called this many times without any draw data, it'll be automatically invalidated.
         /// </summary>
-        public const int UnusedTimesUntilPrune = 100;
+        public const int UnusedTimesUntilPrune = 5;
 
         private V[] _vertices = new V[8];
         private int _verticesIndex;
@@ -217,18 +217,33 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
                 _material = value;
 
 #if DEBUG
-                if (_material != null && _material is ITextureUniform texUniform) {
-                    // cache shader expected texture type
-                    // so we can verify it later on
-                    _shaderTexType = texUniform.GetType()
-                                               .GetProperty(
-                                                    "Texture",
-                                                    BindingFlags.Public | BindingFlags.Instance
-                                                )
-                                               .PropertyType;
-                } else {
-                    _shaderTexType = null;
+                if (_material != null) {
+                    if (_material is ITextureUniform texUniform) {
+                        // cache shader expected texture type
+                        // so we can verify it later on
+                        _shaderTexType = texUniform.GetType()
+                                                   .GetProperty(
+                                                        "Texture",
+                                                        BindingFlags.Public | BindingFlags.Instance
+                                                    )
+                                                   .PropertyType;
+
+                        return;
+                    } else if (_material.BaseShader != null && _material.BaseShader is ITextureShader texShader) {
+                        // cache shader expected texture type
+                        // so we can verify it later on
+                        _shaderTexType = texShader.GetType()
+                                                  .GetProperty(
+                                                       "Texture",
+                                                       BindingFlags.Public | BindingFlags.Instance
+                                                   )
+                                                  .PropertyType;
+
+                        return;
+                    }
                 }
+
+                _shaderTexType = null;
 #endif
             }
         }
@@ -239,10 +254,14 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
         public void Extend(IList<V> vertices) {
             EnsureCapacity(vertices.Count);
-
             vertices.CopyTo(_vertices, _verticesIndex);
-
             _verticesIndex += vertices.Count;
+        }
+
+        public void Extend(System.Span<V> vertices) {
+            EnsureCapacity(vertices.Length);
+            vertices.CopyTo(_vertices);
+            _verticesIndex += vertices.Length;
         }
 
         public void Flush(RenderingServer r, DrawBatcher<V> batcher) {
@@ -269,12 +288,22 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
             _unusedTimes = 0;
 
             // adjust texture, if needed
-            if (Material is ITextureUniform texUniform && Texture != null) {
+            if (Texture != null) {
                 r.XnaGraphicsDevice.Textures[0] = Texture.Underlying;
 #if DEBUG
-                Debug.Assert(Texture.GetType().IsAssignableTo(_shaderTexType));
+                Debug.Assert(
+                    Texture.GetType().IsAssignableTo(_shaderTexType),
+                    $"Shader expects texture to be: {_shaderTexType?.Name ?? "-"}\nBut batch is using texture with type instead: {Texture.GetType().Name}"
+                );
 #endif
-                texUniform.Texture = Texture; // ?
+
+                if (Material is ITextureUniform texUniform) {
+                    // by using material
+                    texUniform.Texture = Texture;
+                } else if (Material.BaseShader is ITextureShader texShader) {
+                    // by using shader directly
+                    texShader.Texture = Texture;
+                }
             }
 
             // apply draw settings

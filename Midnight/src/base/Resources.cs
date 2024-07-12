@@ -7,6 +7,7 @@ public class Resources {
 
     internal void LoadAll() {
         Shaders.Sprite = Load("SpriteShader");
+        Fonts.Shaders.MTSDF = Load("MTSDFShader");
     }
 
     private byte[] Load(string name) {
@@ -15,6 +16,12 @@ public class Resources {
                 stream.CopyTo(ms);
                 return ms.ToArray();
             }
+        }
+    }
+
+    public static class Fonts {
+        public static class Shaders {
+            public static byte[] MTSDF { get; internal set; }
         }
     }
 

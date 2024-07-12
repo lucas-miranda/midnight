@@ -23,6 +23,9 @@
         <EmbeddedResource Include="obj/Assets/SpriteShader.fxc">
             <LogicalName>Midnight.Embedded.SpriteShader</LogicalName>
         </EmbeddedResource>
+        <EmbeddedResource Include="obj/Assets/MTSDFShader.fxc">
+            <LogicalName>Midnight.Embedded.MTSDFShader</LogicalName>
+        </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../FNA/FNA.Core.csproj"/>

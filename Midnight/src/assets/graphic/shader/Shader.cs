@@ -103,8 +103,15 @@ public class Shader : IAsset {
     }
 
     public IEnumerable<ShaderPass> Apply() {
-        Debug.AssertNotNull(CurrentTechnique);
         PreApply();
+
+        // ensure it has a technique
+        // by applying the first found
+        if (CurrentTechnique == null && !_techniques.IsEmpty()) {
+            ChangeTechnique(0);
+        }
+
+        Debug.AssertNotNull(CurrentTechnique, $"Can't apply shader '{GetType().Name}' without a defined technique.");
 
         foreach (ShaderPass pass in CurrentTechnique.Passes) {
             PrePass();

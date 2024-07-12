@@ -93,6 +93,14 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return new(n + v.X, n + v.Y);
     }
 
+    public static Vector2 operator +(Vector2 v, Size2 s) {
+        return new(v.X + s.Width, v.Y + s.Height);
+    }
+
+    public static Vector2 operator +(Vector2 v, Size2I s) {
+        return new(v.X + s.Width, v.Y + s.Height);
+    }
+
     public static Vector2 operator -(Vector2 a, Vector2 b) {
         return new(a.X - b.X, a.Y - b.Y);
     }
@@ -103,6 +111,14 @@ public struct Vector2 : System.IEquatable<Vector2> {
 
     public static Vector2 operator -(float n, Vector2 v) {
         return new(n - v.X, n - v.Y);
+    }
+
+    public static Vector2 operator -(Vector2 a, Size2 b) {
+        return new(a.X - b.Width, a.Y - b.Height);
+    }
+
+    public static Vector2 operator -(Vector2 a, Size2I b) {
+        return new(a.X - b.Width, a.Y - b.Height);
     }
 
     public static Vector2 operator *(Vector2 a, Vector2 b) {
@@ -117,6 +133,14 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return new(n * v.X, n * v.Y);
     }
 
+    public static Vector2 operator *(Vector2 a, Size2 b) {
+        return new(a.X * b.Width, a.Y * b.Height);
+    }
+
+    public static Vector2 operator *(Vector2 a, Size2I b) {
+        return new(a.X * b.Width, a.Y * b.Height);
+    }
+
     public static Vector2 operator /(Vector2 a, Vector2 b) {
         return new(a.X / b.X, a.Y / b.Y);
     }
@@ -127,6 +151,14 @@ public struct Vector2 : System.IEquatable<Vector2> {
 
     public static Vector2 operator /(float n, Vector2 v) {
         return new(n / v.X, n / v.Y);
+    }
+
+    public static Vector2 operator /(Vector2 v, Size2 s) {
+        return new(v.X / s.Width, v.Y / s.Height);
+    }
+
+    public static Vector2 operator /(Vector2 v, Size2I s) {
+        return new(v.X / s.Width, v.Y / s.Height);
     }
 
     public static bool operator ==(Vector2 a, Vector2 b) {
