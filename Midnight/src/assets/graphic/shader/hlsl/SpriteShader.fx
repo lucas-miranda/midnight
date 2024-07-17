@@ -11,17 +11,17 @@ sampler2D TextureSampler = sampler_state {
     AddressV = Clamp;
 };
 
-float4x4 WorldViewProj;
-float4 Color;
+float4x4 u_WorldViewProj;
+float4 u_Color;
 
 // Vertex Color
 
 VSOut_PosColor VSVertexColor(VSIn_PosColor input) {
     VSOut_PosColor output;
 
-    output.Position = mul(float4(input.Position.x, input.Position.y, 0.0f, 1.0f), WorldViewProj);
+    output.Position = mul(float4(input.Position.x, input.Position.y, 0.0f, 1.0f), u_WorldViewProj);
     output.PositionPS = input.Position;
-    output.Diffuse = Color * input.Color;
+    output.Diffuse = u_Color * input.Color;
 
     return output;
 }
@@ -40,9 +40,9 @@ float4 PSVertexColor(PSIn_PosColor input) : COLOR0 {
 VSOut_PosColorTexture VSVertexColorTexture(VSIn_PosColorTexture input) {
     VSOut_PosColorTexture output;
 
-    output.Position = mul(float4(input.Position.x, input.Position.y, 0.0f, 1.0f), WorldViewProj);
+    output.Position = mul(float4(input.Position.x, input.Position.y, 0.0f, 1.0f), u_WorldViewProj);
     output.PositionPS = input.Position;
-    output.Diffuse = Color * input.Color;
+    output.Diffuse = u_Color * input.Color;
     output.TextureCoord = input.TextureCoord;
 
     return output;
@@ -65,10 +65,10 @@ float4 PSVertexColorTexture(PSIn_PosColorTexture input) : COLOR0 {
 VSOut_PosColorDepth VSVertexColorDepth(VSIn_PosColor input) {
     VSOut_PosColorDepth output;
 
-    output.Position = mul(float4(input.Position.x, input.Position.y, 0.0f, 1.0f), WorldViewProj);
+    output.Position = mul(float4(input.Position.x, input.Position.y, 0.0f, 1.0f), u_WorldViewProj);
     output.PositionPS = input.Position;
     output.Depth = input.Position.z / input.Position.w;
-    output.Diffuse = Color * input.Color;
+    output.Diffuse = u_Color * input.Color;
 
     return output;
 }
@@ -91,10 +91,10 @@ PSOut_ColorDepth PSVertexColorDepth(PSIn_PosColorDepth input) {
 VSOut_PosColorTextureDepth VSVertexColorTextureDepth(VSIn_PosColorTexture input) {
     VSOut_PosColorTextureDepth output;
 
-    output.Position = mul(float4(input.Position.x, input.Position.y, 0.0f, 1.0f), WorldViewProj);
+    output.Position = mul(float4(input.Position.x, input.Position.y, 0.0f, 1.0f), u_WorldViewProj);
     output.PositionPS = input.Position;
     output.Depth = input.Position.z / input.Position.w;
-    output.Diffuse = Color * input.Color;
+    output.Diffuse = u_Color * input.Color;
     output.TextureCoord = input.TextureCoord;
 
     return output;

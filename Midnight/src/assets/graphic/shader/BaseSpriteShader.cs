@@ -83,8 +83,8 @@ public abstract class BaseSpriteShader : Shader, IWVPShader, ITextureShader {
     }
 
     protected override void Loaded() {
-        WorldViewProjParam = RetrieveParameter("WorldViewProj");
-        ColorParam = RetrieveParameter("Color");
+        WorldViewProjParam = RetrieveParameter("u_WorldViewProj");
+        ColorParam = RetrieveParameter("u_Color");
         TextureParam = RetrieveParameter("Texture");
 
         // default values

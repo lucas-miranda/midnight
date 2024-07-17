@@ -7,11 +7,10 @@ public class TextDisplayer : GraphicDisplayer {
 
     private Font _font;
     private string _value;
-    private bool _needRegenerate;
+    private ShaderMaterial _material;
+    private bool _needRegenerate, _hasCustomMaterial;
 
     public TextDisplayer() {
-        MTSDFShader shader = Shader.Load<MTSDFShader>(Embedded.Resources.Fonts.Shaders.MTSDF);
-        Material = shader.CreateMaterial();
     }
 
     public Size2 SizeEm { get; set; }
@@ -21,6 +20,17 @@ public class TextDisplayer : GraphicDisplayer {
         set {
             _font = value;
             RequestGenerate();
+
+            if (Material == null && !_hasCustomMaterial && _font is Font<MTSDF>) {
+                MTSDFShader shader = Shader.Load<MTSDFShader>(
+                        Embedded.Resources
+                                .Fonts
+                                .Shaders
+                                .MTSDF
+                    );
+
+                _material = shader.CreateMaterial();
+            }
         }
     }
 
@@ -32,7 +42,14 @@ public class TextDisplayer : GraphicDisplayer {
         }
     }
 
-    public ShaderMaterial Material { get; set; }
+    public ShaderMaterial Material {
+        get => _material;
+        set {
+            _material = value;
+            _hasCustomMaterial = _material != null;
+            RequestGenerate();
+        }
+    }
 
     public override void Render(DeltaTime dt, RenderingServer r) {
         if (_needRegenerate) {
@@ -68,7 +85,9 @@ public class TextDisplayer : GraphicDisplayer {
                 0,
                 0,
                 Material,
-                DrawSettings.Default
+                DrawSettings.Default with {
+                    Samplers = new SamplerState[] { SamplerState.LinearClamp },
+                }
             );
         }
     }

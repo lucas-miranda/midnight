@@ -77,7 +77,7 @@ public class Camera {
 
         if (_requireRecalculateView) {
             // TODO  add custom config to target and up
-            View = Matrix.LookAt(Position, new(0.0f, 0.0f, 1.0f), new(0.0f, -1.0f, 0.0f));
+            View = Matrix.LookAt(Position, Position + new Vector3(0.0f, 0.0f, 1.0f), new(0.0f, -1.0f, 0.0f));
             _requireRecalculateView = false;
         }
 

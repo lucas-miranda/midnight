@@ -180,6 +180,22 @@ public static class Math {
         return System.MathF.Sqrt(n);
     }
 
+    public static float Lerp(float start, float end, float t) {
+        return (1.0f - t) * start + end * t;
+    }
+
+    public static float Unlerp(float start, float end, float value) {
+        if (Math.Abs(end - start) < Epsilon) {
+            return 1.0f;
+        }
+
+        return (value - start) / (end - start);
+    }
+
+    public static float Map(float value, float min, float max, float targetMin, float targetMax) {
+        return Lerp(targetMin, targetMax, Unlerp(min, max, value));
+    }
+
     #endregion Numeric
 
     #region Geometry
