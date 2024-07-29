@@ -11,7 +11,7 @@ namespace Midnight;
 /// </remarks>
 public abstract class Font : IAsset {
     public Font(IFontTypesetting typesetting) {
-        Debug.AssertNotNull(typesetting);
+        Assert.NotNull(typesetting);
         Typesetting = typesetting;
         Glyphs = Typesetting.GenerateGlyphs();
     }
@@ -115,7 +115,7 @@ public abstract class Font : IAsset {
                         break;
                     }
 
-                    Debug.AssertNotNull(glyph, "There is no glyph available.");
+                    Assert.NotNull(glyph, "There is no glyph available.");
                 }
             }
 

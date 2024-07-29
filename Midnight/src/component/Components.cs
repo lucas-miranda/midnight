@@ -19,7 +19,7 @@ public class Components : IEnumerable<Component> {
 
     public C Add<C>(C component) where C : Component {
         List<Component> storage = GetOrCreateStorage(typeof(C));
-        Debug.AssertNotNull(storage, "Component storage must exist at this point.");
+        Assert.NotNull(storage, "Component storage must exist at this point.");
         storage.Add(component);
         ComponentAdded(component);
         return component;

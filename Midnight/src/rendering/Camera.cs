@@ -31,7 +31,7 @@ public class Camera {
     public Size2I Size {
         get => _size;
         set {
-            Debug.Assert(value.IsEmpty(), "Size can't be empty.");
+            Assert.True(value.IsEmpty(), "Size can't be empty.");
             _size = value;
             RequestRecalculateProjection();
         }

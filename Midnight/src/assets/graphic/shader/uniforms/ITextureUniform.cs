@@ -7,7 +7,7 @@ public interface ITextureUniform<T> : ITextureUniform where T : Texture {
     Texture ITextureUniform.Texture {
         get => Texture;
         set {
-            Debug.Assert(value is T);
+            Assert.True(value is T);
             Texture = (T) value;
         }
     }

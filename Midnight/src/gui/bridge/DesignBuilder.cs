@@ -21,7 +21,7 @@ public class DesignBuilder : ContainerBuilder {
             return;
         }
 
-        Debug.AssertNotNull(fn);
+        Assert.NotNull(fn);
         _fn = fn;
 
         // test
@@ -36,7 +36,7 @@ public class DesignBuilder : ContainerBuilder {
     }
 
     public void Evaluate() {
-        Debug.AssertNotNull(_fn, "Design was not builded.");
+        Assert.NotNull(_fn, "Design was not builded.");
         Start();
         _fn.Invoke(this);
         End();

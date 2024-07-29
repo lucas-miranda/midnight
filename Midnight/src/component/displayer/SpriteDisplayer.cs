@@ -1,6 +1,8 @@
 namespace Midnight;
 
 public class SpriteDisplayer : GraphicDisplayer {
+    public static readonly DrawSettings DefaultDrawSettings = DrawSettings.Default;
+
     private Texture2D _texture;
 
     private VertexPositionColorTexture[] _vertices = new VertexPositionColorTexture[] {
@@ -12,6 +14,10 @@ public class SpriteDisplayer : GraphicDisplayer {
         new(Vector3.Zero, Color.White, Vector2.Right),
         new(Vector3.Zero, Color.White, Vector2.DownRight),
     };
+
+    public SpriteDisplayer() {
+        DrawSettings = DefaultDrawSettings;
+    }
 
     public Texture2D Texture {
         get => _texture;
@@ -28,18 +34,22 @@ public class SpriteDisplayer : GraphicDisplayer {
     public ShaderMaterial Material { get; set; }
 
     public override void Render(DeltaTime dt, RenderingServer r) {
-        Transform2D trans = Entity.Components.Get<Transform2D>();
-        trans.FlushMatrix();
-
         VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[_vertices.Length];
+        Transform2D trans = Entity?.Components.Get<Transform2D>();
 
-        for (int i = 0; i < vertices.Length; i++) {
-            var v = _vertices[i];
-            vertices[i] = new(
-                trans.Apply(v.Position),
-                v.Color,
-                v.TextureCoordinate
-            );
+        if (trans != null) {
+            trans.FlushMatrix();
+
+            for (int i = 0; i < vertices.Length; i++) {
+                var v = _vertices[i];
+                vertices[i] = new(
+                    trans.Apply(v.Position),
+                    v.Color,
+                    v.TextureCoordinate
+                );
+            }
+        } else {
+            _vertices.CopyTo(vertices, 0);
         }
 
         r.Draw(
@@ -51,7 +61,7 @@ public class SpriteDisplayer : GraphicDisplayer {
             0,
             0,
             Material,
-            DrawSettings.Default
+            DrawSettings
         );
     }
 

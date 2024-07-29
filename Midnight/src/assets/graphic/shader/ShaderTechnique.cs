@@ -5,7 +5,7 @@ namespace Midnight;
 
 public class ShaderTechnique {
     internal ShaderTechnique(XnaGraphics.EffectTechnique xnaTechnique, int id) {
-        Debug.AssertNotNull(xnaTechnique);
+        Assert.NotNull(xnaTechnique);
         Underlying = xnaTechnique;
         Id = id;
 

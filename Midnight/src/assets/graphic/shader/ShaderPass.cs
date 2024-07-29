@@ -5,7 +5,7 @@ namespace Midnight;
 
 public class ShaderPass {
     internal ShaderPass(XnaGraphics.EffectPass xnaPass, int id) {
-        Debug.AssertNotNull(xnaPass);
+        Assert.NotNull(xnaPass);
         Underlying = xnaPass;
         Id = id;
     }

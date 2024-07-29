@@ -59,9 +59,9 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
         ObjectBuilder b;
 
         if (DesignBuilder.IsBuilded) {
-            Debug.Assert(_index < _children.Count);
+            Assert.True(_index < _children.Count);
             b = _children[_index];
-            Debug.Assert(b.Result.GetType().IsAssignableTo(type), $"Expected '{type.Name}', but get '{b.GetType().Name}'");
+            Assert.True(b.Result.GetType().IsAssignableTo(type), $"Expected '{type.Name}', but get '{b.GetType().Name}'");
             _index += 1;
 
             b.Prepare();

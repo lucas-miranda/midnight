@@ -46,16 +46,18 @@ public class Canvas : Texture2D {
         int multiSampleCount,
         RenderTargetUsage usage
     )
-        : base(new XnaGraphics.RenderTarget2D(
-            Program.Rendering.XnaGraphicsDevice,
-            width,
-            height,
-            mipMap,
-            format.ToXna(),
-            depthFormat.ToXna(),
-            multiSampleCount,
-            usage.ToXna()
-        ))
+        : base(Program.Rendering != null ?
+            new XnaGraphics.RenderTarget2D(
+                Program.Rendering?.XnaGraphicsDevice,
+                width,
+                height,
+                mipMap,
+                format.ToXna(),
+                depthFormat.ToXna(),
+                multiSampleCount,
+                usage.ToXna()
+            )
+            : null)
     {
         DepthStencilFormat = depthFormat;
         MultiSampleCount = multiSampleCount;
@@ -67,6 +69,24 @@ public class Canvas : Texture2D {
     public RenderTargetUsage Usage { get; }
 
     internal override XnaGraphics.RenderTarget2D Underlying { get => (XnaGraphics.RenderTarget2D) base.Underlying; }
+
+    /// <summary>
+    /// Create a <see cref="Canvas"/> based on <see cref="BackBuffer"/> settings.
+    /// </summary>
+    public static Canvas FromBackBuffer(
+        DepthFormat? depthFormat = null,
+        int? multiSampleCount = null
+    ) {
+        return new(
+            Program.Graphics.BackBuffer.Width,
+            Program.Graphics.BackBuffer.Height,
+            false,
+            Program.Graphics.BackBuffer.Format,
+            depthFormat.GetValueOrDefault(DepthFormat.None),
+            multiSampleCount.GetValueOrDefault(0),
+            RenderTargetUsage.PreserveContents
+        );
+    }
 
     public override void Dispose() {
         base.Dispose();

@@ -43,7 +43,7 @@ public struct Matrix : System.IEquatable<Matrix> {
     }
 
     public Matrix(System.Span<float> m) {
-        Debug.Assert(m.Length >= 4 * 4);
+        Assert.True(m.Length >= 4 * 4);
         Row0 = new(m[0], m[1], m[2], m[3]);
         Row1 = new(m[4], m[5], m[6], m[7]);
         Row2 = new(m[8], m[9], m[10], m[11]);

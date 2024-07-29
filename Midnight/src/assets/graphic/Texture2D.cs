@@ -47,7 +47,7 @@ public class Texture2D : Texture {
     }
 
     public static Texture2D Load(Stream stream) {
-        Debug.AssertNotNull(stream);
+        Assert.NotNull(stream);
         XnaGraphics.Texture2D xnaTexture = XnaGraphics.Texture2D.FromStream(
             Program.Rendering.XnaGraphicsDevice,
             stream
@@ -57,7 +57,7 @@ public class Texture2D : Texture {
     }
 
     public static Texture2D Load(Stream stream, int width, int height, bool zoom) {
-        Debug.AssertNotNull(stream);
+        Assert.NotNull(stream);
         XnaGraphics.Texture2D xnaTexture = XnaGraphics.Texture2D.FromStream(
             Program.Rendering.XnaGraphicsDevice,
             stream,
@@ -76,7 +76,7 @@ public class Texture2D : Texture {
     }
 
     public override void Reload(Stream stream) {
-        Debug.AssertNotNull(stream);
+        Assert.NotNull(stream);
         XnaGraphics.Texture2D.TextureDataFromStreamEXT(
             stream,
             out int w,
@@ -98,14 +98,14 @@ public class Texture2D : Texture {
     }
 
     public void Read<T>(T[] data) where T : struct {
-        Debug.AssertNotNull(Underlying);
-        Debug.AssertNotNull(data);
+        Assert.NotNull(Underlying);
+        Assert.NotNull(data);
         Underlying.GetData(data);
     }
 
     public void Read<T>(T[] data, int startIndex, int elementCount) where T : struct {
-        Debug.AssertNotNull(Underlying);
-        Debug.AssertNotNull(data);
+        Assert.NotNull(Underlying);
+        Assert.NotNull(data);
         Underlying.GetData(data, startIndex, elementCount);
     }
 
@@ -116,20 +116,20 @@ public class Texture2D : Texture {
         int startIndex,
         int elementCount
     ) where T : struct {
-        Debug.AssertNotNull(Underlying);
-        Debug.AssertNotNull(data);
+        Assert.NotNull(Underlying);
+        Assert.NotNull(data);
         Underlying.GetData(level, bounds.ToXna(), data, startIndex, elementCount);
     }
 
     public void Write<T>(T[] data) where T : struct {
-        Debug.AssertNotNull(Underlying);
-        Debug.AssertNotNull(data);
+        Assert.NotNull(Underlying);
+        Assert.NotNull(data);
         Underlying.SetData(data);
     }
 
     public void Write<T>(T[] data, int startIndex, int elementCount) where T : struct {
-        Debug.AssertNotNull(Underlying);
-        Debug.AssertNotNull(data);
+        Assert.NotNull(Underlying);
+        Assert.NotNull(data);
         Underlying.SetData(data, startIndex, elementCount);
     }
 
@@ -140,8 +140,8 @@ public class Texture2D : Texture {
         int startIndex,
         int elementCount
     ) where T : struct {
-        Debug.AssertNotNull(Underlying);
-        Debug.AssertNotNull(data);
+        Assert.NotNull(Underlying);
+        Assert.NotNull(data);
         Underlying.SetData(level, bounds.ToXna(), data, startIndex, elementCount);
     }
 }

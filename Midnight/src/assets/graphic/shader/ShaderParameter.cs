@@ -6,7 +6,7 @@ namespace Midnight;
 
 public class ShaderParameter {
     internal ShaderParameter(XnaGraphics.EffectParameter xnaParameter) {
-        Debug.AssertNotNull(xnaParameter);
+        Assert.NotNull(xnaParameter);
         Underlying = xnaParameter;
     }
 

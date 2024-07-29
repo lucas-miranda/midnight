@@ -19,8 +19,8 @@ namespace Midnight;
 /// </remarks>
 public class MTSDF : IFontTypesetting {
     public MTSDF(Texture2D texture, string dataFilepath) {
-        Debug.AssertNotNull(texture);
-        Debug.AssertNotNull(dataFilepath);
+        Assert.NotNull(texture);
+        Assert.NotNull(dataFilepath);
 
         Texture = texture;
 

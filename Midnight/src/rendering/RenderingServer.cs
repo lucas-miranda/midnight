@@ -1,4 +1,5 @@
 using Midnight.Diagnostics;
+
 using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 
 namespace Midnight;
@@ -7,10 +8,12 @@ public sealed class RenderingServer {
     private Camera _mainCamera;
 
     internal RenderingServer(XnaGraphics.GraphicsDevice xnaDevice) {
-        Debug.AssertNotNull(xnaDevice);
+        Assert.NotNull(xnaDevice);
         XnaGraphicsDevice = xnaDevice;
-        MainCamera = new();
         Batcher = new();
+        MainCamera = new();
+        Target = new(xnaDevice);
+        Layers = new();
     }
 
     public DrawBatcher<VertexPositionColorTexture> Batcher { get; }
@@ -23,7 +26,19 @@ public sealed class RenderingServer {
         }
     }
 
+    public Canvas MainCanvas { get; private set; }
+    public RenderTarget Target { get; }
+    public RenderLayers Layers { get; }
+
     internal XnaGraphics.GraphicsDevice XnaGraphicsDevice { get; }
+
+    public void Clear(Color color) {
+        XnaGraphicsDevice.Clear(color.ToXna());
+    }
+
+    public void Clear(ClearOptions options, Color color, float depth, int stencil) {
+        XnaGraphicsDevice.Clear(options.ToXna(), color.ToXna().ToVector4(), depth, stencil);
+    }
 
     public void Draw(
         Texture texture,
@@ -65,6 +80,11 @@ public sealed class RenderingServer {
     }
 
     internal void LoadContent() {
+        Layers.LoadContent();
+
+        MainCanvas = Canvas.FromBackBuffer(DepthFormat.Depth24Stencil8);
+        Layers.Register(0, MainCanvas);
+
         // set default shader material for Batcher
         SpriteShader shader = Shader.Load<SpriteShader>(Embedded.Resources.Shaders.Sprite);
         Batcher.DefaultMaterial = new SpriteShaderMaterial(shader);
@@ -72,11 +92,21 @@ public sealed class RenderingServer {
         Batcher.LoadContent();
     }
 
+    internal void UnloadContent() {
+        Layers.UnloadContent();
+        MainCanvas.Dispose();
+    }
+
     internal void PrepareRender() {
+        MainCamera?.Recalculate();
+        Target.Push(MainCanvas);
+
+        // TODO  add Viewport
+        Clear(ClearOptions.All, Color.Transparent, XnaGraphicsDevice.Viewport.MaxDepth, 0);
     }
 
     internal void Flush() {
-        MainCamera?.Recalculate();
         Batcher.Flush(this);
+        Target.Pop();
     }
 }

@@ -11,6 +11,7 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
         DepthStencil = DepthStencilState.Default;
         Rasterizer = RasterizerState.CullNone;
         Primitive = PrimitiveType.TriangleList;
+        Immediate = false;
     }
 
     public BlendState Blend { get; init; }
@@ -18,6 +19,12 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
     public DepthStencilState DepthStencil { get; init; }
     public RasterizerState Rasterizer { get; init; }
     public PrimitiveType Primitive { get; init; }
+
+    /// <summary>
+    /// Should it be submmitted as immediate?
+    /// It'll break current batching and never be grouped with any other thing.
+    /// </summary>
+    public bool Immediate { get; init; }
 
     internal void Apply() {
         var xnaGD = Program.Rendering.XnaGraphicsDevice;
@@ -44,10 +51,11 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
             }
         }
 
-        return !(Blend.Equals(s.Blend)
-            || DepthStencil.Equals(s.DepthStencil)
-            || Rasterizer.Equals(s.Rasterizer)
-            || Primitive.Equals(s.Primitive));
+        return Blend.Equals(s.Blend)
+            && DepthStencil.Equals(s.DepthStencil)
+            && Rasterizer.Equals(s.Rasterizer)
+            && Primitive.Equals(s.Primitive)
+            && Immediate.Equals(s.Immediate);
     }
 
     public override bool Equals([NotNullWhen(true)] object obj) {
@@ -67,6 +75,7 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
             hashCode = hashCode * 1610612741 + DepthStencil.GetHashCode();
             hashCode = hashCode * 1610612741 + Rasterizer.GetHashCode();
             hashCode = hashCode * 1610612741 + Primitive.GetHashCode();
+            hashCode = hashCode * 1610612741 + Immediate.GetHashCode();
         }
 
         return hashCode;

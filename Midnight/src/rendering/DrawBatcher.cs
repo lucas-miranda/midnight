@@ -64,11 +64,31 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
             //System.Console.WriteLine($"- Uses Custom Material (hash: {material.GetHashCode()}");
         }
 
-        if (settings == null) {
+        if (!settings.HasValue) {
             settings = DrawSettings.Default;
             //System.Console.WriteLine($"- Uses DefaultSettings (hash: {settings.GetHashCode()}");
         } else {
             //System.Console.WriteLine($"- Uses Custom Settings (hash: {settings.GetHashCode()}");
+        }
+
+        if (settings.Value.Immediate) {
+            // break current batch
+            Flush(Program.Rendering);
+
+            // create a temporary batch group
+            BatchGroup tempGroup = new() {
+                Texture = texture,
+                Material = material.Duplicate(),
+                Settings = settings.Value,
+            };
+
+            tempGroup.Extend(vertexData);
+
+            // draw immediatelly
+            FlushGroup(Program.Rendering, tempGroup);
+            tempGroup.Invalidate();
+
+            return;
         }
 
         int groupId;
@@ -99,13 +119,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
     public void Flush(RenderingServer r) {
         foreach (KeyValuePair<int, BatchGroup> group in _groups) {
-            // TODO  remove me
-            // TODO  iterate through active Shaders and place WVP, extracted from MainCamera
-            if (group.Value.Material.BaseShader is IWVPShader wvpShader && r.MainCamera != null) {
-                wvpShader.WorldViewProjection = r.MainCamera.ViewProjection;
-            }
-
-            group.Value.Flush(r, this);
+            FlushGroup(r, group.Value);
 
             if (!group.Value.IsValid) {
                 // add to removal
@@ -128,10 +142,20 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
         CreateBuffers(INITIAL_BUFFERS_SIZE);
     }
 
+    private void FlushGroup(RenderingServer r, BatchGroup group) {
+        // TODO  remove me
+        // TODO  iterate through active Shaders and place WVP, extracted from MainCamera
+        if (group.Material.BaseShader is IWVPShader wvpShader && r.MainCamera != null) {
+            wvpShader.WorldViewProjection = r.MainCamera.ViewProjection;
+        }
+
+        group.Flush(r, this);
+    }
+
     private int CalculateGroupId(Texture texture, ShaderMaterial material, DrawSettings settings) {
-        Debug.AssertNotNull(texture);
-        Debug.AssertNotNull(material);
-        Debug.AssertNotNull(settings);
+        Assert.NotNull(texture);
+        Assert.NotNull(material);
+        Assert.NotNull(settings);
         int hashCode = 1861411795;
 
         unchecked {
@@ -144,8 +168,8 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
     }
 
     private int CalculateGroupId(ShaderMaterial material, DrawSettings settings) {
-        Debug.AssertNotNull(material);
-        Debug.AssertNotNull(settings);
+        Assert.NotNull(material);
+        Assert.NotNull(settings);
         int hashCode = 1861411795;
 
         unchecked {
@@ -288,10 +312,15 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
             _unusedTimes = 0;
 
             // adjust texture, if needed
+            bool usingTexture = false;
+
             if (Texture != null) {
+
+
+                usingTexture = true;
                 r.XnaGraphicsDevice.Textures[0] = Texture.Underlying;
 #if DEBUG
-                Debug.Assert(
+                Assert.True(
                     Texture.GetType().IsAssignableTo(_shaderTexType),
                     $"Shader expects texture to be: {_shaderTexType?.Name ?? "-"}\nBut batch is using texture with type instead: {Texture.GetType().Name}"
                 );
@@ -330,6 +359,10 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
             // reset
             _verticesIndex = 0;
+
+            if (usingTexture) {
+                r.XnaGraphicsDevice.Textures[0] = null;
+            }
         }
 
         public void Invalidate() {

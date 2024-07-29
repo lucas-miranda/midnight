@@ -4,7 +4,7 @@ public class Game : Program {
     public Game(GraphicsConfig? config = null) : base(config) {
     }
 
-    public static new Game Current { get => (Game) Program.Current; }
+    public static new Game Current => (Game) Program.Current;
 	public Scene Scene { get; private set; }
 
 	public void LoadScene<S>() where S : Scene, new() {
@@ -16,7 +16,6 @@ public class Game : Program {
     }
 
 	protected override void Setup() {
-	    //MainCanvas = new Canvas();
     }
 
 	protected override void Load() {
@@ -25,6 +24,7 @@ public class Game : Program {
     }
 
 	protected override void Unload() {
+	    //Scene?.Dispose();
     }
 
 	protected override void Update(DeltaTime dt) {
@@ -32,8 +32,9 @@ public class Game : Program {
     }
 
 	protected override void Render(DeltaTime dt, RenderingServer r) {
-		Rendering.PrepareRender();
-        Scene?.Render(dt, Rendering);
-        Rendering.Flush();
+	    r.Clear(Background);
+		r.PrepareRender();
+        Scene?.Render(dt, r);
+        r.Flush();
 	}
 }

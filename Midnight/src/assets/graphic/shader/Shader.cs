@@ -15,7 +15,7 @@ public class Shader : IAsset {
     }
 
     internal Shader(XnaGraphics.Effect xnaEffect) {
-        Debug.AssertNotNull(xnaEffect);
+        Assert.NotNull(xnaEffect);
         Underlying = xnaEffect;
     }
 
@@ -49,7 +49,7 @@ public class Shader : IAsset {
     }
 
     public static S Load<S>(byte[] bytecode) where S : Shader, new() {
-        Debug.AssertNotNull(Program.Rendering);
+        Assert.NotNull(Program.Rendering);
         XnaGraphics.Effect xnaEffect = new XnaGraphics.Effect(
             Program.Rendering.XnaGraphicsDevice,
             bytecode
@@ -68,7 +68,7 @@ public class Shader : IAsset {
     }
 
     public static S Load<S>(Stream stream) where S : Shader, new() {
-        Debug.AssertNotNull(Program.Rendering);
+        Assert.NotNull(Program.Rendering);
 
         if (!stream.CanSeek) {
             throw new System.InvalidOperationException("Can't load, stream can't seek.");
@@ -111,7 +111,7 @@ public class Shader : IAsset {
             ChangeTechnique(0);
         }
 
-        Debug.AssertNotNull(CurrentTechnique, $"Can't apply shader '{GetType().Name}' without a defined technique.");
+        Assert.NotNull(CurrentTechnique, $"Can't apply shader '{GetType().Name}' without a defined technique.");
 
         foreach (ShaderPass pass in CurrentTechnique.Passes) {
             PrePass();

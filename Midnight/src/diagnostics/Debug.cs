@@ -1,49 +1,48 @@
 
 namespace Midnight.Diagnostics;
 
-public static class Debug {
-    [System.Diagnostics.Conditional("DEBUG")]
-    public static void Assert(bool condition) {
-        System.Diagnostics.Debug.Assert(condition);
+public class Debug {
+    private const string DiagnosticsFormat = "FPS: {0}";
+    private Entity _diagnosticsEntity;
+    private TextDisplayer _diagnosticsTextDisplayer;
+
+    public Canvas Canvas {
+#if DEBUG
+        get; private set;
+#else
+        get { return null; }
+#endif
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
-    public static void Assert(bool condition, string message) {
-        System.Diagnostics.Debug.Assert(condition, message);
+    public void Initialize() {
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
-    public static void Assert(bool condition, string message, string detailedMessage) {
-        System.Diagnostics.Debug.Assert(condition, message, detailedMessage);
+    internal void LoadContent() {
+        Canvas = Canvas.FromBackBuffer(DepthFormat.Depth24Stencil8);
+        Program.Rendering.Layers.Register(100, Canvas);
+
+        _diagnosticsEntity = new();
+
+        Transform2D diagnosticsTrans = _diagnosticsEntity.Components.Create<Transform2D>();
+        diagnosticsTrans.Position = new();
+
+        _diagnosticsTextDisplayer = new() {
+            //Font = ...,
+            Value = string.Format(DiagnosticsFormat, "-"),
+        };
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
-    public static void AssertNotNull<T>(T something) {
-        System.Diagnostics.Debug.Assert(something != null);
+    internal void UnloadContent() {
+        Canvas.Dispose();
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
-    public static void AssertNotNull<T>(T something, string message) {
-        System.Diagnostics.Debug.Assert(something != null, message);
-    }
-
-    [System.Diagnostics.Conditional("DEBUG")]
-    public static void AssertNotNull<T>(T something, string message, string detailedMessage) {
-        System.Diagnostics.Debug.Assert(something != null, message, detailedMessage);
-    }
-
-    [System.Diagnostics.Conditional("DEBUG")]
-    public static void AssertIsNull<T>(T something) {
-        System.Diagnostics.Debug.Assert(something == null);
-    }
-
-    [System.Diagnostics.Conditional("DEBUG")]
-    public static void AssertIsNull<T>(T something, string message) {
-        System.Diagnostics.Debug.Assert(something == null, message);
-    }
-
-    [System.Diagnostics.Conditional("DEBUG")]
-    public static void AssertIsNull<T>(T something, string message, string detailedMessage) {
-        System.Diagnostics.Debug.Assert(something == null, message, detailedMessage);
+	internal void Render(DeltaTime dt, RenderingServer r) {
+	    r.Target.Push(Canvas);
+	    _diagnosticsTextDisplayer.Render(dt, r);
+	    r.Target.Pop();
     }
 }

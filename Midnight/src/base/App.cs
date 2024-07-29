@@ -6,7 +6,7 @@ public class App : Program {
         Background = 0x8C7AA1FF;
     }
 
-    public static new App Current { get => (App) Program.Current; }
+    public static new App Current => (App) Program.Current;
 	public Scene Scene { get; private set; }
 
 	public void LoadScene<S>() where S : Scene, new() {
@@ -26,6 +26,7 @@ public class App : Program {
     }
 
 	protected override void Unload() {
+	    //Scene?.Dispose();
     }
 
 	protected override void Update(DeltaTime dt) {
@@ -33,8 +34,13 @@ public class App : Program {
     }
 
 	protected override void Render(DeltaTime dt, RenderingServer r) {
-		Rendering.PrepareRender();
-        Scene?.Render(dt, Rendering);
-        Rendering.Flush();
+	    r.Clear(Background);
+		r.PrepareRender();
+        Scene?.Render(dt, r);
+        r.Flush();
+
+        // render canvas layes to backbuffer
+	    r.Clear(Background);
+	    r.Layers.Render(dt, r);
 	}
 }

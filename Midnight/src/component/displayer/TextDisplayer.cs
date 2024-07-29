@@ -3,6 +3,10 @@ using System.Collections.Generic;
 namespace Midnight;
 
 public class TextDisplayer : GraphicDisplayer {
+    public static readonly DrawSettings DefaultDrawSettings = DrawSettings.Default with {
+            Samplers = new SamplerState[] { SamplerState.LinearClamp },
+        };
+
     private List<VertexPositionColorTexture> _vertices = new List<VertexPositionColorTexture>();
 
     private Font _font;
@@ -11,6 +15,7 @@ public class TextDisplayer : GraphicDisplayer {
     private bool _needRegenerate, _hasCustomMaterial;
 
     public TextDisplayer() {
+        DrawSettings = DefaultDrawSettings;
     }
 
     public Size2 SizeEm { get; set; }
@@ -85,9 +90,7 @@ public class TextDisplayer : GraphicDisplayer {
                 0,
                 0,
                 Material,
-                DrawSettings.Default with {
-                    Samplers = new SamplerState[] { SamplerState.LinearClamp },
-                }
+                DrawSettings
             );
         }
     }
