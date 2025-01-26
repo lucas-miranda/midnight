@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Midnight.Diagnostics;
 
 namespace Midnight.Assets.Font.MTSDF;
 
@@ -103,7 +104,8 @@ public class KerningConverter : JsonConverter<Dictionary<uint, Dictionary<uint, 
             Kerning kerning = kerningConverter.Read(ref reader, typeof(Kerning), options);
 
             if (!value.TryGetValue(kerning.UnicodeA, out Dictionary<uint, Kerning> nextEntries)) {
-                value[kerning.UnicodeA] = new();
+                nextEntries = new();
+                value[kerning.UnicodeA] = nextEntries;
             }
 
             nextEntries[kerning.UnicodeB] = kerning;

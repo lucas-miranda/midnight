@@ -18,7 +18,7 @@ public class Game : Program {
 	protected override void Setup() {
     }
 
-	protected override void Load() {
+	protected override void GraphicsReady() {
         Scene?.Prepare();
         Scene?.Start();
     }

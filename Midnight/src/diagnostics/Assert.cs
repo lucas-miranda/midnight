@@ -22,6 +22,24 @@ public static class Assert {
 
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void False(bool condition) {
+        System.Diagnostics.Debug.Assert(!condition, "Value is expected to be false.");
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void False(bool condition, string message) {
+        System.Diagnostics.Debug.Assert(!condition, message);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void False(bool condition, string message, string detailedMessage) {
+        System.Diagnostics.Debug.Assert(!condition, message, detailedMessage);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
     public static void NotNull<T>(T something) {
         System.Diagnostics.Debug.Assert(something != null, "Value is expected to not be null.");
     }

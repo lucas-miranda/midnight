@@ -18,7 +18,8 @@ public class TextDisplayer : GraphicDisplayer {
         DrawSettings = DefaultDrawSettings;
     }
 
-    public Size2 SizeEm { get; set; }
+    public Size2 SizeEm { get; private set; }
+    public Size2 Size => SizeEm * Font.Size;
 
     public Font Font {
         get => _font;
@@ -61,19 +62,31 @@ public class TextDisplayer : GraphicDisplayer {
             Generate();
         }
 
-        Transform2D trans = Entity.Components.Get<Transform2D>();
-        trans.FlushMatrix();
-
         System.Span<VertexPositionColorTexture> renderBuffer = stackalloc VertexPositionColorTexture[_vertices.Count];
+        Transform2D trans = Entity?.Components.Get<Transform2D>();
 
-        for (int i = 0; i < renderBuffer.Length; i++) {
-            var v = _vertices[i];
+        if (trans != null) {
+            trans.FlushMatrix();
 
-            renderBuffer[i] = new(
-                trans.Apply(v.Position * Font.Size),
-                v.Color,
-                v.TextureCoordinate
-            );
+            for (int i = 0; i < renderBuffer.Length; i++) {
+                var v = _vertices[i];
+
+                renderBuffer[i] = new(
+                    trans.Apply(v.Position * Font.Size),
+                    v.Color,
+                    v.TextureCoordinate
+                );
+            }
+        } else {
+            for (int i = 0; i < renderBuffer.Length; i++) {
+                var v = _vertices[i];
+
+                renderBuffer[i] = new(
+                    v.Position * Font.Size,
+                    v.Color,
+                    v.TextureCoordinate
+                );
+            }
         }
 
         if (Font is Font<MTSDF> font) {

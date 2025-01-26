@@ -2,7 +2,7 @@ using System.IO;
 
 namespace Midnight;
 
-public interface IAsset : System.IDisposable {
+public interface IAsset {
     /// <summary>
     /// A meaningful identification.
     /// </summary>
@@ -25,20 +25,25 @@ public interface IAsset : System.IDisposable {
     public string Filepath { get => Filepaths[0]; protected set => Filepaths[0] = value; }
 
     /// <summary>
-    /// Is this asset already disposed.
+    /// Is this asset already released.
     /// </summary>
     /// <remarks>
     /// Useful to verify if asset was already freed and is at invalid state.
     /// </remarks>
-    bool IsDisposed { get; }
+    bool IsReleased { get; }
 
     /// <summary>
     /// Make asset read it's sources and reconstruct it's data.
     /// </summary>
-    void Reload();
+    bool Reload();
 
     /// <summary>
     /// Make asset read from a stream and reconstruct it's data.
     /// </summary>
-    void Reload(Stream stream);
+    bool Reload(Stream stream);
+
+    /// <summary>
+    /// Release asset's managed resources.
+    /// </summary>
+    bool Release();
 }

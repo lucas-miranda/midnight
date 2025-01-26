@@ -79,7 +79,7 @@ public sealed class RenderingServer {
         Draw(texture, vertexData, 0, vertexData.Length, null, 0, vertexData.Length / 2, null, null);
     }
 
-    internal void LoadContent() {
+    internal void GraphicsReady() {
         Layers.LoadContent();
 
         MainCanvas = Canvas.FromBackBuffer(DepthFormat.Depth24Stencil8);
@@ -99,7 +99,6 @@ public sealed class RenderingServer {
 
     internal void PrepareRender() {
         MainCamera?.Recalculate();
-        Target.Push(MainCanvas);
 
         // TODO  add Viewport
         Clear(ClearOptions.All, Color.Transparent, XnaGraphicsDevice.Viewport.MaxDepth, 0);
@@ -107,6 +106,5 @@ public sealed class RenderingServer {
 
     internal void Flush() {
         Batcher.Flush(this);
-        Target.Pop();
     }
 }

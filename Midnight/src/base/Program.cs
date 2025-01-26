@@ -4,6 +4,8 @@ using Midnight.Diagnostics;
 namespace Midnight;
 
 public abstract class Program : Xna.Game {
+    private int _framesRendered;
+
 	public Program(GraphicsConfig? config = null) {
 	    Assert.Null(Current, "Only one Program can exists.");
 	    Current = this;
@@ -47,32 +49,37 @@ public abstract class Program : Xna.Game {
     }
 
     public Color Background { get; set; } = new(0x834EBFFF);
+    public FPS FPS { get; } = new();
 
 	protected sealed override void Initialize() {
 	    Debug.Initialize();
         Rendering = new(GraphicsDevice);
 		base.Initialize();
-		Setup();
+		DeviceInit();
 		System.Console.WriteLine($"At Initialize, graphics:\n{Graphics}");
 	}
 
     /*
      *DeviceReady
-LoadGraphics
 InitResources
 ReadyToLoad
-GraphicsReady
 PrepareGraphics
-ResourcesReady
 LoadReady
 DeviceInit
+
 SetupGraphics
+
+LoadGraphics
+ResourcesReady
+
+
+-> GraphicsReady
      */
 	protected sealed override void LoadContent() {
 		base.LoadContent();
-		Debug.LoadContent();
-        Rendering.LoadContent();
-		Load();
+		Debug.GraphicsReady();
+        Rendering.GraphicsReady();
+		GraphicsReady();
 		System.Console.WriteLine($"At LoadContent, graphics:\n{Graphics}");
 	}
 
@@ -84,21 +91,21 @@ SetupGraphics
 	}
 
 	protected sealed override void Update(Xna.GameTime gameTime) {
-		base.Update(gameTime);
-		Update(new((float) gameTime.ElapsedGameTime.TotalSeconds));
+        DeltaTime deltaTime = new(gameTime);
+        FPS.Update(deltaTime);
+		Update(deltaTime);
 	}
 
 	protected sealed override void Draw(Xna.GameTime gameTime) {
-		base.Draw(gameTime);
-		Render(
-            new((float) gameTime.ElapsedGameTime.TotalSeconds),
-            Rendering
-		);
+        DeltaTime deltaTime = new(gameTime);
+        FPS.PreFrameRendered();
+		Debug.Render(deltaTime, Rendering);
+		Render(deltaTime, Rendering);
 	}
 
-    protected abstract void Setup();
-    protected abstract void Load();
-    protected abstract void Unload();
+    protected abstract void DeviceInit();
+    protected abstract void GraphicsReady();
+    protected abstract void ResourceRelease();
     protected abstract void Update(DeltaTime dt);
     protected abstract void Render(DeltaTime dt, RenderingServer r);
 }

@@ -17,14 +17,23 @@
     </PropertyGroup>
     <Target Name="BuildEmbeddedAssets" BeforeTargets="BeforeBuild">
         <Message Text="Building embedded assets" Importance="High" />
-        <Exec Command="sh scripts/BuildAssets.sh obj/Assets" />
+        <Exec Command="sh scripts/BuildAssets.sh obj/assets" />
     </Target>
     <ItemGroup>
-        <EmbeddedResource Include="obj/Assets/SpriteShader.fxc">
+        <!-- Shaders -->
+        <EmbeddedResource Include="obj/assets/SpriteShader.fxc">
             <LogicalName>Midnight.Embedded.SpriteShader</LogicalName>
         </EmbeddedResource>
-        <EmbeddedResource Include="obj/Assets/MTSDFShader.fxc">
+        <EmbeddedResource Include="obj/assets/MTSDFShader.fxc">
             <LogicalName>Midnight.Embedded.MTSDFShader</LogicalName>
+        </EmbeddedResource>
+
+        <!-- Fonts -->
+        <EmbeddedResource Include="res/fonts/accidental president/data.json">
+            <LogicalName>Midnight.Embedded.AccidentalPresidentFontData</LogicalName>
+        </EmbeddedResource>
+        <EmbeddedResource Include="res/fonts/accidental president/texture.png">
+            <LogicalName>Midnight.Embedded.AccidentalPresidentFontTexture</LogicalName>
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>

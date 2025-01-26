@@ -1,3 +1,5 @@
+using Xna = Microsoft.Xna.Framework;
+
 namespace Midnight;
 
 public struct DeltaTime {
@@ -7,8 +9,12 @@ public struct DeltaTime {
         _sec = sec;
     }
 
-    public float Sec { get => _sec; }
-    public int Milli { get => Time.Sec.ToMilli(Sec); }
+    internal DeltaTime(Xna.GameTime gameTime) {
+        _sec = (float) gameTime.ElapsedGameTime.TotalSeconds;
+    }
+
+    public float Sec => _sec;
+    public int Milli => Time.Sec.ToMilli(Sec);
 
     public static implicit operator float(DeltaTime dt) {
         return dt.Sec;

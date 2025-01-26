@@ -8,6 +8,8 @@ public class Resources {
     internal void LoadAll() {
         Shaders.Sprite = Load("SpriteShader");
         Fonts.Shaders.MTSDF = Load("MTSDFShader");
+        Fonts.AccidentalPresident.Data = Load("AccidentalPresidentFontData");
+        Fonts.AccidentalPresident.Texture = Load("AccidentalPresidentFontTexture");
     }
 
     private byte[] Load(string name) {
@@ -22,6 +24,11 @@ public class Resources {
     public static class Fonts {
         public static class Shaders {
             public static byte[] MTSDF { get; internal set; }
+        }
+
+        public static class AccidentalPresident {
+            public static byte[] Data { get; internal set; }
+            public static byte[] Texture { get; internal set; }
         }
     }
 

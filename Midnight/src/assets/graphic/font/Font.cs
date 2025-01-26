@@ -148,7 +148,7 @@ public abstract class Font : IAsset {
                 // kerning with next character
                 //
 
-                if (Typesetting.HasKerning && !grapheme.IsEOL) {
+                if (Typesetting.HasKerning && !grapheme.IsEOL && graphemes.Length < i + 1) {
                     (uint nextUnicode, _) = graphemes[i + 1].Render(s);
                     pen.X += Typesetting.Kerning(unicode, nextUnicode);
                 }
@@ -165,6 +165,10 @@ public abstract class Font : IAsset {
 
                 k += 1;
             }
+        }
+
+        if (pen.X > size.Width) {
+            size.Width = pen.X;
         }
 
         size.Height = Math.Abs(pen.Y) + Typesetting.Descender;

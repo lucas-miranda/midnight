@@ -35,6 +35,16 @@ public class MTSDF : IFontTypesetting {
         LoadData();
     }
 
+    public MTSDF(Texture2D texture, Stream dataStream) {
+        Assert.NotNull(texture);
+        Assert.NotNull(dataStream);
+
+        Texture = texture;
+        Filepaths = new string[0];
+
+        LoadData(dataStream);
+    }
+
     /// <summary>
     /// Glyphs atlas texture.
     /// </summary>
@@ -58,6 +68,10 @@ public class MTSDF : IFontTypesetting {
 
     public static Font<MTSDF> LoadFont(Texture2D texture, string dataFilepath) {
         return new(new(texture, dataFilepath));
+    }
+
+    public static Font<MTSDF> LoadFont(Texture2D texture, Stream dataStream) {
+        return new(new(texture, dataStream));
     }
 
     public Dictionary<uint, Glyph> GenerateGlyphs() {
@@ -113,14 +127,24 @@ public class MTSDF : IFontTypesetting {
         Texture?.Dispose();
     }
 
+    private void LoadData(Stream dataStream) {
+        Assert.NotNull(dataStream);
+
+        Data = JsonDocument.Parse(dataStream).Deserialize<MTSDFData>(
+            new JsonSerializerOptions() {
+                PropertyNameCaseInsensitive = true,
+                IncludeFields = true,
+            }
+        );
+    }
+
     private void LoadData() {
+        if (string.IsNullOrEmpty(DataFilepath)) {
+            return;
+        }
+
         using (FileStream dataStream = File.OpenRead(DataFilepath)) {
-            Data = JsonDocument.Parse(dataStream).Deserialize<MTSDFData>(
-                new JsonSerializerOptions() {
-                    PropertyNameCaseInsensitive = true,
-                    IncludeFields = true,
-                }
-            );
+            LoadData(dataStream);
         }
     }
 }

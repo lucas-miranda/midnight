@@ -40,6 +40,20 @@ public class Texture2D : Texture {
         }
     }
 
+    public static Texture2D Load(byte[] bytecode) {
+        Assert.NotNull(Program.Rendering);
+
+        using (MemoryStream stream = new(bytecode, false)) {
+            XnaGraphics.Texture2D texture = XnaGraphics.Texture2D.FromStream(Program.Rendering.XnaGraphicsDevice, stream);
+
+            if (texture == null) {
+                return null;
+            }
+
+            return new(texture);
+        }
+    }
+
     public static Texture2D Load(string filepath, int width, int height, bool zoom) {
         using (FileStream stream = File.OpenRead(filepath)) {
             return Load(stream, width, height, zoom);

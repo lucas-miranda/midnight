@@ -69,7 +69,8 @@ public readonly struct Graphemes : IEnumerable<Grapheme> {
         return Rune.IsLetterOrDigit(rune)
             || Rune.IsSeparator(rune)
             || Rune.IsSymbol(rune)
-            || Rune.IsControl(rune);
+            || Rune.IsControl(rune)
+            || Rune.IsPunctuation(rune);
     }
 
     public IEnumerator<Grapheme> GetEnumerator() {
