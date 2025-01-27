@@ -87,8 +87,4 @@ public class Canvas : Texture2D {
             RenderTargetUsage.PreserveContents
         );
     }
-
-    public override void Dispose() {
-        base.Dispose();
-    }
 }

@@ -66,7 +66,7 @@ public sealed class RenderLayers : IEnumerable<RenderLayer> {
         };
     }
 
-    internal void UnloadContent() {
+    internal void ResourceRelease() {
     }
 
     internal void Render(DeltaTime dt, RenderingServer r) {

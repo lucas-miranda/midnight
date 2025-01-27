@@ -15,7 +15,7 @@ public class Game : Program {
 	    Scene = scene;
     }
 
-	protected override void Setup() {
+	protected override void DeviceInit() {
     }
 
 	protected override void GraphicsReady() {
@@ -23,7 +23,7 @@ public class Game : Program {
         Scene?.Start();
     }
 
-	protected override void Unload() {
+	protected override void ResourceRelease() {
 	    //Scene?.Dispose();
     }
 

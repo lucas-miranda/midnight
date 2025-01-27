@@ -293,7 +293,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
                 return;
             }
 
-            if (Texture != null && Texture.IsDisposed) {
+            if (Texture != null && Texture.IsReleased) {
                 // texture was disposed, group isn't valid anymore
                 Invalidate();
                 return;

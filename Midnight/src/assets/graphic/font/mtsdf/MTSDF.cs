@@ -64,7 +64,7 @@ public class MTSDF : IFontTypesetting {
     public float NominalWidth => Data.Atlas.Size;
     public float LineHeight => Data.Metrics.LineHeight;
     public bool HasKerning => !Data.Kerning.IsEmpty();
-    public bool IsDisposed { get; private set; }
+    public bool IsReleased { get; private set; }
 
     public static Font<MTSDF> LoadFont(Texture2D texture, string dataFilepath) {
         return new(new(texture, dataFilepath));
@@ -113,18 +113,19 @@ public class MTSDF : IFontTypesetting {
         return kerning.Advance;
     }
 
-    public void Reload() {
+    public bool Reload() {
         Texture.Reload();
         LoadData();
+        return true;
     }
 
-    public void Reload(Stream stream) {
+    public bool Reload(Stream stream) {
         throw new System.NotImplementedException();
     }
 
-    public void Dispose() {
-        IsDisposed = true;
-        Texture?.Dispose();
+    public bool Release() {
+        IsReleased = true;
+        return Texture?.Release() ?? true;
     }
 
     private void LoadData(Stream dataStream) {

@@ -18,7 +18,7 @@ public abstract class Font : IAsset {
 
     public string Name { get; set; }
     public string[] Filepaths => Typesetting.Filepaths;
-    public bool IsDisposed { get; private set; }
+    public bool IsReleased { get; private set; }
 
     /// <summary>
     /// Describes glyphs to build a text.
@@ -176,16 +176,16 @@ public abstract class Font : IAsset {
         return output.ToReadOnly();
     }
 
-    public void Reload() {
-        Typesetting.Reload();
+    public bool Reload() {
+        return Typesetting.Reload();
     }
 
-    public void Reload(System.IO.Stream stream) {
-        Typesetting.Reload(stream);
+    public bool Reload(System.IO.Stream stream) {
+        return Typesetting.Reload(stream);
     }
 
-    public void Dispose() {
-        Typesetting.Dispose();
+    public bool Release() {
+        return Typesetting.Release();
     }
 }
 

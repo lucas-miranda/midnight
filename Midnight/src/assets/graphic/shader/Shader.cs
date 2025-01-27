@@ -23,7 +23,7 @@ public class Shader : IAsset {
     public string[] Filepaths { get; protected set; } = new string[1];
     public string Filepath { get => Filepaths[0]; protected set => Filepaths[0] = value; }
     public int TechniqueCount { get => _techniques.Count; }
-    public bool IsDisposed { get; private set; }
+    public bool IsReleased { get; private set; }
 
     public ShaderTechnique CurrentTechnique {
         get => _currentTechnique;
@@ -146,14 +146,17 @@ public class Shader : IAsset {
         CurrentTechnique = _techniquesByName[name];
     }
 
-    public void Reload() {
+    public bool Reload() {
+        return false;
     }
 
-    public void Reload(Stream stream) {
+    public bool Reload(Stream stream) {
+        return false;
     }
 
-    public void Dispose() {
-        IsDisposed = true;
+    public bool Release() {
+        IsReleased = true;
+        return true;
     }
 
     protected virtual void Loaded() {

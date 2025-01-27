@@ -92,9 +92,9 @@ public sealed class RenderingServer {
         Batcher.LoadContent();
     }
 
-    internal void UnloadContent() {
-        Layers.UnloadContent();
-        MainCanvas.Dispose();
+    internal void ResourceRelease() {
+        Layers.ResourceRelease();
+        MainCanvas.Release();
     }
 
     internal void PrepareRender() {

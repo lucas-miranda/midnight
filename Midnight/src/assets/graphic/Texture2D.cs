@@ -83,13 +83,13 @@ public class Texture2D : Texture {
         return new(xnaTexture);
     }
 
-    public override void Reload() {
+    public override bool Reload() {
         using (FileStream stream = File.OpenRead(((IAsset) this).Filepath)) {
-            Reload(stream);
+            return Reload(stream);
         }
     }
 
-    public override void Reload(Stream stream) {
+    public override bool Reload(Stream stream) {
         Assert.NotNull(stream);
         XnaGraphics.Texture2D.TextureDataFromStreamEXT(
             stream,
@@ -105,10 +105,12 @@ public class Texture2D : Texture {
             0,
             pixels.Length
         );
+
+        return true;
     }
 
-    public override void Dispose() {
-        base.Dispose();
+    public override bool Release() {
+        return base.Release();
     }
 
     public void Read<T>(T[] data) where T : struct {

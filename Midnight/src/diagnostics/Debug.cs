@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 
 namespace Midnight.Diagnostics;
 
@@ -30,21 +29,18 @@ public class Debug {
         _diagnosticsEntity = new();
 
         Transform2D diagnosticsTrans = _diagnosticsEntity.Components.Create<Transform2D>();
-        Texture2D fontTexture = Texture2D.Load(Midnight.Embedded.Resources.Fonts.AccidentalPresident.Texture);
 
-        using (MemoryStream dataStream = new(Midnight.Embedded.Resources.Fonts.AccidentalPresident.Data, false)) {
-            _diagnosticsTextDisplayer = new() {
-                Font = MTSDF.LoadFont(fontTexture, dataStream),
-                Value = string.Format(DiagnosticsFormat, "0"),
-            };
+        _diagnosticsTextDisplayer = new() {
+            Font = Program.AssetManager.Get<Font>("accidental president"),
+            Value = string.Format(DiagnosticsFormat, "0"),
+        };
 
-            _diagnosticsEntity.Components.Add(_diagnosticsTextDisplayer);
-        }
+        _diagnosticsEntity.Components.Add(_diagnosticsTextDisplayer);
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
-    internal void UnloadContent() {
-        Canvas.Dispose();
+    internal void ResourceRelease() {
+        Canvas.Release();
     }
 
     [System.Diagnostics.Conditional("DEBUG")]

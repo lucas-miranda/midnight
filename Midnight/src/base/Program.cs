@@ -20,6 +20,7 @@ public abstract class Program : Xna.Game {
         Resources = new();
         Resources.LoadAll();
         Random.Init();
+        AssetManager = new();
 
         // Graphics
 
@@ -38,6 +39,7 @@ public abstract class Program : Xna.Game {
     public static RenderingServer Rendering { get; private set; }
     public static GraphicsServer Graphics { get; private set; }
     public static Embedded.Resources Resources { get; private set; }
+    public static AssetManager AssetManager { get; private set; }
 
     public static Debug Debug {
 #if DEBUG
@@ -77,6 +79,7 @@ ResourcesReady
      */
 	protected sealed override void LoadContent() {
 		base.LoadContent();
+		Resources.GraphicsReady();
 		Debug.GraphicsReady();
         Rendering.GraphicsReady();
 		GraphicsReady();
@@ -85,9 +88,9 @@ ResourcesReady
 
 	protected sealed override void UnloadContent() {
 		base.UnloadContent();
-		Unload();
-		Rendering.UnloadContent();
-		Debug.UnloadContent();
+		ResourceRelease();
+		Rendering.ResourceRelease();
+		Debug.ResourceRelease();
 	}
 
 	protected sealed override void Update(Xna.GameTime gameTime) {

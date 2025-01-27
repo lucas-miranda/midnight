@@ -5,6 +5,14 @@ namespace Midnight.Embedded;
 public class Resources {
     public const string ManifestNamespace = "Midnight.Embedded";
 
+    internal void GraphicsReady() {
+        Texture2D fontTexture = Texture2D.Load(Midnight.Embedded.Resources.Fonts.AccidentalPresident.Texture);
+
+        using (MemoryStream dataStream = new(Midnight.Embedded.Resources.Fonts.AccidentalPresident.Data, false)) {
+            Program.AssetManager.Register("accidental president", MTSDF.LoadFont(fontTexture, dataStream));
+        }
+    }
+
     internal void LoadAll() {
         Shaders.Sprite = Load("SpriteShader");
         Fonts.Shaders.MTSDF = Load("MTSDFShader");
