@@ -102,6 +102,8 @@ public sealed class RenderingServer {
 
         // TODO  add Viewport
         Clear(ClearOptions.All, Color.Transparent, XnaGraphicsDevice.Viewport.MaxDepth, 0);
+
+        Batcher.ResetStats();
     }
 
     internal void Flush() {

@@ -35,6 +35,9 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
     internal XnaGraphics.DynamicVertexBuffer VertexBuffer { get => _vertexBuffer; }
     internal XnaGraphics.DynamicIndexBuffer IndexBuffer { get => _indexBuffer; }
+#if DEBUG
+    internal int DrawCallsCount { get; private set; }
+#endif
 
     public void Push(
         Texture texture,
@@ -44,17 +47,8 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
         int[] _indices,
         int _minIndex,
         int _primitivesCount,
-        //bool isHollow,
-        //Vector2 position,
-        //float rotation,
-        //Vector2 scale,
-        //Color color,
-        //Vector2 origin,
-        //Vector2 scroll,
         ShaderMaterial material,
         DrawSettings? settings
-        //IShaderParameters shaderParameters,
-        //float layerDepth = 1.0f
     ) {
         //System.Console.WriteLine("Push:");
         if (material == null) {
@@ -110,19 +104,21 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
             _groups.Add(groupId, group);
 
-            System.Console.WriteLine($"Creating batch group (total: {_groups.Count})");
+            //System.Console.WriteLine($"Creating batch group (total: {_groups.Count})");
         }
 
-        //System.Console.WriteLine("Push!");
         group.Extend(vertexData);
+        //System.Console.WriteLine($"Push! (pushing {vertexData.Length} vertices, total: {group.VertexCount})");
     }
 
     public void Flush(RenderingServer r) {
         foreach (KeyValuePair<int, BatchGroup> group in _groups) {
+            //System.Console.WriteLine("Flushing Group: " + group.Key);
             FlushGroup(r, group.Value);
 
             if (!group.Value.IsValid) {
                 // add to removal
+                //System.Console.WriteLine("- Group will be removed");
                 _groupsRemoval.Add(group.Key);
             }
         }
@@ -133,13 +129,18 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
                 _groups.Remove(id);
             }
 
-            System.Console.WriteLine($"Removing {_groupsRemoval.Count} invalid batch group (total remaining: {_groups.Count})");
+            //System.Console.WriteLine($"Removing {_groupsRemoval.Count} invalid batch group (total remaining: {_groups.Count})");
             _groupsRemoval.Clear();
         }
     }
 
     internal void LoadContent() {
         CreateBuffers(INITIAL_BUFFERS_SIZE);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG")]
+    internal void ResetStats() {
+        DrawCallsCount = 0;
     }
 
     private void FlushGroup(RenderingServer r, BatchGroup group) {
@@ -274,6 +275,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
         public DrawSettings Settings { get; set; }
         public V[] Vertices { get => _vertices; }
+        public int VertexCount => _verticesIndex;
         public bool IsValid { get; private set; } = true;
 
         public void Extend(IList<V> vertices) {
@@ -284,7 +286,11 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
         public void Extend(System.Span<V> vertices) {
             EnsureCapacity(vertices.Length);
-            vertices.CopyTo(_vertices);
+
+            for (int i = 0; i < vertices.Length; i++) {
+                _vertices[i + _verticesIndex] = vertices[i];
+            }
+
             _verticesIndex += vertices.Length;
         }
 
@@ -315,8 +321,6 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
             bool usingTexture = false;
 
             if (Texture != null) {
-
-
                 usingTexture = true;
                 r.XnaGraphicsDevice.Textures[0] = Texture.Underlying;
 #if DEBUG
@@ -343,8 +347,9 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
 
             // each pass must apply each pass while draw vertices
             int primitiveCount = Settings.Primitive.CalculateCount(_verticesIndex);
+
             foreach (ShaderPass pass in Material.Apply()) {
-                //System.Console.WriteLine("Using technique: " + Material.BaseShader.CurrentTechnique.Name);
+                //System.Console.WriteLine("Using technique: " + Material.BaseShader.CurrentTechnique.Name + $" Drawing {primitiveCount} {Settings.Primitive} ({_verticesIndex}/{Vertices.Length} vertices)");
                 pass.Apply();
 
                 r.XnaGraphicsDevice.DrawIndexedPrimitives(
@@ -355,6 +360,8 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
                     0,
                     primitiveCount
                 );
+
+                batcher.DrawCallsCount += 1;
             }
 
             // reset
@@ -366,6 +373,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
         }
 
         public void Invalidate() {
+            //System.Console.WriteLine("Invalidating BatchGroup");
             IsValid = false;
         }
 

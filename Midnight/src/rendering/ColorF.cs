@@ -95,6 +95,94 @@ public struct ColorF : System.IEquatable<ColorF> {
         return a.R != b.R || a.G != b.G || a.B != b.B || a.A != b.A;
     }
 
+    public static ColorF operator +(ColorF a, ColorF b) {
+        return new(a.R + b.R, a.G + b.G, a.B + b.B, a.A + b.A);
+    }
+
+    public static ColorF operator +(ColorF a, Color b) {
+        return new(
+            a.R + (b.R / (float) byte.MaxValue),
+            a.G + (b.G / (float) byte.MaxValue),
+            a.B + (b.B / (float) byte.MaxValue),
+            a.A + (b.A / (float) byte.MaxValue)
+        );
+    }
+
+    public static ColorF operator +(Color a, ColorF b) {
+        return new(
+            (a.R / (float) byte.MaxValue) + b.R,
+            (a.G / (float) byte.MaxValue) + b.G,
+            (a.B / (float) byte.MaxValue) + b.B,
+            (a.A / (float) byte.MaxValue) + b.A
+        );
+    }
+
+    public static ColorF operator -(ColorF a, ColorF b) {
+        return new(a.R - b.R, a.G - b.G, a.B - b.B, a.A - b.A);
+    }
+
+    public static ColorF operator -(ColorF a, Color b) {
+        return new(
+            a.R - (b.R / (float) byte.MaxValue),
+            a.G - (b.G / (float) byte.MaxValue),
+            a.B - (b.B / (float) byte.MaxValue),
+            a.A - (b.A / (float) byte.MaxValue)
+        );
+    }
+
+    public static ColorF operator -(Color a, ColorF b) {
+        return new(
+            (a.R / (float) byte.MaxValue) - b.R,
+            (a.G / (float) byte.MaxValue) - b.G,
+            (a.B / (float) byte.MaxValue) - b.B,
+            (a.A / (float) byte.MaxValue) - b.A
+        );
+    }
+
+    public static ColorF operator *(ColorF a, ColorF b) {
+        return new(a.R * b.R, a.G * b.G, a.B * b.B, a.A * b.A);
+    }
+
+    public static ColorF operator *(ColorF a, Color b) {
+        return new(
+            a.R * (b.R / (float) byte.MaxValue),
+            a.G * (b.G / (float) byte.MaxValue),
+            a.B * (b.B / (float) byte.MaxValue),
+            a.A * (b.A / (float) byte.MaxValue)
+        );
+    }
+
+    public static ColorF operator *(Color a, ColorF b) {
+        return new(
+            (a.R / (float) byte.MaxValue) * b.R,
+            (a.G / (float) byte.MaxValue) * b.G,
+            (a.B / (float) byte.MaxValue) * b.B,
+            (a.A / (float) byte.MaxValue) * b.A
+        );
+    }
+
+    public static ColorF operator /(ColorF a, ColorF b) {
+        return new(a.R / b.R, a.G / b.G, a.B / b.B, a.A / b.A);
+    }
+
+    public static ColorF operator /(ColorF a, Color b) {
+        return new(
+            a.R / (b.R / (float) byte.MaxValue),
+            a.G / (b.G / (float) byte.MaxValue),
+            a.B / (b.B / (float) byte.MaxValue),
+            a.A / (b.A / (float) byte.MaxValue)
+        );
+    }
+
+    public static ColorF operator /(Color a, ColorF b) {
+        return new(
+            (a.R / (float) byte.MaxValue) / b.R,
+            (a.G / (float) byte.MaxValue) / b.G,
+            (a.B / (float) byte.MaxValue) / b.B,
+            (a.A / (float) byte.MaxValue) / b.A
+        );
+    }
+
     internal Xna.Color ToXna() {
         return new(R, G, B, A);
     }

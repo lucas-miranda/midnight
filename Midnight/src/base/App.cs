@@ -34,16 +34,12 @@ public class App : Program {
     }
 
 	protected override void Render(DeltaTime dt, RenderingServer r) {
+	    // game rendering on MainCanvas
         r.Target.Push(r.MainCanvas);
 	    r.Clear(Background);
 		r.PrepareRender();
         Scene?.Render(dt, r);
         r.Flush();
         r.Target.Pop(); // MainCanvas
-
-        // render canvas layes to backbuffer
-	    r.Target.Clear();
-	    r.Clear(Background);
-	    r.Layers.Render(dt, r);
 	}
 }

@@ -13,7 +13,10 @@ public class DesignBuilder : ContainerBuilder {
     public bool IsBuilded { get; private set; }
 
     public override GUI.Object Build() {
-        return new Frame();
+        Frame rootFrame = new Frame();
+        rootFrame.Background.Color = 0xFFFFFFFF;
+        rootFrame.Border.Color = 0xFFFFFF00;
+        return rootFrame;
     }
 
     public void Build(System.Action<DesignBuilder> fn) {

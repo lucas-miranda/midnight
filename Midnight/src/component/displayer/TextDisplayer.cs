@@ -25,7 +25,7 @@ public class TextDisplayer : GraphicDisplayer {
         get => _font;
         set {
             _font = value;
-            RequestGenerate();
+            Generate();
 
             if (Material == null && !_hasCustomMaterial && _font is Font<MTSDF>) {
                 MTSDFShader shader = Shader.Load<MTSDFShader>(
@@ -44,7 +44,7 @@ public class TextDisplayer : GraphicDisplayer {
         get => _value;
         set {
             _value = value;
-            RequestGenerate();
+            Generate();
         }
     }
 
@@ -53,15 +53,11 @@ public class TextDisplayer : GraphicDisplayer {
         set {
             _material = value;
             _hasCustomMaterial = _material != null;
-            RequestGenerate();
+            Generate();
         }
     }
 
     public override void Render(DeltaTime dt, RenderingServer r) {
-        if (_needRegenerate) {
-            Generate();
-        }
-
         System.Span<VertexPositionColorTexture> renderBuffer = stackalloc VertexPositionColorTexture[_vertices.Count];
         Transform2D trans = Entity?.Components.Get<Transform2D>();
 
@@ -115,7 +111,7 @@ public class TextDisplayer : GraphicDisplayer {
         _needRegenerate = false;
         _vertices.Clear();
 
-        if (Value.IsEmpty()) {
+        if (Value == null || Value.IsEmpty()) {
             return;
         }
 
@@ -162,9 +158,5 @@ public class TextDisplayer : GraphicDisplayer {
                 _vertices.Add(new(new(pos + quadSize), Color.White, uv.BottomRight));
             }
         }
-    }
-
-    private void RequestGenerate() {
-        _needRegenerate = true;
     }
 }

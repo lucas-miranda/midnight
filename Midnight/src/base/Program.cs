@@ -102,8 +102,15 @@ ResourcesReady
 	protected sealed override void Draw(Xna.GameTime gameTime) {
         DeltaTime deltaTime = new(gameTime);
         FPS.PreFrameRendered();
-		Debug.Render(deltaTime, Rendering);
 		Render(deltaTime, Rendering);
+		Debug.Render(deltaTime, Rendering);
+
+        System.Console.WriteLine("\nRendering Layers Begin");
+        // render canvas layes to backbuffer
+	    Rendering.Target.Clear();
+	    Rendering.Clear(Background);
+	    Rendering.Layers.Render(deltaTime, Rendering);
+        System.Console.WriteLine("Rendering Layers End\n");
 	}
 
     protected abstract void DeviceInit();

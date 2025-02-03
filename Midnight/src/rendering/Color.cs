@@ -131,6 +131,22 @@ public struct Color : System.IEquatable<Color> {
         return a.R != b.R || a.G != b.G || a.B != b.B || a.A != b.A;
     }
 
+    public static Color operator +(Color a, Color b) {
+        return new(a.R + b.R, a.G + b.G, a.B + b.B, a.A + b.A);
+    }
+
+    public static Color operator -(Color a, Color b) {
+        return new(a.R - b.R, a.G - b.G, a.B - b.B, a.A - b.A);
+    }
+
+    public static Color operator *(Color a, Color b) {
+        return new(a.R * b.R, a.G * b.G, a.B * b.B, a.A * b.A);
+    }
+
+    public static Color operator /(Color a, Color b) {
+        return new(a.R / b.R, a.G / b.G, a.B / b.B, a.A / b.A);
+    }
+
     internal Xna.Color ToXna() {
         return new(R, G, B, A);
     }

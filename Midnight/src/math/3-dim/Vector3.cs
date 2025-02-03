@@ -90,6 +90,10 @@ public struct Vector3 : System.IEquatable<Vector3> {
         return new(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
     }
 
+    public static Vector3 operator +(Vector3 a, Vector2 b) {
+        return new(a.X + b.X, a.Y + b.Y, a.Z);
+    }
+
     public static Vector3 operator +(Vector3 v, float n) {
         return new(v.X + n, v.Y + n, v.Z + n);
     }
@@ -100,6 +104,10 @@ public struct Vector3 : System.IEquatable<Vector3> {
 
     public static Vector3 operator -(Vector3 a, Vector3 b) {
         return new(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+    }
+
+    public static Vector3 operator -(Vector3 a, Vector2 b) {
+        return new(a.X - b.X, a.Y - b.Y, a.Z);
     }
 
     public static Vector3 operator -(Vector3 v, float n) {
@@ -114,6 +122,10 @@ public struct Vector3 : System.IEquatable<Vector3> {
         return new(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
     }
 
+    public static Vector3 operator *(Vector3 a, Vector2 b) {
+        return new(a.X * b.X, a.Y * b.Y, a.Z);
+    }
+
     public static Vector3 operator *(Vector3 v, float n) {
         return new(v.X * n, v.Y * n, v.Z * n);
     }
@@ -124,6 +136,10 @@ public struct Vector3 : System.IEquatable<Vector3> {
 
     public static Vector3 operator /(Vector3 a, Vector3 b) {
         return new(a.X / b.X, a.Y / b.Y, a.Z / b.Z);
+    }
+
+    public static Vector3 operator /(Vector3 a, Vector2 b) {
+        return new(a.X / b.X, a.Y / b.Y, a.Z);
     }
 
     public static Vector3 operator /(Vector3 v, float n) {

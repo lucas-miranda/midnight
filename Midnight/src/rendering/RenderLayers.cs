@@ -11,6 +11,8 @@ public sealed class RenderLayers : IEnumerable<RenderLayer> {
     internal RenderLayers() {
     }
 
+    public int Count => _layers.Count;
+
     public void Register(int order, Canvas canvas) {
         Assert.NotNull(canvas);
         _layers.Add(new(canvas, order));

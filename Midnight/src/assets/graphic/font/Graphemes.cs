@@ -14,7 +14,7 @@ public readonly struct Graphemes : IEnumerable<Grapheme> {
         Entries = new(buffer.Length);
 
         foreach (Rune rune in buffer.EnumerateRunes()) {
-            System.Console.WriteLine($"{rune}; is meaningful? {IsMeaningful(rune)} (category: {Rune.GetUnicodeCategory(rune)})");
+            //System.Console.WriteLine($"{rune}; is meaningful? {IsMeaningful(rune)} (category: {Rune.GetUnicodeCategory(rune)})");
 
             if (!IsMeaningful(rune)) {
                 // can be ignored

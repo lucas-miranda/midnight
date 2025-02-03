@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Midnight.Diagnostics;
 
 public class Debug {
-    private const string DiagnosticsFormat = "FPS: {0}";
+    private const string DiagnosticsFormat = "FPS: {0}\nD: {1}  L: {2}";
     private Entity _diagnosticsEntity;
     private TextDisplayer _diagnosticsTextDisplayer;
 
@@ -17,6 +17,8 @@ public class Debug {
 #endif
     }
 
+    public bool Visible { get; set; } = true;
+
     [System.Diagnostics.Conditional("DEBUG")]
     public void Initialize() {
     }
@@ -26,16 +28,15 @@ public class Debug {
         Canvas = Canvas.FromBackBuffer(DepthFormat.Depth24Stencil8);
         Program.Rendering.Layers.Register(100, Canvas);
 
-        _diagnosticsEntity = new();
-
-        Transform2D diagnosticsTrans = _diagnosticsEntity.Components.Create<Transform2D>();
+        _diagnosticsEntity = Entity.Create()
+                                   .With<Transform2D>();
 
         _diagnosticsTextDisplayer = new() {
             Font = Program.AssetManager.Get<Font>("accidental president"),
-            Value = string.Format(DiagnosticsFormat, "0"),
+            Value = string.Format(DiagnosticsFormat, "0", "0", "0"),
         };
 
-        _diagnosticsEntity.Components.Add(_diagnosticsTextDisplayer);
+        _diagnosticsEntity.With(_diagnosticsTextDisplayer);
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
@@ -45,15 +46,24 @@ public class Debug {
 
     [System.Diagnostics.Conditional("DEBUG")]
 	internal void Render(DeltaTime dt, RenderingServer r) {
+        if (!Visible) {
+            return;
+        }
+
+        // update text displayer
+        _diagnosticsTextDisplayer.Value = string.Format(
+            DiagnosticsFormat,
+            Program.Current.FPS.Current,
+            r.Batcher.DrawCallsCount,
+            r.Layers.Count
+        );
+
 	    r.Target.Push(Canvas);
 	    r.Clear(Color.Transparent);
 
-        // update text displayer
-        _diagnosticsTextDisplayer.Value = string.Format(DiagnosticsFormat, Program.Current.FPS.Current);
-
         // adjust position
-        var trans = _diagnosticsEntity.Components.Get<Transform2D>();
-        trans.Position = new Vector2(Canvas.Size.Width - _diagnosticsTextDisplayer.Size.Width - 20, 5);
+        var trans = _diagnosticsEntity.Get<Transform2D>();
+        trans.Position = new Vector2(Canvas.Size.Width - _diagnosticsTextDisplayer.Size.Width - 25, 5);
 
         // render!
 	    _diagnosticsTextDisplayer.Render(dt, r);

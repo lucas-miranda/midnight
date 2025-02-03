@@ -94,6 +94,11 @@ public abstract class Font : IAsset {
             if (grapheme.IsNewLine) {
                 // go to the next line
                 pen.Y += Typesetting.LineHeight;
+
+                if (pen.X > size.Width) {
+                    size.Width = pen.X;
+                }
+
                 pen.X = 0.0f;
                 continue;
             } else if (grapheme.IsCarriageReturn) {

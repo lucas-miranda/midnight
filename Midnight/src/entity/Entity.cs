@@ -10,6 +10,10 @@ public sealed class Entity {
     public Scene Scene { get; private set; }
     public Components Components { get; }
 
+    public static Entity Create() {
+        return new();
+    }
+
     public void SceneAdded(Scene scene) {
         Scene = scene;
     }
@@ -26,5 +30,24 @@ public sealed class Entity {
     public void ComponentRemoved(Component component) {
         Scene?.ComponentRemoved(component, this);
         component.EntityRemoved(this);
+    }
+
+    public Entity With<T>() where T : Component, new() {
+        Components.Create<T>();
+        return this;
+    }
+
+    public Entity With<T>(out T component) where T : Component, new() {
+        component = Components.Create<T>();
+        return this;
+    }
+
+    public Entity With<T>(T component) where T : Component {
+        Components.Add(component);
+        return this;
+    }
+
+    public T Get<T>() where T : Component {
+        return Components.Get<T>();
     }
 }

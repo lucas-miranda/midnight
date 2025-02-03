@@ -2,11 +2,15 @@
 namespace Midnight.GUI;
 
 public abstract class Object : IRenderable {
-    private Vector2 _size;
+    private Size2 _size;
 
-    public Vector2 Size {
+    public Size2 Size {
         get => _size;
         set {
+            if (value == _size) {
+                return;
+            }
+
             _size = value;
             SizeChanged();
         }
