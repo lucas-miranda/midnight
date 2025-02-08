@@ -1,36 +1,26 @@
 
 namespace Midnight.GUI;
 
-public class Button : Object {
+public class Button : Container {
     public Button() {
         Background = new() {
             Color = 0x57606FFF,
         };
 
-        Text = new() {
-            Font = Program.AssetManager.Get<Font>("accidental president"),
-            Value = "Button",
-        };
-
-        Size = Text.Size;
+        Size = new(50, 50);
     }
 
-    public Container Container { get; } = new();
     public bool Pressed { get; private set; }
     public RectangleDrawable Background { get; private set; }
-    public StringDrawable Text { get; private set; }
 
     internal ButtonBuilder Builder { get; set; }
 
     public override void Render(DeltaTime dt, RenderingServer r) {
-        System.Console.WriteLine("Button Draw Begin");
-        Background.Draw(dt, r);
-        Text.Draw(dt, r);
-
-        foreach (Object obj in Container) {
-            obj.Render(dt, r);
-        }
-        System.Console.WriteLine("Button Draw End");
+        //System.Console.WriteLine($"Draw Button Begin");
+        //System.Console.WriteLine($"Button Trans: {Transform}");
+        Background.Draw(dt, r, new DrawParams { Transform = Transform });
+        base.Render(dt, r);
+        //System.Console.WriteLine($"Draw Button End");
     }
 
     public void Press() {
@@ -51,17 +41,7 @@ public class Button : Object {
         Builder?.RequestEvaluate();
     }
 
-    public override string TreeToString() {
-        string str = "[Button |";
-
-        foreach (Object obj in Container) {
-            str += $" {obj.TreeToString()}";
-        }
-
-        return str + "]";
-    }
-
     protected override void SizeChanged() {
-        Background.Size = Text.Size;
+        Background.Size = Size;
     }
 }

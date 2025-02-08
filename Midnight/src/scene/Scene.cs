@@ -51,22 +51,29 @@ public class Scene {
     }
 
     internal void EntityRemoved(Entity entity) {
-        System.Console.WriteLine("Scene > Entity added");
+        System.Console.WriteLine("Scene > Entity removed");
         foreach (Component component in entity.Components) {
             ComponentRemoved(component, entity);
         }
     }
 
     internal void ComponentAdded(Component component, Entity entity) {
+        System.Console.WriteLine($"Scene > Component '{component.GetType().Name}' added");
         if (component is IUpdatable updatable) {
+            System.Console.WriteLine("- Updatable");
             Push(updatable, _updateComponents);
-        } else if (component is IRenderable renderable) {
+        }
+
+        if (component is IRenderable renderable) {
+            System.Console.WriteLine("- Renderable");
             Push(renderable, _renderComponents);
         }
     }
 
     internal void ComponentRemoved(Component component, Entity entity) {
+        System.Console.WriteLine($"Scene > Component '{component.GetType().Name}' removed");
         if (component is IUpdatable updatable) {
+            System.Console.WriteLine("- Updatable");
             for (int i = 0; i < _updateComponents.Count; i++) {
                 ComponentWrapper<IUpdatable> wrapper = _updateComponents[i];
 
@@ -75,7 +82,10 @@ public class Scene {
                     break;
                 }
             }
-        } else if (component is IRenderable renderable) {
+        }
+
+        if (component is IRenderable renderable) {
+            System.Console.WriteLine("- Renderable");
             for (int i = 0; i < _renderComponents.Count; i++) {
                 ComponentWrapper<IRenderable> wrapper = _renderComponents[i];
 

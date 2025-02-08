@@ -39,10 +39,8 @@ public class StringDrawable : Drawable {
         }
     }
 
-    public override void Draw(DeltaTime dt, RenderingServer r) {
-        base.Draw(dt, r);
+    protected override void Paint(DeltaTime dt, RenderingServer r) {
         PositionScale = new(Font.Size);
-        PrepareFinalVertices();
 
         DrawSettings settings;
         if (Params.DrawSettings.HasValue) {

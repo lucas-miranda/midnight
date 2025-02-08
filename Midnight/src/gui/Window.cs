@@ -1,6 +1,7 @@
 
 namespace Midnight.GUI;
 
+/*
 public class Window : Object {
     /*
     public override void EntityAdded(Entity entity) {
@@ -17,7 +18,6 @@ public class Window : Object {
         //       if it's a sub Window, that window should be freed
         //       otherwise, if it's the main Window, do nothing
     }
-    */
 
     public override void Render(DeltaTime dt, RenderingServer r) {
     }
@@ -25,3 +25,4 @@ public class Window : Object {
     protected override void SizeChanged() {
     }
 }
+*/

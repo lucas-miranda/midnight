@@ -44,15 +44,18 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
 
     public ButtonBuilder Button(string label) {
         ButtonBuilder b = Create<Button>() as ButtonBuilder;
-        Label l = b.Result.Container.Find<Label>();
+        Label l = b.Result.Find<Label>();
 
         if (l != null) {
-            l.Text = label;
+            l.Value = label;
         } else {
-            b.Result.Container.Add(new Label() { Text = label });
+            b.Result.Add(new Label() { Value = label });
         }
 
         return b;
+    }
+
+    public void Dispose() {
     }
 
     private ObjectBuilder RetrieveBuilder(System.Type type) {
@@ -76,13 +79,11 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
             b.Prepare();
 
             // register as child
-            IContainer c = (IContainer) Result;
-            c.Container.Add(b.Result);
+            Assert.Is<Container>(Result);
+            Container c = (Container) Result;
+            c.Add(b.Result);
         }
 
         return b;
-    }
-
-    public void Dispose() {
     }
 }

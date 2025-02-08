@@ -73,4 +73,40 @@ public static class Assert {
     public static void Null<T>(T something, string message, string detailedMessage) {
         System.Diagnostics.Debug.Assert(something == null, message, detailedMessage);
     }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void Is<T>(object something) {
+        System.Diagnostics.Debug.Assert(something is T, $"Value is expected to have type {typeof(T).Name}.");
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void Is<T>(object something, string message) {
+        System.Diagnostics.Debug.Assert(something is T, message);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void Is<T>(object something, string message, string detailedMessage) {
+        System.Diagnostics.Debug.Assert(something is T, message, detailedMessage);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void IsNot<T>(object something) {
+        System.Diagnostics.Debug.Assert(!(something is T), $"Value is expected to not have type {typeof(T).Name}.");
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void IsNot<T>(object something, string message) {
+        System.Diagnostics.Debug.Assert(!(something is T), message);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void IsNot<T>(object something, string message, string detailedMessage) {
+        System.Diagnostics.Debug.Assert(!(something is T), message, detailedMessage);
+    }
 }

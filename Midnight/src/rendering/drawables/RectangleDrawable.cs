@@ -24,22 +24,20 @@ public class RectangleDrawable : Drawable {
         }
     }
 
-    public override void Draw(DeltaTime dt, RenderingServer r) {
-        System.Console.WriteLine("Rectangle Draw Begin");
-        base.Draw(dt, r);
-        PrepareFinalVertices();
-        System.Console.WriteLine($"- Vertices: {Vertices.Length}, Final Vertices: {FinalVertices.Length}");
+    protected override void Paint(DeltaTime dt, RenderingServer r) {
+        //System.Console.WriteLine($"Rectangle Draw Begin (global pos: {Params.Transform.GlobalPosition}; pos: {Params.Transform.Position}; has parent? {(Params.Transform.Parent != null).ToString()})");
+        //System.Console.WriteLine($"- Vertices: {Vertices.Length}, Final Vertices: {FinalVertices.Length}");
         DrawSettings settings = Params.DrawSettings.GetValueOrDefault(Midnight.DrawSettings.Default);
 
         if (Filled) {
-            System.Console.WriteLine("- Filled");
+            //System.Console.WriteLine("- Filled");
             settings = settings with {
                 Samplers = new SamplerState[0],
                 Primitive = PrimitiveType.TriangleList,
                 //Immediate = true,
             };
         } else {
-            System.Console.WriteLine("- Hollow");
+            //System.Console.WriteLine("- Hollow");
             settings = settings with {
                 Samplers = new SamplerState[0],
                 Primitive = PrimitiveType.LineStrip,
@@ -58,7 +56,7 @@ public class RectangleDrawable : Drawable {
             Params.Material,
             settings
         );
-        System.Console.WriteLine("Rectangle Draw End");
+        //System.Console.WriteLine("Rectangle Draw End");
     }
 
     protected override void UpdateVertices() {

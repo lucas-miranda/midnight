@@ -33,6 +33,9 @@ public class SpriteDisplayer : GraphicDisplayer {
 
     public ShaderMaterial Material { get; set; }
 
+    public override void Update(DeltaTime dt) {
+    }
+
     public override void Render(DeltaTime dt, RenderingServer r) {
         VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[_vertices.Length];
         Transform2D trans = Entity?.Components.Get<Transform2D>();

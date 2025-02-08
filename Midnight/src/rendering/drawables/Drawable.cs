@@ -6,7 +6,11 @@ public abstract class Drawable {
     private VertexPositionColorTexture[] _vertices, _finalVertices;
     private ShaderMaterial _material;
 
-    public Transform2D Transform { get; set; }
+    public Drawable() {
+        Transform = new();
+    }
+
+    public Transform2D Transform { get; }
 
     public ShaderMaterial Material {
         get => _material;
@@ -34,7 +38,7 @@ public abstract class Drawable {
     protected bool UsingCustomMaterial { get; set; }
     protected Vector2 PositionScale { get; set; } = Vector2.One;
 
-    public virtual void Draw(DeltaTime dt, RenderingServer r) {
+    public void Draw(DeltaTime dt, RenderingServer r) {
         Params = new() {
             Transform = Transform,
             Material = Material,
@@ -42,9 +46,37 @@ public abstract class Drawable {
             Color = Color,
         };
 
+        Draw(dt, r, Params);
+    }
+
+    public void Draw(DeltaTime dt, RenderingServer r, DrawParams drawParams) {
+        //System.Console.WriteLine($"Drawable '{GetType().Name}' Draw Begin");
+        Params = new() {
+            Transform = drawParams.IsTransformDefined ? drawParams.Transform : Transform,
+            Material = drawParams.IsMaterialDefined ? drawParams.Material : Material,
+            DrawSettings = drawParams.IsDrawSettingsDefined ? drawParams.DrawSettings : DrawSettings,
+            Color = drawParams.IsColorDefined ? drawParams.Color : Color,
+        };
+
+        //System.Console.WriteLine($"params are = global pos: {Params.Transform.GlobalPosition}; pos: {Params.Transform.Position}; has parent? {(Params.Transform.Parent != null).ToString()}");
+
         if (IsRecalculateRequested) {
             RecalculateVertices();
         }
+
+        Transform.FlushMatrix();
+
+        if (Params.Transform != Transform) {
+            Params.Transform.FlushMatrix();
+            //System.Console.WriteLine($"Preparing Final Vertices with Custom Transform");
+            PrepareFinalVertices(Params.Transform.Matrix * Transform.Matrix);
+        } else {
+            //System.Console.WriteLine($"Preparing Final Vertices");
+            PrepareFinalVertices(Transform.Matrix);
+        }
+
+        Paint(dt, r);
+        //System.Console.WriteLine($"Drawable '{GetType().Name}' Draw End");
     }
 
     public void RequestRecalculateVertices() {
@@ -56,9 +88,18 @@ public abstract class Drawable {
         UpdateVertices();
     }
 
+    protected abstract void Paint(DeltaTime dt, RenderingServer r);
     protected abstract void UpdateVertices();
 
-    protected void PrepareFinalVertices() {
+    protected void ResizeVertices(int n) {
+        if (Vertices == null) {
+            Vertices = new VertexPositionColorTexture[n];
+        } else if (_vertices.Length != n) {
+            System.Array.Resize(ref _vertices, n);
+        }
+    }
+
+    private void PrepareFinalVertices(Matrix m) {
         Assert.NotNull(Vertices, "Vertices must be resized first.");
 
         if (FinalVertices == null) {
@@ -67,34 +108,14 @@ public abstract class Drawable {
             System.Array.Resize(ref _finalVertices, Vertices.Length);
         }
 
-        if (Params.Transform != null) {
-            Params.Transform.FlushMatrix();
-
-            for (int i = 0; i < Vertices.Length; i++) {
-                var v = Vertices[i];
-                FinalVertices[i] = new(
-                    Params.Transform.Apply(v.Position * PositionScale),
-                    (v.Color.Normalized() * Params.Color).ToByte(),
-                    v.TextureCoordinate
-                );
-            }
-        } else {
-            for (int i = 0; i < Vertices.Length; i++) {
-                var v = Vertices[i];
-                FinalVertices[i] = new(
-                    v.Position * PositionScale,
-                    (v.Color.Normalized() * Params.Color).ToByte(),
-                    v.TextureCoordinate
-                );
-            }
-        }
-    }
-
-    protected void ResizeVertices(int n) {
-        if (Vertices == null) {
-            Vertices = new VertexPositionColorTexture[n];
-        } else if (_vertices.Length != n) {
-            System.Array.Resize(ref _vertices, n);
+        for (int i = 0; i < Vertices.Length; i++) {
+            var v = Vertices[i];
+            //System.Console.WriteLine($"v[{i}] = Pos: {v.Position}, Pos Scale: {PositionScale}, result: {m * (v.Position * PositionScale)}");
+            FinalVertices[i] = new(
+                m * (v.Position * PositionScale),
+                (v.Color.Normalized() * Params.Color).ToByte(),
+                v.TextureCoordinate
+            );
         }
     }
 }

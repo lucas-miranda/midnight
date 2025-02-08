@@ -30,7 +30,18 @@ public struct Rectangle {
     public Vector2 BottomLeft => new(X, Y + Height);
     public Vector2 BottomRight => new(X + Width, Y + Height);
 
+    public static Rectangle Enclose(Rectangle a, Rectangle b) {
+        return new(
+            new Vector2(Math.Min(a.TopLeft.X, b.TopLeft.X), Math.Min(a.TopLeft.Y, b.TopLeft.Y)),
+            new Vector2(Math.Max(a.BottomRight.X, b.BottomRight.X), Math.Max(a.BottomRight.Y, b.BottomRight.Y))
+        );
+    }
+
     public RectangleI ToInt() {
         return new((int) X, (int) Y, (int) Width, (int) Height);
+    }
+
+    public override string ToString() {
+        return $"{X}, {Y}, {Width} x {Height}";
     }
 }

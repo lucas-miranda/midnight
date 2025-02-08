@@ -57,6 +57,9 @@ public class TextDisplayer : GraphicDisplayer {
         }
     }
 
+    public override void Update(DeltaTime dt) {
+    }
+
     public override void Render(DeltaTime dt, RenderingServer r) {
         System.Span<VertexPositionColorTexture> renderBuffer = stackalloc VertexPositionColorTexture[_vertices.Count];
         Transform2D trans = Entity?.Components.Get<Transform2D>();
