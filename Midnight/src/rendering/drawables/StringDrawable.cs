@@ -39,7 +39,7 @@ public class StringDrawable : Drawable {
         }
     }
 
-    protected override void Paint(DeltaTime dt, RenderingServer r) {
+    protected override void Paint(DeltaTime dt) {
         PositionScale = new(Font.Size);
 
         DrawSettings settings;
@@ -56,7 +56,7 @@ public class StringDrawable : Drawable {
                 mat.ChangeScreenPixelRange(font, Font.Size, 1.0f);
             }
 
-            r.Draw(
+            RenderingServer.Draw(
                 font.Typesetting.Texture,
                 FinalVertices,
                 0,

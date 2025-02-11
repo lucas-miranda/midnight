@@ -49,9 +49,9 @@ public class Shader : IAsset {
     }
 
     public static S Load<S>(byte[] bytecode) where S : Shader, new() {
-        Assert.NotNull(Program.Rendering);
+        Assert.True(RenderingServer.IsInitialized);
         XnaGraphics.Effect xnaEffect = new XnaGraphics.Effect(
-            Program.Rendering.XnaGraphicsDevice,
+            RenderingServer.XnaGraphicsDevice,
             bytecode
         );
 
@@ -68,7 +68,7 @@ public class Shader : IAsset {
     }
 
     public static S Load<S>(Stream stream) where S : Shader, new() {
-        Assert.NotNull(Program.Rendering);
+        Assert.True(RenderingServer.IsInitialized);
 
         if (!stream.CanSeek) {
             throw new System.InvalidOperationException("Can't load, stream can't seek.");
@@ -86,7 +86,7 @@ public class Shader : IAsset {
         stream.Read(contents);
 
         XnaGraphics.Effect xnaEffect = new XnaGraphics.Effect(
-            Program.Rendering.XnaGraphicsDevice,
+            RenderingServer.XnaGraphicsDevice,
             contents
         );
 

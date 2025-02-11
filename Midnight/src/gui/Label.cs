@@ -4,7 +4,7 @@ namespace Midnight.GUI;
 public class Label : Object {
     public Label() {
         Text = new() {
-            Font = Program.AssetManager.Get<Font>("accidental president"),
+            Font = AssetManager.Get<Font>("accidental president"),
         };
 
         Size = Text.Size;
@@ -20,8 +20,8 @@ public class Label : Object {
 
     public StringDrawable Text { get; private set; }
 
-    public override void Render(DeltaTime dt, RenderingServer r) {
-        Text.Draw(dt, r, new DrawParams { Transform = Transform });
+    public override void Render(DeltaTime dt) {
+        Text.Draw(dt, new DrawParams { Transform = Transform });
     }
 
     public override string TreeToString() {

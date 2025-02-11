@@ -31,10 +31,10 @@ public class Game : Program {
         Scene?.Update(dt);
     }
 
-	protected override void Render(DeltaTime dt, RenderingServer r) {
-	    r.Clear(Background);
-		r.PrepareRender();
-        Scene?.Render(dt, r);
-        r.Flush();
+	protected override void Render(DeltaTime dt) {
+	    RenderingServer.Clear(Background);
+		RenderingServer.PrepareRender();
+        Scene?.Render(dt);
+        RenderingServer.Flush();
 	}
 }

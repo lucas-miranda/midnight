@@ -8,5 +8,5 @@ public abstract class GraphicDisplayer : Component, IUpdatable, IRenderable {
 
     public abstract void Update(DeltaTime dt);
 
-    public abstract void Render(DeltaTime dt, RenderingServer r);
+    public abstract void Render(DeltaTime dt);
 }

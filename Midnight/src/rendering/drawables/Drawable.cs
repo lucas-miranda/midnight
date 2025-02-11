@@ -38,7 +38,7 @@ public abstract class Drawable {
     protected bool UsingCustomMaterial { get; set; }
     protected Vector2 PositionScale { get; set; } = Vector2.One;
 
-    public void Draw(DeltaTime dt, RenderingServer r) {
+    public void Draw(DeltaTime dt) {
         Params = new() {
             Transform = Transform,
             Material = Material,
@@ -46,10 +46,10 @@ public abstract class Drawable {
             Color = Color,
         };
 
-        Draw(dt, r, Params);
+        Draw(dt, Params);
     }
 
-    public void Draw(DeltaTime dt, RenderingServer r, DrawParams drawParams) {
+    public void Draw(DeltaTime dt, DrawParams drawParams) {
         //System.Console.WriteLine($"Drawable '{GetType().Name}' Draw Begin");
         Params = new() {
             Transform = drawParams.IsTransformDefined ? drawParams.Transform : Transform,
@@ -75,7 +75,7 @@ public abstract class Drawable {
             PrepareFinalVertices(Transform.Matrix);
         }
 
-        Paint(dt, r);
+        Paint(dt);
         //System.Console.WriteLine($"Drawable '{GetType().Name}' Draw End");
     }
 
@@ -88,7 +88,7 @@ public abstract class Drawable {
         UpdateVertices();
     }
 
-    protected abstract void Paint(DeltaTime dt, RenderingServer r);
+    protected abstract void Paint(DeltaTime dt);
     protected abstract void UpdateVertices();
 
     protected void ResizeVertices(int n) {

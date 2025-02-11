@@ -12,9 +12,10 @@ public sealed class AssetManager {
     };
 
     private readonly List<System.Type> _allowedPageTypes = new List<System.Type>();
+    private static AssetManager _instance;
     private Dictionary<System.Type, AssetPage> _library = new();
 
-    public AssetManager() {
+    private AssetManager() {
         _allowedPageTypes.AddRange(DefaultAllowedPageTypes);
 
         foreach (System.Type type in _allowedPageTypes) {
@@ -22,28 +23,28 @@ public sealed class AssetManager {
         }
     }
 
-    public IAsset Get(System.Type assetType, string name) {
-        AssetPage page = FindPage(assetType);
+    public static IAsset Get(System.Type assetType, string name) {
+        AssetPage page = _instance.FindPage(assetType);
         Assert.NotNull(page);
         return page.Get(name).Asset;
     }
 
-    public T Get<T>(string name) where T : IAsset {
+    public static T Get<T>(string name) where T : IAsset {
         return (T) Get(typeof(T), name);
     }
 
-    public IAsset Get(System.Type assetType) {
-        AssetPage page = FindPage(assetType);
+    public static IAsset Get(System.Type assetType) {
+        AssetPage page = _instance.FindPage(assetType);
         Assert.NotNull(page);
         return page.Get(assetType).Asset;
     }
 
-    public T Get<T>() where T : IAsset {
+    public static T Get<T>() where T : IAsset {
         return (T) Get(typeof(T));
     }
 
-    public bool TryGet(System.Type assetType, string name, out IAsset asset) {
-        AssetPage page = FindPage(assetType);
+    public static bool TryGet(System.Type assetType, string name, out IAsset asset) {
+        AssetPage page = _instance.FindPage(assetType);
 
         if (page == null || !page.TryGet(name, out AssetRegistry registry)) {
             asset = null;
@@ -54,30 +55,42 @@ public sealed class AssetManager {
         return true;
     }
 
-    public bool TryGet<T>(string name, out IAsset asset) where T : IAsset {
+    public static bool TryGet<T>(string name, out IAsset asset) where T : IAsset {
         return TryGet(typeof(T), name, out asset);
     }
 
-    public AssetRegistry Register<T>(string name, T asset, bool canOverride = false) where T : IAsset {
-        AssetPage page = FindPage(asset.GetType());
+    public static AssetRegistry Register<T>(string name, T asset, bool canOverride = false) where T : IAsset {
+        AssetPage page = _instance.FindPage(asset.GetType());
         Assert.NotNull(page);
         return page.Register(name, asset, canOverride);
     }
 
-    public AssetRegistry Register<T>(T asset, bool canOverride = false) where T : IAsset {
+    public static AssetRegistry Register<T>(T asset, bool canOverride = false) where T : IAsset {
         return Register(typeof(T).Name, asset, canOverride);
     }
 
-    public void RegisterPage(System.Type assetType) {
+    public static void RegisterPage(System.Type assetType) {
         Assert.NotNull(assetType);
         Assert.True(typeof(IAsset).IsAssignableFrom(assetType));
-        Assert.False(_allowedPageTypes.Contains(assetType));
-        _allowedPageTypes.Add(assetType);
-        _library.Add(assetType, new(assetType));
+        Assert.False(_instance._allowedPageTypes.Contains(assetType));
+        _instance._allowedPageTypes.Add(assetType);
+        _instance._library.Add(assetType, new(assetType));
     }
 
-    public void RegisterPage<T>() where T : IAsset {
+    public static void RegisterPage<T>() where T : IAsset {
         RegisterPage(typeof(T));
+    }
+
+    internal static void Initialize() {
+        if (_instance != null) {
+            return;
+        }
+
+        _instance = new();
+        _instance.Initialized();
+    }
+
+    private void Initialized() {
     }
 
     private AssetPage FindPage(System.Type assetType) {

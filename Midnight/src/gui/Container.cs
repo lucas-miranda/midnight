@@ -10,9 +10,9 @@ public abstract class Container : Object, IEnumerable<Object> {
 
     public int ChildCount => Transform.ChildCount;
 
-    public override void Render(DeltaTime dt, RenderingServer r) {
+    public override void Render(DeltaTime dt) {
         foreach (Object child in this) {
-            child.Render(dt, r);
+            child.Render(dt);
         }
     }
 

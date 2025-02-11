@@ -26,13 +26,13 @@ public class Debug {
     [System.Diagnostics.Conditional("DEBUG")]
     internal void GraphicsReady() {
         Canvas = Canvas.FromBackBuffer(DepthFormat.Depth24Stencil8);
-        Program.Rendering.Layers.Register(100, Canvas);
+        RenderingServer.Layers.Register(100, Canvas);
 
         _diagnosticsEntity = Entity.Create()
                                    .With<Transform2D>();
 
         _diagnosticsTextDisplayer = new() {
-            Font = Program.AssetManager.Get<Font>("accidental president"),
+            Font = AssetManager.Get<Font>("accidental president"),
             Value = string.Format(DiagnosticsFormat, "0", "0", "0"),
         };
 
@@ -45,7 +45,7 @@ public class Debug {
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
-	internal void Render(DeltaTime dt, RenderingServer r) {
+	internal void Render(DeltaTime dt) {
         if (!Visible) {
             return;
         }
@@ -54,21 +54,21 @@ public class Debug {
         _diagnosticsTextDisplayer.Value = string.Format(
             DiagnosticsFormat,
             Program.Current.FPS.Current,
-            r.Batcher.DrawCallsCount,
-            r.Layers.Count
+            RenderingServer.Batcher.DrawCallsCount,
+            RenderingServer.Layers.Count
         );
 
-	    r.Target.Push(Canvas);
-	    r.Clear(Color.Transparent);
+	    RenderingServer.Target.Push(Canvas);
+	    RenderingServer.Clear(Color.Transparent);
 
         // adjust position
         var trans = _diagnosticsEntity.Get<Transform2D>();
         trans.Position = new Vector2(Canvas.Size.Width - _diagnosticsTextDisplayer.Size.Width - 25, 5);
 
         // render!
-	    _diagnosticsTextDisplayer.Render(dt, r);
+	    _diagnosticsTextDisplayer.Render(dt);
 
-	    r.Flush();
-	    r.Target.Pop();
+	    RenderingServer.Flush();
+	    RenderingServer.Target.Pop();
     }
 }

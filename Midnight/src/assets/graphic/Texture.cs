@@ -6,7 +6,7 @@ namespace Midnight;
 
 public abstract class Texture : IAsset {
     internal Texture(XnaGraphics.Texture xnaTexture) {
-        Assert.NotNull(Program.Rendering, $"{nameof(Program.Rendering)} isn't ready yet.\nMaybe it's at wrong engine step?");
+        Assert.True(RenderingServer.IsInitialized, $"{nameof(RenderingServer)} isn't ready yet.\nMaybe it's at wrong engine step?");
         Assert.NotNull(xnaTexture);
         Underlying = xnaTexture;
         Format = (SurfaceFormat) Underlying.Format;

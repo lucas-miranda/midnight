@@ -2,18 +2,29 @@ using System.IO;
 
 namespace Midnight.Embedded;
 
-public class Resources {
+public sealed class Resources {
     public const string ManifestNamespace = "Midnight.Embedded";
 
-    internal void GraphicsReady() {
+    private static Resources _instance;
+
+    internal static void Initialize() {
+        if (_instance != null) {
+            return;
+        }
+
+        _instance = new();
+        _instance.Initialized();
+    }
+
+    internal static void GraphicsReady() {
         Texture2D fontTexture = Texture2D.Load(Midnight.Embedded.Resources.Fonts.AccidentalPresident.Texture);
 
         using (MemoryStream dataStream = new(Midnight.Embedded.Resources.Fonts.AccidentalPresident.Data, false)) {
-            Program.AssetManager.Register("accidental president", MTSDF.LoadFont(fontTexture, dataStream));
+            AssetManager.Register("accidental president", MTSDF.LoadFont(fontTexture, dataStream));
         }
     }
 
-    internal void LoadAll() {
+    private void Initialized() {
         Shaders.Sprite = Load("SpriteShader");
         Fonts.Shaders.MTSDF = Load("MTSDFShader");
         Fonts.AccidentalPresident.Data = Load("AccidentalPresidentFontData");

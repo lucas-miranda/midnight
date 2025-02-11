@@ -17,29 +17,23 @@ public abstract class Program : Xna.Game {
 
 	    // Modules
 
-        Resources = new();
-        Resources.LoadAll();
+        Embedded.Resources.Initialize();
         Random.Init();
-        AssetManager = new();
+        AssetManager.Initialize();
 
         // Graphics
-
-        Graphics = new GraphicsServer(this);
+        GraphicsServer.Initialize(this);
 
         if (config.HasValue) {
-            Graphics.LoadConfig(config.Value);
+            GraphicsServer.LoadConfig(config.Value);
         } else {
-            Graphics.LoadConfig(GraphicsConfig.Default);
+            GraphicsServer.LoadConfig(GraphicsConfig.Default);
         }
 
-		System.Console.WriteLine($"Initial graphics:\n{Graphics}");
+		System.Console.WriteLine($"Initial graphics:\n{GraphicsServer.AsString()}");
 	}
 
     public static Program Current { get; private set; }
-    public static RenderingServer Rendering { get; private set; }
-    public static GraphicsServer Graphics { get; private set; }
-    public static Embedded.Resources Resources { get; private set; }
-    public static AssetManager AssetManager { get; private set; }
 
     public static Debug Debug {
 #if DEBUG
@@ -55,10 +49,10 @@ public abstract class Program : Xna.Game {
 
 	protected sealed override void Initialize() {
 	    Debug.Initialize();
-        Rendering = new(GraphicsDevice);
+        RenderingServer.Initialize(GraphicsDevice);
 		base.Initialize();
 		DeviceInit();
-		System.Console.WriteLine($"At Initialize, graphics:\n{Graphics}");
+		System.Console.WriteLine($"At Initialize, graphics:\n{GraphicsServer.AsString()}");
 	}
 
     /*
@@ -79,17 +73,17 @@ ResourcesReady
      */
 	protected sealed override void LoadContent() {
 		base.LoadContent();
-		Resources.GraphicsReady();
+		Embedded.Resources.GraphicsReady();
 		Debug.GraphicsReady();
-        Rendering.GraphicsReady();
+        RenderingServer.GraphicsReady();
 		GraphicsReady();
-		System.Console.WriteLine($"At LoadContent, graphics:\n{Graphics}");
+		System.Console.WriteLine($"At LoadContent, graphics:\n{GraphicsServer.AsString()}");
 	}
 
 	protected sealed override void UnloadContent() {
 		base.UnloadContent();
 		ResourceRelease();
-		Rendering.ResourceRelease();
+		RenderingServer.ResourceRelease();
 		Debug.ResourceRelease();
 	}
 
@@ -102,14 +96,14 @@ ResourcesReady
 	protected sealed override void Draw(Xna.GameTime gameTime) {
         DeltaTime deltaTime = new(gameTime);
         FPS.PreFrameRendered();
-		Render(deltaTime, Rendering);
-		Debug.Render(deltaTime, Rendering);
+		Render(deltaTime);
+		Debug.Render(deltaTime);
 
         //System.Console.WriteLine("\nRendering Layers Begin");
         // render canvas layes to backbuffer
-	    Rendering.Target.Clear();
-	    Rendering.Clear(Background);
-	    Rendering.Layers.Render(deltaTime, Rendering);
+	    RenderingServer.Target.Clear();
+	    RenderingServer.Clear(Background);
+	    RenderingServer.Layers.Render(deltaTime);
         //System.Console.WriteLine("Rendering Layers End\n");
 	}
 
@@ -117,5 +111,5 @@ ResourcesReady
     protected abstract void GraphicsReady();
     protected abstract void ResourceRelease();
     protected abstract void Update(DeltaTime dt);
-    protected abstract void Render(DeltaTime dt, RenderingServer r);
+    protected abstract void Render(DeltaTime dt);
 }

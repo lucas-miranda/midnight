@@ -15,11 +15,11 @@ public class Button : Container {
 
     internal ButtonBuilder Builder { get; set; }
 
-    public override void Render(DeltaTime dt, RenderingServer r) {
+    public override void Render(DeltaTime dt) {
         //System.Console.WriteLine($"Draw Button Begin");
         //System.Console.WriteLine($"Button Trans: {Transform}");
-        Background.Draw(dt, r, new DrawParams { Transform = Transform });
-        base.Render(dt, r);
+        Background.Draw(dt, new DrawParams { Transform = Transform });
+        base.Render(dt);
         //System.Console.WriteLine($"Draw Button End");
     }
 

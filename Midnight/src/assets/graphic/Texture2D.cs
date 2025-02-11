@@ -7,7 +7,7 @@ namespace Midnight;
 public class Texture2D : Texture {
     public Texture2D(int width, int height)
         : this(new(
-            Program.Rendering.XnaGraphicsDevice,
+            RenderingServer.XnaGraphicsDevice,
             width,
             height
         )) {
@@ -15,7 +15,7 @@ public class Texture2D : Texture {
 
     public Texture2D(int width, int height, bool mipMap, SurfaceFormat format)
         : this(new(
-            Program.Rendering.XnaGraphicsDevice,
+            RenderingServer.XnaGraphicsDevice,
             width,
             height,
             mipMap,
@@ -41,10 +41,10 @@ public class Texture2D : Texture {
     }
 
     public static Texture2D Load(byte[] bytecode) {
-        Assert.NotNull(Program.Rendering);
+        Assert.True(RenderingServer.IsInitialized);
 
         using (MemoryStream stream = new(bytecode, false)) {
-            XnaGraphics.Texture2D texture = XnaGraphics.Texture2D.FromStream(Program.Rendering.XnaGraphicsDevice, stream);
+            XnaGraphics.Texture2D texture = XnaGraphics.Texture2D.FromStream(RenderingServer.XnaGraphicsDevice, stream);
 
             if (texture == null) {
                 return null;
@@ -63,7 +63,7 @@ public class Texture2D : Texture {
     public static Texture2D Load(Stream stream) {
         Assert.NotNull(stream);
         XnaGraphics.Texture2D xnaTexture = XnaGraphics.Texture2D.FromStream(
-            Program.Rendering.XnaGraphicsDevice,
+            RenderingServer.XnaGraphicsDevice,
             stream
         );
 
@@ -73,7 +73,7 @@ public class Texture2D : Texture {
     public static Texture2D Load(Stream stream, int width, int height, bool zoom) {
         Assert.NotNull(stream);
         XnaGraphics.Texture2D xnaTexture = XnaGraphics.Texture2D.FromStream(
-            Program.Rendering.XnaGraphicsDevice,
+            RenderingServer.XnaGraphicsDevice,
             stream,
             width,
             height,

@@ -71,10 +71,10 @@ public sealed class RenderLayers : IEnumerable<RenderLayer> {
     internal void ResourceRelease() {
     }
 
-    internal void Render(DeltaTime dt, RenderingServer r) {
+    internal void Render(DeltaTime dt) {
         foreach (RenderLayer layer in _layers) {
             _displayer.Texture = layer.Canvas;
-            _displayer.Render(dt, r);
+            _displayer.Render(dt);
         }
 
         _displayer.Texture = null;

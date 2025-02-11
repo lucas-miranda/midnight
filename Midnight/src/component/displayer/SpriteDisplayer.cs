@@ -36,7 +36,7 @@ public class SpriteDisplayer : GraphicDisplayer {
     public override void Update(DeltaTime dt) {
     }
 
-    public override void Render(DeltaTime dt, RenderingServer r) {
+    public override void Render(DeltaTime dt) {
         VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[_vertices.Length];
         Transform2D trans = Entity?.Components.Get<Transform2D>();
 
@@ -55,7 +55,7 @@ public class SpriteDisplayer : GraphicDisplayer {
             _vertices.CopyTo(vertices, 0);
         }
 
-        r.Draw(
+        RenderingServer.Draw(
             Texture,
             vertices,
             0,

@@ -1,5 +1,5 @@
 namespace Midnight;
 
 public interface IRenderable {
-    void Render(DeltaTime dt, RenderingServer rendering);
+    void Render(DeltaTime dt);
 }

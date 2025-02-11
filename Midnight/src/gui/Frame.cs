@@ -19,10 +19,10 @@ public class Frame : Container {
     public RectangleDrawable Background { get; private set; }
     public RectangleDrawable Border { get; private set; }
 
-    public override void Render(DeltaTime dt, RenderingServer r) {
-        Background.Draw(dt, r, new DrawParams { Transform = Transform });
-        Border.Draw(dt, r, new DrawParams { Transform = Transform });
-        base.Render(dt, r);
+    public override void Render(DeltaTime dt) {
+        Background.Draw(dt, new DrawParams { Transform = Transform });
+        Border.Draw(dt, new DrawParams { Transform = Transform });
+        base.Render(dt);
     }
 
     protected override void SizeChanged() {

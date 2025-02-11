@@ -11,12 +11,12 @@ public class GUIDisplayer : GraphicDisplayer {
         Design.Root.Update(dt);
     }
 
-    public override void Render(DeltaTime dt, RenderingServer r) {
+    public override void Render(DeltaTime dt) {
         // TODO  draws GUI.Design here
         if (Design.Root == null) {
             return;
         }
 
-        Design.Root.Render(dt, r);
+        Design.Root.Render(dt);
     }
 }

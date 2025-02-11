@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Xna = Microsoft.Xna.Framework;
 
 namespace Midnight;
@@ -29,6 +30,7 @@ public struct Vector2 : System.IEquatable<Vector2> {
     internal Vector2(Xna.Vector2 xnaVector2) : this(xnaVector2.X, xnaVector2.Y) {
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float Dot(Vector2 v) {
         return X * v.X + Y * v.Y;
     }

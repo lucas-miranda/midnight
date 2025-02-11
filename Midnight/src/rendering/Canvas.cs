@@ -46,9 +46,9 @@ public class Canvas : Texture2D {
         int multiSampleCount,
         RenderTargetUsage usage
     )
-        : base(Program.Rendering != null ?
+        : base(RenderingServer.IsInitialized ?
             new XnaGraphics.RenderTarget2D(
-                Program.Rendering?.XnaGraphicsDevice,
+                RenderingServer.XnaGraphicsDevice,
                 width,
                 height,
                 mipMap,
@@ -78,10 +78,10 @@ public class Canvas : Texture2D {
         int? multiSampleCount = null
     ) {
         return new(
-            Program.Graphics.BackBuffer.Width,
-            Program.Graphics.BackBuffer.Height,
+            GraphicsServer.BackBuffer.Width,
+            GraphicsServer.BackBuffer.Height,
             false,
-            Program.Graphics.BackBuffer.Format,
+            GraphicsServer.BackBuffer.Format,
             depthFormat.GetValueOrDefault(DepthFormat.None),
             multiSampleCount.GetValueOrDefault(0),
             RenderTargetUsage.PreserveContents

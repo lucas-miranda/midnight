@@ -5,42 +5,41 @@ using XnaGraphics = Microsoft.Xna.Framework.Graphics;
 namespace Midnight;
 
 public sealed class RenderingServer {
+    private static RenderingServer _instance;
     private Camera _mainCamera;
+    private XnaGraphics.GraphicsDevice _xnaGraphicsDevice;
 
-    internal RenderingServer(XnaGraphics.GraphicsDevice xnaDevice) {
+    private RenderingServer(XnaGraphics.GraphicsDevice xnaDevice) {
         Assert.NotNull(xnaDevice);
-        XnaGraphicsDevice = xnaDevice;
-        Batcher = new();
-        MainCamera = new();
-        Target = new(xnaDevice);
-        Layers = new();
+        _xnaGraphicsDevice = xnaDevice;
     }
 
-    public DrawBatcher<VertexPositionColorTexture> Batcher { get; }
+    public static bool IsInitialized => _instance != null;
+    public static DrawBatcher<VertexPositionColorTexture> Batcher { get; private set; }
 
-    public Camera MainCamera {
-        get => _mainCamera;
+    public static Camera MainCamera {
+        get => _instance._mainCamera;
         set {
-            _mainCamera = value;
-            _mainCamera?.RequestRecalculate();
+            _instance._mainCamera = value;
+            _instance._mainCamera?.RequestRecalculate();
         }
     }
 
-    public Canvas MainCanvas { get; private set; }
-    public RenderTarget Target { get; }
-    public RenderLayers Layers { get; }
+    public static Canvas MainCanvas { get; private set; }
+    public static RenderTarget Target { get; private set; }
+    public static RenderLayers Layers { get; private set; }
 
-    internal XnaGraphics.GraphicsDevice XnaGraphicsDevice { get; }
+    internal static XnaGraphics.GraphicsDevice XnaGraphicsDevice => _instance._xnaGraphicsDevice;
 
-    public void Clear(Color color) {
+    public static void Clear(Color color) {
         XnaGraphicsDevice.Clear(color.ToXna());
     }
 
-    public void Clear(ClearOptions options, Color color, float depth, int stencil) {
+    public static void Clear(ClearOptions options, Color color, float depth, int stencil) {
         XnaGraphicsDevice.Clear(options.ToXna(), color.ToXna().ToVector4(), depth, stencil);
     }
 
-    public void Draw(
+    public static void Draw(
         Texture texture,
         System.Span<VertexPositionColorTexture> vertexData,
         int minVertexIndex,
@@ -75,11 +74,27 @@ public sealed class RenderingServer {
         );
     }
 
-    public void Draw(Texture texture, VertexPositionColorTexture[] vertexData) {
+    public static void Draw(Texture texture, VertexPositionColorTexture[] vertexData) {
         Draw(texture, vertexData, 0, vertexData.Length, null, 0, vertexData.Length / 2, null, null);
     }
 
-    internal void GraphicsReady() {
+    internal static void Initialize(XnaGraphics.GraphicsDevice xnaDevice) {
+        if (_instance != null) {
+            return;
+        }
+
+        _instance = new(xnaDevice);
+        _instance.Initialized();
+    }
+
+    private void Initialized() {
+        Batcher = new();
+        _instance._mainCamera = new();
+        Target = new(XnaGraphicsDevice);
+        Layers = new();
+    }
+
+    internal static void GraphicsReady() {
         Layers.LoadContent();
 
         MainCanvas = Canvas.FromBackBuffer(DepthFormat.Depth24Stencil8);
@@ -92,12 +107,12 @@ public sealed class RenderingServer {
         Batcher.LoadContent();
     }
 
-    internal void ResourceRelease() {
+    internal static void ResourceRelease() {
         Layers.ResourceRelease();
         MainCanvas.Release();
     }
 
-    internal void PrepareRender() {
+    internal static void PrepareRender() {
         MainCamera?.Recalculate();
 
         // TODO  add Viewport
@@ -106,7 +121,7 @@ public sealed class RenderingServer {
         Batcher.ResetStats();
     }
 
-    internal void Flush() {
-        Batcher.Flush(this);
+    internal static void Flush() {
+        Batcher.Flush();
     }
 }

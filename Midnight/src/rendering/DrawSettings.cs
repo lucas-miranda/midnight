@@ -27,7 +27,7 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
     public bool Immediate { get; init; }
 
     internal void Apply() {
-        var xnaGD = Program.Rendering.XnaGraphicsDevice;
+        var xnaGD = RenderingServer.XnaGraphicsDevice;
         xnaGD.BlendState = Blend.Underlying;
 
         if (Samplers != null) {

@@ -29,8 +29,8 @@ public class Scene {
         UpdateComponents(dt);
     }
 
-    public virtual void Render(DeltaTime dt, RenderingServer r) {
-        RenderComponents(dt, r);
+    public virtual void Render(DeltaTime dt) {
+        RenderComponents(dt);
     }
 
     // TODO: REMOVE ME
@@ -120,10 +120,10 @@ public class Scene {
         }
     }
 
-    private void RenderComponents(DeltaTime dt, RenderingServer r) {
+    private void RenderComponents(DeltaTime dt) {
         foreach (ComponentWrapper<IRenderable> wrapper in _renderComponents) {
             if (wrapper.Alive) {
-                wrapper.Reference.Render(dt, r);
+                wrapper.Reference.Render(dt);
             }
         }
     }

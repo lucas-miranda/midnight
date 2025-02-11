@@ -60,7 +60,7 @@ public class TextDisplayer : GraphicDisplayer {
     public override void Update(DeltaTime dt) {
     }
 
-    public override void Render(DeltaTime dt, RenderingServer r) {
+    public override void Render(DeltaTime dt) {
         System.Span<VertexPositionColorTexture> renderBuffer = stackalloc VertexPositionColorTexture[_vertices.Count];
         Transform2D trans = Entity?.Components.Get<Transform2D>();
 
@@ -93,7 +93,7 @@ public class TextDisplayer : GraphicDisplayer {
                 mat.ChangeScreenPixelRange(font, Font.Size, 1.0f);
             }
 
-            r.Draw(
+            RenderingServer.Draw(
                 font.Typesetting.Texture,
                 renderBuffer,
                 0,

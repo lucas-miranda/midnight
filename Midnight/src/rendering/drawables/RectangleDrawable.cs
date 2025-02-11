@@ -24,7 +24,7 @@ public class RectangleDrawable : Drawable {
         }
     }
 
-    protected override void Paint(DeltaTime dt, RenderingServer r) {
+    protected override void Paint(DeltaTime dt) {
         //System.Console.WriteLine($"Rectangle Draw Begin (global pos: {Params.Transform.GlobalPosition}; pos: {Params.Transform.Position}; has parent? {(Params.Transform.Parent != null).ToString()})");
         //System.Console.WriteLine($"- Vertices: {Vertices.Length}, Final Vertices: {FinalVertices.Length}");
         DrawSettings settings = Params.DrawSettings.GetValueOrDefault(Midnight.DrawSettings.Default);
@@ -45,7 +45,7 @@ public class RectangleDrawable : Drawable {
             };
         }
 
-        r.Draw(
+        RenderingServer.Draw(
             null,
             FinalVertices,
             0,

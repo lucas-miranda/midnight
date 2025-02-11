@@ -33,13 +33,13 @@ public class App : Program {
         Scene?.Update(dt);
     }
 
-	protected override void Render(DeltaTime dt, RenderingServer r) {
+	protected override void Render(DeltaTime dt) {
 	    // game rendering on MainCanvas
-        r.Target.Push(r.MainCanvas);
-	    r.Clear(Background);
-		r.PrepareRender();
-        Scene?.Render(dt, r);
-        r.Flush();
-        r.Target.Pop(); // MainCanvas
+        RenderingServer.Target.Push(RenderingServer.MainCanvas);
+	    RenderingServer.Clear(Background);
+		RenderingServer.PrepareRender();
+        Scene?.Render(dt);
+        RenderingServer.Flush();
+        RenderingServer.Target.Pop(); // MainCanvas
 	}
 }

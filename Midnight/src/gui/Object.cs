@@ -32,7 +32,7 @@ public abstract class Object : IRenderable, ITransformObject {
         TryLayout();
     }
 
-    public abstract void Render(DeltaTime dt, RenderingServer rendering);
+    public abstract void Render(DeltaTime dt);
 
     public void AddedContainer(Container c) {
     }

@@ -15,7 +15,7 @@ public class Camera {
     private ProjectionKind _projectionKind;
 
     public Camera() {
-        BackBuffer backbuffer = Program.Graphics.BackBuffer;
+        BackBuffer backbuffer = GraphicsServer.BackBuffer;
         _size = backbuffer.Size;
         RequestRecalculate();
     }
