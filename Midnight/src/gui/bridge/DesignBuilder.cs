@@ -35,7 +35,7 @@ public class DesignBuilder : ContainerBuilder {
         IsBuilded = true;
 
         // test  print the whole tree
-        System.Console.WriteLine($"Result:\n{Result.TreeToString()}");
+        Logger.Line($"Result:\n{Result.TreeToString()}");
     }
 
     public void Evaluate() {
@@ -45,7 +45,7 @@ public class DesignBuilder : ContainerBuilder {
         End();
 
         // test  print the whole tree
-        System.Console.WriteLine($"Result:\n{Result.TreeToString()}");
+        Logger.Line($"Result:\n{Result.TreeToString()}");
     }
 
     public void Start() {

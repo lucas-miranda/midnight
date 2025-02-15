@@ -90,6 +90,14 @@ public struct Color : System.IEquatable<Color> {
         );
     }
 
+    public System.ConsoleColor ToConsole() {
+        int index = (A > 128) ? 8 : 0; // Bright bit
+        index |= (R > 64) ? 4 : 0; // Red bit
+        index |= (G > 64) ? 2 : 0; // Green bit
+        index |= (B > 64) ? 1 : 0; // Blue bit
+        return (System.ConsoleColor) index;
+    }
+
     public bool Equals(Color c) {
         return !(R != c.R || G != c.G || B != c.B || A != c.A);
     }

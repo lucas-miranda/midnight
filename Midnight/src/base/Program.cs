@@ -10,6 +10,10 @@ public abstract class Program : Xna.Game {
 	    Assert.Null(Current, "Only one Program can exists.");
 	    Current = this;
 
+	    // Early Modules
+	    Logger.Initialize();
+	    Logger.Line("\n| Midnight |\n| v0.1.0");
+
 	    // Debug
 #if DEBUG
         Debug = new();
@@ -30,7 +34,7 @@ public abstract class Program : Xna.Game {
             GraphicsServer.LoadConfig(GraphicsConfig.Default);
         }
 
-		System.Console.WriteLine($"Initial graphics:\n{GraphicsServer.AsString()}");
+        Logger.DebugLine($"Initial graphics:\n{GraphicsServer.AsString()}");
 	}
 
     public static Program Current { get; private set; }
@@ -52,7 +56,7 @@ public abstract class Program : Xna.Game {
         RenderingServer.Initialize(GraphicsDevice);
 		base.Initialize();
 		DeviceInit();
-		System.Console.WriteLine($"At Initialize, graphics:\n{GraphicsServer.AsString()}");
+		Logger.Line($"At Initialize, graphics:\n{GraphicsServer.AsString()}");
 	}
 
     /*
@@ -77,10 +81,11 @@ ResourcesReady
 		Debug.GraphicsReady();
         RenderingServer.GraphicsReady();
 		GraphicsReady();
-		System.Console.WriteLine($"At LoadContent, graphics:\n{GraphicsServer.AsString()}");
+		Logger.Line($"At LoadContent, graphics:\n{GraphicsServer.AsString()}");
 	}
 
 	protected sealed override void UnloadContent() {
+	    Logger.Flush();
 		base.UnloadContent();
 		ResourceRelease();
 		RenderingServer.ResourceRelease();
@@ -91,6 +96,7 @@ ResourcesReady
         DeltaTime deltaTime = new(gameTime);
         FPS.Update(deltaTime);
 		Update(deltaTime);
+		Logger.Update(deltaTime);
 	}
 
 	protected sealed override void Draw(Xna.GameTime gameTime) {
@@ -99,12 +105,12 @@ ResourcesReady
 		Render(deltaTime);
 		Debug.Render(deltaTime);
 
-        //System.Console.WriteLine("\nRendering Layers Begin");
+        //Logger.Line("\nRendering Layers Begin");
         // render canvas layes to backbuffer
 	    RenderingServer.Target.Clear();
 	    RenderingServer.Clear(Background);
 	    RenderingServer.Layers.Render(deltaTime);
-        //System.Console.WriteLine("Rendering Layers End\n");
+        //Logger.Line("Rendering Layers End\n");
 	}
 
     protected abstract void DeviceInit();

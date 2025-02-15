@@ -133,6 +133,22 @@ public struct BitTag : System.IEquatable<BitTag>, IEnumerable<BitTag>, IEnumerab
         }
     }
 
+    public IEnumerable<(int, BitTag)> IterBits() {
+        if (LiteralValue == 0UL) {
+            yield break;
+        }
+
+        int bits = (int) System.Math.Ceiling(System.Math.Log(LiteralValue, 2));
+        for (int i = 0; i <= bits; i++) {
+            ulong flagValue = 1UL << i;
+            if ((LiteralValue & flagValue) == 0UL) {
+                continue;
+            }
+
+            yield return (i, new BitTag(flagValue) { EnumType = EnumType });
+        }
+    }
+
     public override string ToString() {
         if (EnumType != null) {
             return $"{System.Enum.ToObject(EnumType, LiteralValue)}";
