@@ -8,7 +8,7 @@ public class FileLoggerListener : TextLoggerListener {
     private StringBuilder _builder;
     private uint _elapsedTimeSinceLastAutoFlush;
 
-    public FileLoggerListener(string filepath)
+    public FileLoggerListener(PathBuf filepath)
         : base(new StreamWriter(filepath, false, Encoding.UTF8))
     {
         _builder = new();

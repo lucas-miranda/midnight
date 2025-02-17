@@ -6,13 +6,30 @@ namespace Midnight;
 public abstract class Program : Xna.Game {
     private int _framesRendered;
 
-	public Program(GraphicsConfig? config = null) {
+	public Program(MidnightConfig? config = null) {
 	    Assert.Null(Current, "Only one Program can exists.");
 	    Current = this;
+	    Logger.Initialize(); // logger should be available asap
+	    Logger.Line("\n | Midnight |\n | v0.1.0");
+
+        if (config.HasValue) {
+            ProjectDirs.Set(
+                config.Value.Qualifier,
+                config.Value.Organization,
+                config.Value.Application
+            );
+        } else {
+            ProjectDirs.Set(
+                MidnightConfig.Default.Qualifier,
+                MidnightConfig.Default.Organization,
+                MidnightConfig.Default.Application
+            );
+        }
+
+        ProjectDirs.Initialize();
 
 	    // Early Modules
-	    Logger.Initialize();
-	    Logger.Line("\n| Midnight |\n| v0.1.0");
+	    Logger.LateInitialize();
 
 	    // Debug
 #if DEBUG
@@ -29,9 +46,7 @@ public abstract class Program : Xna.Game {
         GraphicsServer.Initialize(this);
 
         if (config.HasValue) {
-            GraphicsServer.LoadConfig(config.Value);
-        } else {
-            GraphicsServer.LoadConfig(GraphicsConfig.Default);
+            GraphicsServer.LoadConfig(config.Value.Graphics);
         }
 
         Logger.DebugLine($"Initial graphics:\n{GraphicsServer.AsString()}");

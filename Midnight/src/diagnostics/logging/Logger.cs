@@ -95,14 +95,15 @@ public class Logger {
         }
     }
 
-    private void Initialized() {
-        if (CanAutoRegisterConsoleListener) {
-            RegisterListener<ConsoleLoggerListener>();
-        }
-
+    internal static void LateInitialize() {
         // log cycling
         // only move logs if output file (log 0) exists, otherwise nothing should be done
-        if (File.Exists(OutputLogFilename)) {
+        ReadOnlyPathBuf logDir = ProjectDirs.Data;
+        PathBuf outputLogFullpath = logDir + OutputLogFilename;
+
+        Line($"Log files are stored at '{logDir}'");
+
+        if (File.Exists(outputLogFullpath)) {
             /*
                Log Filenames:
 
@@ -115,8 +116,8 @@ public class Logger {
             // cycle log files, by increasing they index
             // we start at last index - 1
             for (int i = MaxLogHistory - 2; i >= 0; i--) {
-                string filename = GetLogFilename(i),
-                       nextFilename = GetLogFilename(i + 1);
+                string filename = logDir + GetLogFilename(i),
+                       nextFilename = logDir + GetLogFilename(i + 1);
 
                 if (File.Exists(filename)) {
                     File.Move(filename, nextFilename, true);
@@ -124,7 +125,13 @@ public class Logger {
             }
         }
 
-        RegisterListener(new FileLoggerListener(OutputLogFilename));
+        RegisterListener(new FileLoggerListener(outputLogFullpath));
+    }
+
+    private void Initialized() {
+        if (CanAutoRegisterConsoleListener) {
+            RegisterListener<ConsoleLoggerListener>();
+        }
     }
 
     private void Send(LogMessage message) {
@@ -149,7 +156,7 @@ public class Logger {
         return GetLogFilename(0);
     }
 
-    private string GetLogFilename(int index) {
+    private static string GetLogFilename(int index) {
         if (index <= 0) {
             return OutputLogFilename;
         }

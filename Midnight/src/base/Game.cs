@@ -1,7 +1,7 @@
 namespace Midnight;
 
 public class Game : Program {
-    public Game(GraphicsConfig? config = null) : base(config) {
+    public Game(MidnightConfig? config = null) : base(config) {
     }
 
     public static new Game Current => (Game) Program.Current;

@@ -2,7 +2,7 @@
 namespace Midnight;
 
 public class App : Program {
-    public App(GraphicsConfig? config = null) : base(config) {
+    public App(MidnightConfig? config = null) : base(config) {
         Background = 0x8C7AA1FF;
     }
 
