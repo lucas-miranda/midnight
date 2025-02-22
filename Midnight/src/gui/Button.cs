@@ -8,6 +8,8 @@ public class Button : Container {
         };
 
         Size = new(50, 50);
+        Margin = new(15, 10);
+        Padding = new(5);
     }
 
     public bool Pressed { get; private set; }

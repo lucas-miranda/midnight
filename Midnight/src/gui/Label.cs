@@ -28,7 +28,7 @@ public class Label : Object {
         return $"[Label '{Value}']";
     }
 
-    protected override void Layout() {
+    protected override void ExecuteLayout() {
     }
 
     protected override void SizeChanged() {

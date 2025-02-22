@@ -81,6 +81,14 @@ public struct Color : System.IEquatable<Color> {
         );
     }
 
+    public Color WithA(byte a) {
+        return new(R, G, B, a);
+    }
+
+    public Color WithA(float a) {
+        return new(R, G, B, (byte) Math.Floor((float) byte.MaxValue * Math.Clamp01(a)));
+    }
+
     public ColorF Normalized() {
         return new(
             R / (float) byte.MaxValue,

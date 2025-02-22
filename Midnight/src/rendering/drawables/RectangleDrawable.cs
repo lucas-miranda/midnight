@@ -11,6 +11,10 @@ public class RectangleDrawable : Drawable {
     public Size2 Size {
         get => _size;
         set {
+            if (value == _size) {
+                return;
+            }
+
             _size = value;
             RequestRecalculateVertices();
         }
@@ -19,6 +23,10 @@ public class RectangleDrawable : Drawable {
     public bool Filled {
         get => _filled;
         set {
+            if (value == _filled) {
+                return;
+            }
+
             _filled = value;
             RequestRecalculateVertices();
         }

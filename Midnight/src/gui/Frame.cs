@@ -14,6 +14,8 @@ public class Frame : Container {
         };
 
         Size = new(200, 150);
+        Padding = new(5);
+        Margin = new(5);
     }
 
     public RectangleDrawable Background { get; private set; }

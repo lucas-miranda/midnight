@@ -13,9 +13,14 @@ public class DesignBuilder : ContainerBuilder {
     public bool IsBuilded { get; private set; }
 
     public override GUI.Object Build() {
-        Frame rootFrame = new Frame();
-        rootFrame.Background.Color = 0xFFFFFFFF;
-        rootFrame.Border.Color = 0xFFFFFF00;
+        Frame rootFrame = new Frame() {
+            Padding = Spacing.Empty,
+            Margin = Spacing.Empty,
+        };
+
+        rootFrame.Background.Opacity = 0.0f;
+        rootFrame.Border.Opacity = 0.0f;
+
         return rootFrame;
     }
 

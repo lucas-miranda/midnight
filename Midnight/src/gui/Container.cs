@@ -9,8 +9,11 @@ public abstract class Container : Object, IEnumerable<Object> {
     }
 
     public int ChildCount => Transform.ChildCount;
+    public ContainerLayout Layout { get; set; } = new HorizontalBoxLayout();
 
     public override void Render(DeltaTime dt) {
+        base.Render(dt);
+
         foreach (Object child in this) {
             child.Render(dt);
         }
@@ -75,21 +78,8 @@ public abstract class Container : Object, IEnumerable<Object> {
         return str + "]";
     }
 
-    protected override void Layout() {
-        //System.Console.WriteLine($"Container '{GetType().Name}' Layout Begin");
-        Vector2 pos = Vector2.Zero;
-
-        foreach (Object child in this) {
-            child.Transform.Position = pos;
-            //System.Console.WriteLine("- Child at pos: " + pos);
-            child.TryLayout();
-            pos += new Vector2(child.Size.Width, 0.0f);
-        }
-
-        Rectangle? childrenBounds = CalculateChildrenBounds();
-        Size = childrenBounds.GetValueOrDefault().Size;
-        //System.Console.WriteLine($"Container size = {Size} (from child bounds: {childrenBounds})");
-        //System.Console.WriteLine($"Container '{GetType().Name}' Layout End");
+    protected override void ExecuteLayout() {
+        Layout?.Execute(this);
     }
 
     private Rectangle? CalculateChildrenBounds() {

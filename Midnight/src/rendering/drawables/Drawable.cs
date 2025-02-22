@@ -22,6 +22,12 @@ public abstract class Drawable {
 
     public DrawSettings? DrawSettings { get; set; }
     public Color Color { get; set; } = Color.White;
+
+    public float Opacity {
+        get => Color.A / (float) byte.MaxValue;
+        set => Color = Color.WithA(value);
+    }
+
     public DrawParams Params { get; private set; }
     public bool IsRecalculateRequested { get; private set; } = true;
 
