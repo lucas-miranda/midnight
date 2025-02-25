@@ -30,6 +30,7 @@ public abstract class Program : Xna.Game {
 
 	    // Early Modules
 	    Logger.LateInitialize();
+	    Input.Initialize();
 
 	    // Debug
 #if DEBUG

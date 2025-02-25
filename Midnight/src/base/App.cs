@@ -4,6 +4,7 @@ namespace Midnight;
 public class App : Program {
     public App(MidnightConfig? config = null) : base(config) {
         Background = 0x8C7AA1FF;
+        IsMouseVisible = true;
     }
 
     public static new App Current => (App) Program.Current;

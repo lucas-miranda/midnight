@@ -54,6 +54,10 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return ApproxEquals(Zero);
     }
 
+    public Vector2I ToInt() {
+        return new((int) X, (int) Y);
+    }
+
     public bool Equals(Vector2 v) {
         return X == v.X && Y == v.Y;
     }
@@ -85,6 +89,10 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return new(a.X + b.X, a.Y + b.Y);
     }
 
+    public static Vector2 operator +(Vector2 a, Vector2I b) {
+        return new(a.X + b.X, a.Y + b.Y);
+    }
+
     public static Vector2 operator +(Vector2 v, float n) {
         return new(v.X + n, v.Y + n);
     }
@@ -105,6 +113,10 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return new(a.X - b.X, a.Y - b.Y);
     }
 
+    public static Vector2 operator -(Vector2 a, Vector2I b) {
+        return new(a.X - b.X, a.Y - b.Y);
+    }
+
     public static Vector2 operator -(Vector2 v, float n) {
         return new(v.X - n, v.Y - n);
     }
@@ -122,6 +134,10 @@ public struct Vector2 : System.IEquatable<Vector2> {
     }
 
     public static Vector2 operator *(Vector2 a, Vector2 b) {
+        return new(a.X * b.X, a.Y * b.Y);
+    }
+
+    public static Vector2 operator *(Vector2 a, Vector2I b) {
         return new(a.X * b.X, a.Y * b.Y);
     }
 
