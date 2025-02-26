@@ -5,7 +5,7 @@ namespace Midnight.Diagnostics;
 public class Debug {
     private const string DiagnosticsFormat = "FPS: {0}\nD: {1}  L: {2}";
     private Entity _diagnosticsEntity;
-    private TextDisplayer _diagnosticsTextDisplayer;
+    //private TextDisplayer _diagnosticsTextDisplayer;
 
     private List<DebugIndicator> _indicators = new();
 
@@ -25,6 +25,7 @@ public class Debug {
 
     [System.Diagnostics.Conditional("DEBUG")]
     internal void GraphicsReady() {
+        /*
         Canvas = Canvas.FromBackBuffer(DepthFormat.Depth24Stencil8);
         RenderingServer.Layers.Register(100, Canvas);
 
@@ -37,15 +38,17 @@ public class Debug {
         };
 
         _diagnosticsEntity.With(_diagnosticsTextDisplayer);
+        */
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
     internal void ResourceRelease() {
-        Canvas.Release();
+        //Canvas.Release();
     }
 
     [System.Diagnostics.Conditional("DEBUG")]
 	internal void Render(DeltaTime dt) {
+	    /*
         if (!Visible) {
             return;
         }
@@ -70,5 +73,6 @@ public class Debug {
 
 	    RenderingServer.Flush();
 	    RenderingServer.Target.Pop();
+	    */
     }
 }

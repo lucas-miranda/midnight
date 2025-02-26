@@ -38,6 +38,8 @@ public class SpriteDisplayer : GraphicDisplayer {
 
     public override void Render(DeltaTime dt) {
         VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[_vertices.Length];
+
+        /*
         Transform2D trans = Entity?.Components.Get<Transform2D>();
 
         if (trans != null) {
@@ -54,6 +56,9 @@ public class SpriteDisplayer : GraphicDisplayer {
         } else {
             _vertices.CopyTo(vertices, 0);
         }
+        */
+
+        _vertices.CopyTo(vertices, 0);
 
         RenderingServer.Draw(
             Texture,

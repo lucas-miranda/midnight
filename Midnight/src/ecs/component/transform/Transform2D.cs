@@ -170,14 +170,6 @@ public class Transform2D : Component, IEnumerable<Transform2D> {
 
     public int ChildCount => _children.Count;
 
-    public override void EntityAdded(Entity entity) {
-        base.EntityAdded(entity);
-    }
-
-    public override void EntityRemoved(Entity entity) {
-        base.EntityRemoved(entity);
-    }
-
     public void OwnerChanged(ITransformObject owner) {
     }
 

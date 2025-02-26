@@ -7,7 +7,7 @@ public class DebugIndicator {
 
     public DebugIndicator() {
         _entity = new();
-        _transform = _entity.Components.Create<Transform2D>();
+        //_transform = _entity.Components.Create<Transform2D>();
     }
 
     public void GraphicsReady() {
