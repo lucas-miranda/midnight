@@ -12,6 +12,7 @@ public sealed class Mouse {
         // initialize buttons state
         MouseButton[] mouseButtons = System.Enum.GetValues<MouseButton>();
         _buttons = new ButtonState[mouseButtons.Length];
+        _prevButtons = new ButtonState[mouseButtons.Length];
     }
 
     public Vector2I Position {
