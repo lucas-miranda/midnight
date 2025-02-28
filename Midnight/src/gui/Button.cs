@@ -17,6 +17,36 @@ public class Button : Container {
 
     internal ButtonBuilder Builder { get; set; }
 
+    public override void Input(InputEvent e) {
+        base.Input(e);
+
+        switch (e) {
+            case MouseButtonEvent mouseButtonEvent:
+                //Logger.DebugLine($"----");
+                //Logger.DebugLine($"Button Event: {mouseButtonEvent}");
+                //Logger.DebugLine($"Button Bounds: {Bounds}");
+
+                if (mouseButtonEvent.Button == MouseButton.Left
+                 && Bounds.IsInside(mouseButtonEvent.Position)
+                ) {
+                    switch (mouseButtonEvent.State) {
+                        case ButtonState.JustPressed:
+                            Press();
+                            break;
+                        case ButtonState.JustReleased:
+                            Release();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                break;
+            default:
+                break;
+        }
+    }
+
     public override void Render(DeltaTime dt) {
         //System.Console.WriteLine($"Draw Button Begin");
         //System.Console.WriteLine($"Button Trans: {Transform}");
@@ -30,6 +60,7 @@ public class Button : Container {
             return;
         }
 
+        Logger.DebugLine($"GUI Button '{this}' Pressed");
         Pressed = true;
         Builder?.RequestEvaluate();
     }
@@ -39,6 +70,7 @@ public class Button : Container {
             return;
         }
 
+        Logger.DebugLine($"GUI Button '{this}' Released");
         Pressed = false;
         Builder?.RequestEvaluate();
     }

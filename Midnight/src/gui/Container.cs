@@ -11,6 +11,16 @@ public abstract class Container : Object, IEnumerable<Object> {
     public int ChildCount => Transform.ChildCount;
     public ContainerLayout Layout { get; set; } = new HorizontalBoxLayout();
 
+    public override void Input(InputEvent e) {
+        base.Input(e);
+
+        foreach (Transform2D child in Transform) {
+            if (child.Owner is Object obj) {
+                obj.Input(e);
+            }
+        }
+    }
+
     public override void Render(DeltaTime dt) {
         base.Render(dt);
 

@@ -7,12 +7,10 @@ public sealed class RenderSystem : EntitySystem {
     }
 
     public void Update(UpdateStepEvent e, GraphicDisplayer displayer) {
-        Logger.DebugLine("Updating...");
         displayer.Update(e.DeltaTime);
     }
 
     public void Render(RenderStepEvent e, GraphicDisplayer displayer) {
-        Logger.DebugLine("Rendering...");
         displayer.Render(e.DeltaTime);
     }
 }

@@ -7,6 +7,8 @@ public class Scene {
         Components = new();
     }
 
+    public static Scene Current { get; private set; }
+
     public Entities Entities { get; }
     public EntitySystems Systems { get; }
     public SceneComponents Components { get; }
@@ -16,12 +18,31 @@ public class Scene {
     /// </summary>
     public virtual void Prepare() {
         Systems.Register(new RenderSystem());
+        Systems.Register(new GUISystem());
     }
 
     /// <summary>
     /// Start anything which was prepared at Prepare().
     /// </summary>
     public virtual void Start() {
+    }
+
+    /// <summary>
+    /// Scene begun, it'll be the current scene.
+    /// </summary>
+    public virtual void Begin() {
+        Current = this;
+    }
+
+    /// <summary>
+    /// Scene ended.
+    /// </summary>
+    public virtual void End() {
+        if (Current != this) {
+            return;
+        }
+
+        Current = null;
     }
 
     public virtual void Update(DeltaTime dt) {

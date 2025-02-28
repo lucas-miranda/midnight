@@ -54,11 +54,9 @@ public class DesignBuilder : ContainerBuilder {
     }
 
     public void Start() {
-        /*
         if (IsBuilded) {
             Reset();
         }
-        */
 
         Prepare();
         IsBuilding = true;

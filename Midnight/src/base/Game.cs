@@ -21,9 +21,11 @@ public class Game : Program {
 	protected override void GraphicsReady() {
         Scene?.Prepare();
         Scene?.Start();
+        Scene?.Begin();
     }
 
 	protected override void ResourceRelease() {
+        Scene?.End();
 	    //Scene?.Dispose();
     }
 

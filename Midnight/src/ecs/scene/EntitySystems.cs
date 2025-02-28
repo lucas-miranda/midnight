@@ -5,8 +5,10 @@ using Midnight.ECS;
 namespace Midnight;
 
 public sealed class EntitySystems {
+    private readonly System.Type EventBaseType = typeof(Event).BaseType;
     private List<EntitySystem> _systems = new();
     private Dictionary<System.Type, List<LookupRegistry>> _lookup = new();
+    private List<List<LookupRegistry>> _buffer = new();
 
     public EntitySystems(Scene scene) {
         Scene = scene;
@@ -15,20 +17,29 @@ public sealed class EntitySystems {
     public Scene Scene { get; }
 
     public void Send<E>(E ev) where E : Event {
-        if (!_lookup.TryGetValue(typeof(E), out List<LookupRegistry> list)) {
+        Assert.NotNull(ev);
+        List<List<LookupRegistry>> lists = RetrieveLists(typeof(E));
+
+        if (lists.IsEmpty()) {
             // there is no systems subscribed
-            Logger.DebugLine($"There is no systems subscribed to: {ev.GetType()}");
+            //Logger.DebugLine($"There is no systems subscribed to: {ev.GetType()}");
             return;
         }
 
-        Assert.NotNull(ev);
+        /*
+        if (ev is not EngineEvent) {
+            Logger.DebugLine($"Sending '{ev.GetType()}':");
+            Logger.DebugLine($" {ev}");
+        }
+        */
 
-        Logger.DebugLine($"Sending '{ev.GetType()}':");
-        foreach (LookupRegistry registry in list) {
-            IList<Component> components = Scene.Components.Query(registry.Contract.ComponentType);
-            Logger.DebugLine($" {components.Count} Component(s)");
-            foreach (Component component in components) {
-                registry.Contract.Call(ev, component);
+        foreach (List<LookupRegistry> list in lists) {
+            foreach (LookupRegistry registry in list) {
+                IList<Component> components = Scene.Components.Query(registry.Contract.ComponentType);
+                //Logger.DebugLine($" {components.Count} Component(s)");
+                foreach (Component component in components) {
+                    registry.Contract.Call(ev, component);
+                }
             }
         }
     }
@@ -43,11 +54,11 @@ public sealed class EntitySystems {
         sys.Setup();
 
         foreach (SystemSubscribeContract contract in sys.Contracts) {
-            List<LookupRegistry> list = GetOrCreateLookupList(contract.EventType);
-            list.Add(new() {
-                Contract = contract,
-                System = sys,
-            });
+            GetOrCreateLookupList(contract.EventType)
+                .Add(new() {
+                    Contract = contract,
+                    System = sys,
+                });
         }
     }
 
@@ -58,6 +69,20 @@ public sealed class EntitySystems {
         }
 
         return list;
+    }
+
+    private List<List<LookupRegistry>> RetrieveLists(System.Type targetType) {
+        _buffer.Clear();
+
+        while (targetType != EventBaseType) {
+            if (_lookup.TryGetValue(targetType, out List<LookupRegistry> list)) {
+                _buffer.Add(list);
+            }
+
+            targetType = targetType.BaseType;
+        }
+
+        return _buffer;
     }
 
     private struct LookupRegistry {

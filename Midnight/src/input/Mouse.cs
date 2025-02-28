@@ -4,6 +4,7 @@ namespace Midnight;
 
 public sealed class Mouse {
     private ButtonState[] _buttons, _prevButtons;
+    private Xna.Input.ButtonState[] _clicked;
     private Vector2I _position;
 
     internal Mouse() {
@@ -13,7 +14,10 @@ public sealed class Mouse {
         MouseButton[] mouseButtons = System.Enum.GetValues<MouseButton>();
         _buttons = new ButtonState[mouseButtons.Length];
         _prevButtons = new ButtonState[mouseButtons.Length];
+        _clicked = new Xna.Input.ButtonState[mouseButtons.Length];
     }
+
+    public Vector2I PreviousPosition { get; private set; }
 
     public Vector2I Position {
         get => _position;
@@ -22,6 +26,7 @@ public sealed class Mouse {
             Xna.Input.Mouse.SetPosition(value.X, value.Y);
         }
     }
+    public int PreviousTotalScrollWheel { get; private set; }
     public int TotalScrollWheel { get; private set; }
     public int ScrollWheel { get; private set; }
 
@@ -41,18 +46,56 @@ public sealed class Mouse {
             _buttons[i] = ButtonState.Up;
         }
 
-        // get current state
+        // update state
         Xna.Input.MouseState xnaState = Xna.Input.Mouse.GetState();
 
+        // position
+        PreviousPosition = Position;
         _position = new(xnaState.X, xnaState.Y);
-        ScrollWheel = xnaState.ScrollWheelValue - TotalScrollWheel;
-        TotalScrollWheel = xnaState.ScrollWheelValue;
 
+        // scroll wheel
+        PreviousTotalScrollWheel = TotalScrollWheel;
+        TotalScrollWheel = xnaState.ScrollWheelValue;
+        ScrollWheel = TotalScrollWheel - PreviousTotalScrollWheel;
+
+        // buttons
         UpdateState(MouseButton.Left, xnaState.LeftButton);
         UpdateState(MouseButton.Right, xnaState.RightButton);
         UpdateState(MouseButton.Middle, xnaState.MiddleButton);
         UpdateState(MouseButton.Button4, xnaState.XButton1);
         UpdateState(MouseButton.Button5, xnaState.XButton2);
+
+        // reset clicked
+        for (int i = 0; i < _clicked.Length; i++) {
+            _clicked[i] = Xna.Input.ButtonState.Released;
+        }
+
+        // send events
+
+        // position
+        if (Position != PreviousPosition) {
+            Scene.Current.Systems.Send<MouseMoveEvent>(new(PreviousPosition, _position - PreviousPosition));
+        }
+
+        // scroll wheel
+        if (TotalScrollWheel != PreviousTotalScrollWheel) {
+            Scene.Current.Systems.Send<MouseScrollWheelEvent>(new(Position, ScrollWheel));
+        }
+
+        // buttons
+        for (int i = (int) MouseButton.Left; i < _buttons.Length; i++) {
+            ButtonState state = _buttons[i],
+                        prevState = _prevButtons[i];
+
+            if (state != prevState) {
+                Scene.Current.Systems.Send<MouseButtonEvent>(new(
+                    Position,
+                    (MouseButton) i,
+                    state,
+                    prevState
+                ));
+            }
+        }
     }
 
     public ButtonState GetButton(MouseButton button) {
@@ -84,6 +127,7 @@ public sealed class Mouse {
     }
 
     private void UpdateState(MouseButton button, Xna.Input.ButtonState buttonState) {
+        buttonState |= _clicked[(int) button];
         ButtonState state,
                     prevState = _prevButtons[(int) button];
 
@@ -101,6 +145,6 @@ public sealed class Mouse {
     }
 
     private void XnaMouseClicked(int button) {
-        UpdateState((MouseButton) button, Xna.Input.ButtonState.Pressed);
+        _clicked[button] = Xna.Input.ButtonState.Pressed;
     }
 }

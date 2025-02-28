@@ -14,7 +14,18 @@ public sealed class EntityBuilder {
 
     public ReadOnlyCollection<Component> Components { get; }
 
+    public EntityBuilder With<C>() where C : Component, new() {
+        _components.Add(new C());
+        return this;
+    }
+
     public EntityBuilder With<C>(C component) where C : Component {
+        _components.Add(component);
+        return this;
+    }
+
+    public EntityBuilder With<C>(out C component) where C : Component, new() {
+        component = new C();
         _components.Add(component);
         return this;
     }

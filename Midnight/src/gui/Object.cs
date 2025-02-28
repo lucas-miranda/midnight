@@ -55,6 +55,9 @@ public abstract class Object : IRenderable, ITransformObject {
     public DebugOptions Debug { get; set; } = DefaultDebug;
 #endif
 
+    public virtual void Input(InputEvent e) {
+    }
+
     public virtual void Update(DeltaTime dt) {
         TryLayout();
     }

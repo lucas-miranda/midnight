@@ -19,6 +19,7 @@ public abstract class EntitySystem {
         where E : Event
         where C : Component
     {
+        Logger.DebugLine($"Subscribe to event '{typeof(E)}', expecting component '{typeof(C)}'");
         SystemSubscribeContract<E, C> contract = new(fn);
         _contracts.Add(contract);
         return contract;

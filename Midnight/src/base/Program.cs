@@ -111,6 +111,7 @@ ResourcesReady
 	protected sealed override void Update(Xna.GameTime gameTime) {
         DeltaTime deltaTime = new(gameTime);
         FPS.Update(deltaTime);
+        Input.Update(deltaTime);
 		Update(deltaTime);
 		Logger.Update(deltaTime);
 	}
