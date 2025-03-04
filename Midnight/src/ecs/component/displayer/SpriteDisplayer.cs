@@ -32,11 +32,12 @@ public class SpriteDisplayer : GraphicDisplayer {
     }
 
     public ShaderMaterial Material { get; set; }
+    public override Size2 Size => Texture.Size.ToFloat();
 
-    public override void Update(DeltaTime dt) {
+    public void Update(DeltaTime dt) {
     }
 
-    public override void Render(DeltaTime dt) {
+    public void Render(DeltaTime dt) {
         VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[_vertices.Length];
 
         /*

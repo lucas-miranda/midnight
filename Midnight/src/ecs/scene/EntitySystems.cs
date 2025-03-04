@@ -9,6 +9,8 @@ public sealed class EntitySystems {
     private List<EntitySystem> _systems = new();
     private Dictionary<System.Type, List<LookupRegistry>> _lookup = new();
     private List<List<LookupRegistry>> _buffer = new();
+    private Queue<(Event, Entity?)> _eventQueue = new();
+    private bool _isHandlingEvent, _isHandlingEventQueue;
 
     public EntitySystems(Scene scene) {
         Scene = scene;
@@ -16,9 +18,15 @@ public sealed class EntitySystems {
 
     public Scene Scene { get; }
 
-    public void Send<E>(E ev) where E : Event {
+    public void Send(Event ev, Entity? entity = null) {
         Assert.NotNull(ev);
-        List<List<LookupRegistry>> lists = RetrieveLists(typeof(E));
+
+        if (_isHandlingEvent) {
+            _eventQueue.Enqueue((ev, entity));
+            return;
+        }
+
+        List<List<LookupRegistry>> lists = RetrieveLists(ev.GetType());
 
         if (lists.IsEmpty()) {
             // there is no systems subscribed
@@ -26,26 +34,41 @@ public sealed class EntitySystems {
             return;
         }
 
-        /*
+        _isHandlingEvent = true;
+
         if (ev is not EngineEvent) {
             Logger.DebugLine($"Sending '{ev.GetType()}':");
+            Logger.DebugLine($" {ev}");
+            Logger.DebugLine($" It'll be handled by {lists.Count} lists");
+
+            foreach (List<LookupRegistry> list in lists) {
+                Logger.DebugLine($" > {list.Count} registries");
+            }
+        }
+
+        foreach (List<LookupRegistry> list in lists) {
+            foreach (LookupRegistry systemRegistry in list) {
+                systemRegistry.Contract.Send(ev, Scene, entity);
+            }
+        }
+
+        /*
+        if (ev is not EngineEvent) {
+            Logger.DebugLine($"Complete Sending '{ev.GetType()}':");
             Logger.DebugLine($" {ev}");
         }
         */
 
-        foreach (List<LookupRegistry> list in lists) {
-            foreach (LookupRegistry registry in list) {
-                IList<Component> components = Scene.Components.Query(registry.Contract.ComponentType);
-                //Logger.DebugLine($" {components.Count} Component(s)");
-                foreach (Component component in components) {
-                    registry.Contract.Call(ev, component);
-                }
-            }
-        }
+        _isHandlingEvent = false;
+        HandleEventQueue();
     }
 
-    public void Send<E>() where E : Event, new() {
-        Send(new E());
+    public void Send<E>(E ev, Entity? entity = null) where E : Event {
+        Send((Event) ev, entity);
+    }
+
+    public void Send<E>(Entity? entity = null) where E : Event, new() {
+        Send((Event) new E(), entity);
     }
 
     public void Register(EntitySystem sys) {
@@ -83,6 +106,19 @@ public sealed class EntitySystems {
         }
 
         return _buffer;
+    }
+
+    private void HandleEventQueue() {
+        if (_isHandlingEventQueue) {
+            return;
+        }
+
+        _isHandlingEventQueue = true;
+        while (!_eventQueue.IsEmpty()) {
+            (Event ev, Entity? entity) = _eventQueue.Dequeue();
+            Send(ev, entity);
+        }
+        _isHandlingEventQueue = false;
     }
 
     private struct LookupRegistry {

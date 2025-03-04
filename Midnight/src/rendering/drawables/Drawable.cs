@@ -2,7 +2,7 @@ using Midnight.Diagnostics;
 
 namespace Midnight;
 
-public abstract class Drawable {
+public abstract class Drawable : ISizeable {
     private VertexPositionColorTexture[] _vertices, _finalVertices;
     private ShaderMaterial _material;
 
@@ -11,6 +11,7 @@ public abstract class Drawable {
     }
 
     public Transform2D Transform { get; }
+    public abstract Size2 Size { get; set; }
 
     public ShaderMaterial Material {
         get => _material;

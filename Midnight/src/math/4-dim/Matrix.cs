@@ -282,6 +282,15 @@ public struct Matrix : System.IEquatable<Matrix> {
         return new(m);
     }
 
+    public void Decompose(out Vector2 translate, out Vector2 scale, out float rotation) {
+        translate = new(Row0.Z, Row1.Z);
+        scale = new Vector2(
+            new Vector2(Row0.X, Row1.X).Length(),
+            new Vector2(Row0.Y, Row1.Y).Length()
+        );
+        rotation = Math.Atan(Row1.X / Row1.Y);
+    }
+
     public float[] AsArray() {
         return new float[] {
             Row0.X, Row0.Y, Row0.Z, Row0.W,

@@ -6,12 +6,12 @@ public abstract class ObjectBuilder {
     }
 
     public DesignBuilder DesignBuilder { get; protected set; }
-    public virtual GUI.Object Result { get; private set; }
+    public virtual Entity Result { get; private set; }
 
-    public abstract GUI.Object Build();
+    public abstract Entity Build();
 
     public void Prepare() {
-        if (Result != null) {
+        if (Result.IsDefined) {
             return;
         }
 

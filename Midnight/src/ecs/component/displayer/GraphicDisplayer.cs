@@ -1,12 +1,9 @@
 namespace Midnight;
 
-public abstract class GraphicDisplayer : Component, IUpdatable, IRenderable {
+public abstract class GraphicDisplayer : Component, ISizeable {
     /// <summary>
     /// Draw settings which will be used at this displayer.
     /// </summary>
     public DrawSettings DrawSettings { get; set; } = DrawSettings.Default;
-
-    public abstract void Update(DeltaTime dt);
-
-    public abstract void Render(DeltaTime dt);
+    public abstract Size2 Size { get; }
 }

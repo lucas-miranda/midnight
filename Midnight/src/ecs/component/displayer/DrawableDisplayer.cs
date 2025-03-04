@@ -6,11 +6,5 @@ public class DrawableDisplayer : GraphicDisplayer {
     }
 
     public Drawable Drawable { get; set; }
-
-    public override void Update(DeltaTime dt) {
-    }
-
-    public override void Render(DeltaTime dt) {
-        Drawable?.Draw(dt);
-    }
+    public override Size2 Size => Drawable.Size;
 }

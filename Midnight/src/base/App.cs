@@ -11,11 +11,13 @@ public class App : Program {
 	public Scene Scene { get; private set; }
 
 	public void LoadScene<S>() where S : Scene, new() {
-	    Scene = new S();
+	    LoadScene(new S());
     }
 
 	public void LoadScene(Scene scene) {
+        Scene?.End();
 	    Scene = scene;
+        Scene?.Begin();
     }
 
 	protected override void DeviceInit() {
@@ -24,7 +26,6 @@ public class App : Program {
 	protected override void GraphicsReady() {
         Scene?.Prepare();
         Scene?.Start();
-        Scene?.Begin();
     }
 
 	protected override void ResourceRelease() {

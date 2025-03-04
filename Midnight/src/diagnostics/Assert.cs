@@ -109,4 +109,40 @@ public static class Assert {
     public static void IsNot<T>(object something, string message, string detailedMessage) {
         System.Diagnostics.Debug.Assert(!(something is T), message, detailedMessage);
     }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void Is<T>(System.Type type) {
+        System.Diagnostics.Debug.Assert(typeof(T).IsAssignableFrom(type), $"Type {type.Name} is expected to be assignable to type {typeof(T).Name}.");
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void Is<T>(System.Type type, string message) {
+        System.Diagnostics.Debug.Assert(typeof(T).IsAssignableFrom(type), message);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void Is<T>(System.Type type, string message, string detailedMessage) {
+        System.Diagnostics.Debug.Assert(typeof(T).IsAssignableFrom(type), message, detailedMessage);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void IsNot<T>(System.Type type) {
+        System.Diagnostics.Debug.Assert(!typeof(T).IsAssignableFrom(type), $"Type {type.Name} is expected to not be assignable to type {typeof(T).Name}.");
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void IsNot<T>(System.Type type, string message) {
+        System.Diagnostics.Debug.Assert(!typeof(T).IsAssignableFrom(type), message);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void IsNot<T>(System.Type type, string message, string detailedMessage) {
+        System.Diagnostics.Debug.Assert(!typeof(T).IsAssignableFrom(type), message, detailedMessage);
+    }
 }

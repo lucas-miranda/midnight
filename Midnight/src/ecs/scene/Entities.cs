@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using Midnight.Diagnostics;
 
 namespace Midnight;
 
 public sealed class Entities {
-    private ulong _nextUid;
+    private ulong _nextUid = 1;
     private List<Entity> _entries = new();
 
     public Entities(Scene scene) {
@@ -21,6 +22,7 @@ public sealed class Entities {
         _nextUid += 1;
 
         foreach (Component component in builder.Components) {
+            Assert.False(component.Entity.IsDefined);
             component.Entity = e;
             Scene.Components.Register(component);
         }

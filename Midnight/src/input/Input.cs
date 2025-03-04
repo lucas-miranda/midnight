@@ -7,7 +7,7 @@ public sealed class Input {
     public static Keyboard Keyboard { get; private set; }
     public static Mouse Mouse { get; private set; }
 
-    static internal void Initialize() {
+    internal static void Initialize() {
         if (_instance != null) {
             return;
         }
@@ -17,7 +17,7 @@ public sealed class Input {
         Mouse = new();
     }
 
-    static internal void Update(DeltaTime dt) {
+    internal static void Update(DeltaTime dt) {
         Keyboard.Update(dt);
         Mouse.Update(dt);
     }

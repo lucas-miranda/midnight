@@ -96,6 +96,7 @@ ResourcesReady
 		Embedded.Resources.GraphicsReady();
 		Debug.GraphicsReady();
         RenderingServer.GraphicsReady();
+	    GUI.Prototypes.Initialize();
 		GraphicsReady();
 		Logger.Line($"At LoadContent, graphics:\n{GraphicsServer.AsString()}");
 	}

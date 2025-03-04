@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using Midnight.Diagnostics;
-
 namespace Midnight;
 
 /// <summary>
 /// Describes a 2D transformation.
 /// The sequence of operations are: Scale, Rotation and Translation.
 /// </summary>
-public class Transform2D : Component, IEnumerable<Transform2D> {
+public class Transform2D {
+    public static readonly Transform2D Identity = new();
+
     private Vector2 _position,
                     _scale = Vector2.One,
                     _scaleOrigin,
@@ -18,9 +16,9 @@ public class Transform2D : Component, IEnumerable<Transform2D> {
                   _scaleRotation;
 
     private bool _hasChanges = true;
-    private Transform2D _parent;
-    private List<Transform2D> _children = new();
-    private ITransformObject _owner;
+
+    public Transform2D() {
+    }
 
     /// <summary>
     /// Local position.
@@ -58,42 +56,12 @@ public class Transform2D : Component, IEnumerable<Transform2D> {
         }
     }
 
-    public Vector2 GlobalPosition {
-        get => Position + (Parent?.GlobalPosition ?? Vector2.Zero);
-        set => Position = value - (Parent?.GlobalPosition ?? Vector2.Zero);
-    }
-
-    public Vector2 GlobalScale {
-        get => Scale * (Parent?.GlobalScale ?? Vector2.One);
-        set => Scale = value / (Parent?.GlobalScale ?? Vector2.One);
-    }
-
-    public float GlobalRotation {
-        get => Rotation + (Parent?.GlobalRotation ?? 0.0f);
-        set => Rotation = value - (Parent?.GlobalRotation ?? 0.0f);
-    }
-
     /// <summary>
     /// Resulting matrix.
     /// By multiplying it by a vector, applies the stored transformation.
     /// </summary>
     /// <see cref="Apply(Vector3)"/>
-    public Matrix Matrix {
-        get {
-            if (Parent == null) {
-                return LocalMatrix;
-            }
-
-            return Parent.Matrix * LocalMatrix;
-        }
-    }
-
-    /// <summary>
-    /// Resulting local matrix.
-    /// By multiplying it by a vector, applies the stored transformation.
-    /// </summary>
-    /// <see cref="Apply(Vector3)"/>
-    public Matrix LocalMatrix { get; set; }
+    public Matrix Matrix { get; set; }
 
     /// <summary>
     /// Origin which should be used when applying Scale.
@@ -141,41 +109,9 @@ public class Transform2D : Component, IEnumerable<Transform2D> {
         }
     }
 
-    public ITransformObject Owner {
-        get => _owner;
-        set {
-            Assert.Null(_owner);
-            _owner = value;
-            OwnerChanged(_owner);
-        }
-    }
-
-    public Transform2D Parent {
-        get => _parent;
-        set {
-            if (value != null) {
-                if (value == _parent) {
-                    // value already is current parent
-                    return;
-                } else if (_parent != null) {
-                    _parent.RemoveChild(this);
-                }
-
-                value.AddChild(this);
-            } else if (_parent != null) {
-                _parent.RemoveChild(this);
-            }
-        }
-    }
-
-    public int ChildCount => _children.Count;
-
-    public void OwnerChanged(ITransformObject owner) {
-    }
-
-    public void FlushMatrix() {
+    public bool FlushMatrix() {
         if (!_hasChanges) {
-            return;
+            return false;
         }
 
         _hasChanges = false;
@@ -187,7 +123,8 @@ public class Transform2D : Component, IEnumerable<Transform2D> {
                mr = Matrix.Rotation(_rotation),
                mt = Matrix.Translation(_position);
 
-        LocalMatrix = mt * mro * mr * mro.Invert() * mso * msr * ms * msr.Invert() * mso.Invert();
+        Matrix = mt * mro * mr * mro.Invert() * mso * msr * ms * msr.Invert() * mso.Invert();
+        return true;
     }
 
     /// <summary>
@@ -197,42 +134,27 @@ public class Transform2D : Component, IEnumerable<Transform2D> {
         return Matrix * v;
     }
 
-    public IEnumerator<Transform2D> GetEnumerator() {
-        return _children.GetEnumerator();
+    public void CopyFrom(Transform2D transform) {
+        _position = transform.Position;
+        _scale = transform.Scale;
+        _scaleOrigin = transform.ScaleOrigin;
+        _rotationOrigin = transform.RotationOrigin;
+        _rotation = transform.Rotation;
+        _scaleRotation = transform.ScaleRotation;
+        _hasChanges = transform._hasChanges;
+        Matrix = transform.Matrix;
     }
 
-    IEnumerator IEnumerable.GetEnumerator() {
-        return GetEnumerator();
+    public void Push(Transform2D transform) {
+        FlushMatrix();
+        transform.FlushMatrix();
+        _scaleOrigin = _rotationOrigin = Vector2.Zero;
+        _scaleRotation = 0.0f;
+        Matrix *= transform.Matrix;
+        Matrix.Decompose(out _position, out _scale, out _rotation);
     }
 
     public override string ToString() {
-        return $"Pos: {Position} (G: {GlobalPosition}); Scale: {Scale} (G: {GlobalScale}; Origin: {ScaleOrigin}; Rot: {ScaleRotation}); Rot: {Rotation} (G: {GlobalRotation}; Origin: {RotationOrigin});";
-    }
-
-    private void AddChild(Transform2D child) {
-        _children.Add(child);
-        child._parent = this;
-        child.ReceiveParent();
-        ChildAdded(child);
-    }
-
-    private void RemoveChild(Transform2D child) {
-        Assert.True(child._parent == this);
-        _children.Remove(child);
-        child._parent = null;
-        child.LostParent(this);
-        ChildRemoved(child);
-    }
-
-    private void ReceiveParent() {
-    }
-
-    private void LostParent(Transform2D parent) {
-    }
-
-    private void ChildAdded(Transform2D child) {
-    }
-
-    private void ChildRemoved(Transform2D child) {
+        return $"Pos: {Position}; Scale: {Scale} (Origin: {ScaleOrigin}; Rot: {ScaleRotation}); Rot: {Rotation} (Origin: {RotationOrigin});";
     }
 }

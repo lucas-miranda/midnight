@@ -4,7 +4,7 @@ public class Scene {
     public Scene() {
         Entities = new(this);
         Systems = new(this);
-        Components = new();
+        Components = new(this);
     }
 
     public static Scene Current { get; private set; }
@@ -17,8 +17,14 @@ public class Scene {
     /// Prepare anything before Start().
     /// </summary>
     public virtual void Prepare() {
-        Systems.Register(new RenderSystem());
-        Systems.Register(new GUISystem());
+        //Systems.Register(new RenderSystem());
+        Systems.Register(new TransformSystem());
+        Systems.Register(new GUI.ContentGraphicsTrackSystem());
+        Systems.Register(new GUI.UIInputSystem());
+        Systems.Register(new GUI.LayoutSystem());
+        //Systems.Register(new GUI.ExtentRenderSystem());
+        Systems.Register(new GUI.BackgroundBorderResizeSystem());
+        Systems.Register(new GUI.RenderSystem());
     }
 
     /// <summary>

@@ -11,8 +11,8 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
     private int _index;
 
     static ContainerBuilder() {
-        _builder.Add(typeof(Frame), typeof(FrameBuilder));
-        _builder.Add(typeof(Button), typeof(ButtonBuilder));
+        _builder.Add(typeof(FramePrototype), typeof(FrameBuilder));
+        _builder.Add(typeof(PushButtonPrototype), typeof(PushButtonBuilder));
     }
 
     public ContainerBuilder(DesignBuilder designBuilder) : base(designBuilder) {
@@ -34,23 +34,32 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
         //_children.Clear();
     }
 
-    public ObjectBuilder Create<T>() where T : GUI.Object, new() {
+    public ObjectBuilder Create<T>() where T : Prototype, new() {
         return RetrieveBuilder(typeof(T));
     }
 
     public FrameBuilder Frame() {
-        return Create<Frame>() as FrameBuilder;
+        return Create<FramePrototype>() as FrameBuilder;
     }
 
-    public ButtonBuilder Button(string label) {
-        ButtonBuilder b = Create<Button>() as ButtonBuilder;
-        Label l = b.Result.Find<Label>();
+    public PushButtonBuilder PushButton(string label) {
+        PushButtonBuilder b = Create<PushButtonPrototype>() as PushButtonBuilder;
+        Components components = b.Result.GetComponents();
+        Transform transform = components.Get<Transform>();
+        Label childLabel = transform.FindFirstChildWithComponent<Label>();
+        DrawableDisplayer displayer = null;
 
-        if (l != null) {
-            l.Value = label;
-        } else {
-            b.Result.Add(new Label() { Value = label });
+        if (childLabel == null) {
+            Entity labelEntity = Prototypes.Instantiate<Label>(b.Result);
+            displayer = labelEntity.Get<DrawableDisplayer>();
         }
+
+        Assert.NotNull(displayer);
+        Assert.Is<StringDrawable>(displayer.Drawable);
+
+        // set label text value
+        StringDrawable text = (StringDrawable) displayer.Drawable;
+        text.Value = label;
 
         return b;
     }
@@ -79,9 +88,14 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
             b.Prepare();
 
             // register as child
-            Assert.Is<Container>(Result);
-            Container c = (Container) Result;
-            c.Add(b.Result);
+            Transform transform = Result.Get<Transform>();
+            Transform childTransform = b.Result.Get<Transform>();
+
+            Assert.NotNull(transform);
+            Assert.NotNull(childTransform);
+            Assert.True(transform != childTransform, $"{Result} != {b.Result}");
+
+            childTransform.Parent = transform;
         }
 
         return b;

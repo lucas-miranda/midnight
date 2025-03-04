@@ -9,7 +9,10 @@ public class StringDrawable : Drawable {
     }
 
     public Size2 SizeEm { get; private set; }
-    public Size2 Size => SizeEm * Font.Size;
+    public override Size2 Size {
+        get => SizeEm * Font.Size;
+        set { }
+    }
 
     public Font Font {
         get => _font;

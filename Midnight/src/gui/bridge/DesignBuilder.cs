@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Midnight.Diagnostics;
 
 namespace Midnight.GUI;
@@ -12,16 +13,19 @@ public class DesignBuilder : ContainerBuilder {
     public bool IsBuilding { get; private set; }
     public bool IsBuilded { get; private set; }
 
-    public override GUI.Object Build() {
-        Frame rootFrame = new Frame() {
-            Padding = Spacing.Empty,
-            Margin = Spacing.Empty,
-        };
+    public override Entity Build() {
+        Entity frame = Prototypes.Instantiate<FramePrototype>();
+        Components frameComponents = frame.GetComponents();
 
-        rootFrame.Background.Opacity = 0.0f;
-        rootFrame.Border.Opacity = 0.0f;
+        var extent = frameComponents.Get<Extent>();
+        extent.Padding = Spacing.Empty;
+        extent.Margin = Spacing.Empty;
 
-        return rootFrame;
+        var backgroundBorder = frameComponents.Get<BackgroundBorder>();
+        backgroundBorder.Background.Drawable.Opacity = 0.0f;
+        backgroundBorder.Border.Drawable.Opacity = 0.0f;
+
+        return frame;
     }
 
     public void Build(System.Action<DesignBuilder> fn) {
@@ -40,7 +44,22 @@ public class DesignBuilder : ContainerBuilder {
         IsBuilded = true;
 
         // test  print the whole tree
-        Logger.Line($"Result:\n{Result.TreeToString()}");
+        Logger.DebugLine("Result:");
+        Entity root = Result;
+        Stack<(Transform, int)> stack = new();
+        stack.Push((root.Get<Transform>(), 0));
+
+        while (!stack.IsEmpty()) {
+            (Transform transform, int level) = stack.Pop();
+            string tab = new string(' ', level * 2);
+            Logger.DebugLine($"{tab}- {transform.Entity.GetComponents().ToString()} ({transform.ChildCount})");
+
+            foreach (Transform child in transform) {
+                stack.Push((child, level + 1));
+            }
+        }
+
+        //Logger.Line($"Result:\n{Result.TreeToString()}");
     }
 
     public void Evaluate() {
@@ -50,7 +69,7 @@ public class DesignBuilder : ContainerBuilder {
         End();
 
         // test  print the whole tree
-        Logger.Line($"Result:\n{Result.TreeToString()}");
+        //Logger.Line($"Result:\n{Result.TreeToString()}");
     }
 
     public void Start() {

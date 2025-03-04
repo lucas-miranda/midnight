@@ -224,6 +224,10 @@ public static class Math {
         return PolarToCartesian(polarPoint.X, polarPoint.Y);
     }
 
+    public static float Atan(float tan) {
+        return System.MathF.Atan(tan);
+    }
+
     public static float Sin(float deg) {
         return System.MathF.Sin(deg * DegToRad);
     }
