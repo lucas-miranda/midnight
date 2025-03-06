@@ -42,12 +42,12 @@ public sealed class EntityBuilder {
         return this;
     }
 
-    public Entity Submit() {
+    public Entity Submit(Prototype prototype = null) {
         if (_submitted) {
             throw new System.InvalidOperationException("Already submitted.");
         }
 
         _submitted = true;
-        return _entities.Submit(this);
+        return _entities.Submit(this, prototype);
     }
 }

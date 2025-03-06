@@ -1,7 +1,7 @@
 namespace Midnight.GUI;
 
-public abstract class ObjectBuilder {
-    public ObjectBuilder(DesignBuilder designBuilder) {
+public abstract class WidgetBuilder {
+    public WidgetBuilder(DesignBuilder designBuilder) {
         DesignBuilder = designBuilder;
     }
 
@@ -30,7 +30,7 @@ public abstract class ObjectBuilder {
         DesignBuilder.Evaluate();
     }
 
-    public static implicit operator bool(ObjectBuilder b) {
+    public static implicit operator bool(WidgetBuilder b) {
         return b.Run();
     }
 }

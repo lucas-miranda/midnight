@@ -283,7 +283,7 @@ public struct Matrix : System.IEquatable<Matrix> {
     }
 
     public void Decompose(out Vector2 translate, out Vector2 scale, out float rotation) {
-        translate = new(Row0.Z, Row1.Z);
+        translate = new(Row0.W, Row1.W);
         scale = new Vector2(
             new Vector2(Row0.X, Row1.X).Length(),
             new Vector2(Row0.Y, Row1.Y).Length()

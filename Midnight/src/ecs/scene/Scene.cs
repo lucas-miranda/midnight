@@ -20,7 +20,8 @@ public class Scene {
         //Systems.Register(new RenderSystem());
         Systems.Register(new TransformSystem());
         Systems.Register(new GUI.ContentGraphicsTrackSystem());
-        Systems.Register(new GUI.UIInputSystem());
+        //Systems.Register(new GUI.UIInputSystem());
+        Systems.Register(new GUI.PressableInputSystem());
         Systems.Register(new GUI.LayoutSystem());
         //Systems.Register(new GUI.ExtentRenderSystem());
         Systems.Register(new GUI.BackgroundBorderResizeSystem());

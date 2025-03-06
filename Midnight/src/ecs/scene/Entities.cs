@@ -17,8 +17,8 @@ public sealed class Entities {
         return new(this);
     }
 
-    internal Entity Submit(EntityBuilder builder) {
-        Entity e = new(_nextUid);
+    internal Entity Submit(EntityBuilder builder, Prototype prototype = null) {
+        Entity e = new(_nextUid, prototype);
         _nextUid += 1;
 
         foreach (Component component in builder.Components) {

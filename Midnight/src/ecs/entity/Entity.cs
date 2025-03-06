@@ -4,16 +4,18 @@ using System.Diagnostics.CodeAnalysis;
 namespace Midnight;
 
 public struct Entity : System.IEquatable<Entity> {
-    public static readonly Entity None = new(0);
+    public static readonly Entity None = new(0, null);
 
     public ulong Uid;
 
-    public Entity(ulong uid) {
+    public Entity(ulong uid, Prototype prototype) {
         Uid = uid;
+        Prototype = prototype;
     }
 
     public bool IsDefined => Uid != None.Uid;
     public bool IsUndefined => Uid == None.Uid;
+    public Prototype Prototype { get; internal set; }
 
     public Components GetComponents() {
         return Scene.Current.Components.Get(this);

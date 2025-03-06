@@ -3,11 +3,11 @@ using Midnight.Diagnostics;
 
 namespace Midnight.GUI;
 
-public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
+public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
     private static Dictionary<System.Type, System.Type> _builder = new();
 
     //private Dictionary<int, ObjectBuilder> _components = new();
-    private List<ObjectBuilder> _children = new();
+    private List<WidgetBuilder> _children = new();
     private int _index;
 
     static ContainerBuilder() {
@@ -27,14 +27,14 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
         base.Reset();
         _index = 0;
 
-        foreach (ObjectBuilder b in _children) {
+        foreach (WidgetBuilder b in _children) {
             b.Reset();
         }
 
         //_children.Clear();
     }
 
-    public ObjectBuilder Create<T>() where T : Prototype, new() {
+    public WidgetBuilder Create<T>() where T : Prototype, new() {
         return RetrieveBuilder(typeof(T));
     }
 
@@ -52,6 +52,8 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
         if (childLabel == null) {
             Entity labelEntity = Prototypes.Instantiate<Label>(b.Result);
             displayer = labelEntity.Get<DrawableDisplayer>();
+        } else {
+            displayer = childLabel.Entity.Get<DrawableDisplayer>();
         }
 
         Assert.NotNull(displayer);
@@ -67,21 +69,25 @@ public abstract class ContainerBuilder : ObjectBuilder, System.IDisposable {
     public void Dispose() {
     }
 
-    private ObjectBuilder RetrieveBuilder(System.Type type) {
-        ObjectBuilder b;
+    private WidgetBuilder RetrieveBuilder(System.Type prototypeType) {
+        WidgetBuilder b;
 
         if (DesignBuilder.IsBuilded) {
             Assert.True(_index < _children.Count);
             b = _children[_index];
-            Assert.True(b.Result.GetType().IsAssignableTo(type), $"Expected '{type.Name}', but get '{b.GetType().Name}'");
+            //System.Type builderType = _builder[type];
+            Assert.True(
+                b.Result.Prototype != null && b.Result.Prototype.GetType().IsAssignableTo(prototypeType),
+                $"Expected '{prototypeType.Name}', but get '{b.Result.GetType().Name}'"
+            );
             _index += 1;
 
             b.Prepare();
         } else {
             b = System.Activator.CreateInstance(
-                    _builder[type],
+                    _builder[prototypeType],
                     new object[] { DesignBuilder }
-                ) as ObjectBuilder;
+                ) as WidgetBuilder;
 
             _children.Add(b);
 

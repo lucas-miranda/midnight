@@ -34,7 +34,7 @@ public class Prototype {
         _builderFn?.Invoke(builder);
         Build(builder);
 
-        return builder.Submit();
+        return builder.Submit(this);
     }
 
     protected virtual void Build(EntityBuilder builder) {

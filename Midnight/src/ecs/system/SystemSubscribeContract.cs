@@ -122,3 +122,41 @@ public class SystemSubscribeContract<E, Q1, Q2, Q3> : SystemSubscribeContract<E>
         }
     }
 }
+
+public class SystemSubscribeContract<E, Q1, Q2, Q3, Q4> : SystemSubscribeContract<E>
+    where E : Event
+    where Q1 : ComponentQuery, new()
+    where Q2 : ComponentQuery, new()
+    where Q3 : ComponentQuery, new()
+    where Q4 : ComponentQuery, new()
+{
+    private System.Action<E, Q1, Q2, Q3, Q4> _fn;
+
+    public SystemSubscribeContract(System.Action<E, Q1, Q2, Q3, Q4> fn) {
+        EventType = typeof(E);
+        /*
+        ComponentTypes = new[] {
+            typeof(C1),
+            typeof(C2),
+            typeof(C3),
+        };
+        */
+
+        _fn = fn;
+    }
+
+    public Q1 QueryA { get; } = new();
+    public Q2 QueryB { get; } = new();
+    public Q3 QueryC { get; } = new();
+    public Q4 QueryD { get; } = new();
+
+    protected override void Execute(E ev, Components entityComponents) {
+        if (QueryA.Execute(entityComponents)
+         && QueryB.Execute(entityComponents)
+         && QueryC.Execute(entityComponents)
+         && QueryD.Execute(entityComponents)
+        ) {
+            _fn.Invoke(ev, QueryA, QueryB, QueryC, QueryD);
+        }
+    }
+}

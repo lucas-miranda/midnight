@@ -5,6 +5,9 @@ public class FrameBuilder : ContainerBuilder {
     }
 
     public override Entity Build() {
-        return Prototypes.Instantiate<FramePrototype>();
+        Entity frameEntity = Prototypes.Instantiate<FramePrototype>();
+        Widget widget = frameEntity.Get<Widget>();
+        widget.Builder = this;
+        return frameEntity;
     }
 }

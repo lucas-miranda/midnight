@@ -1,11 +1,14 @@
 namespace Midnight.GUI;
 
-public class PushButtonBuilder : ObjectBuilder {
+public class PushButtonBuilder : WidgetBuilder {
     public PushButtonBuilder(DesignBuilder designBuilder) : base(designBuilder) {
     }
 
     public override Entity Build() {
-        return Prototypes.Instantiate<PushButtonPrototype>();
+        Entity buttonEntity = Prototypes.Instantiate<PushButtonPrototype>();
+        Widget widget = buttonEntity.Get<Widget>();
+        widget.Builder = this;
+        return buttonEntity;
     }
 
     public override bool Run() {

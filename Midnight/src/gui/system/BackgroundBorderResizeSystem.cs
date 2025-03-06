@@ -8,14 +8,14 @@ public sealed class BackgroundBorderResizeSystem : EntitySystem {
     }
 
     public void Resize(ResizeEvent e, Query<BackgroundBorder> backgroundBorder) {
-        Logger.DebugLine($"{GetType()} -> Resize at {backgroundBorder.Entry.Entity}");
+        //Logger.DebugLine($"{GetType()} -> Resize at {backgroundBorder.Entry.Entity}");
         if (backgroundBorder.Entry.Background != null) {
-            Logger.DebugLine("Applying to Background");
+            //Logger.DebugLine("Applying to Background");
             ResizeDrawable(backgroundBorder.Entry.Background.Drawable, e.Size);
         }
 
         if (backgroundBorder.Entry.Border != null) {
-            Logger.DebugLine("Applying to Border");
+            //Logger.DebugLine("Applying to Border");
             ResizeDrawable(backgroundBorder.Entry.Border.Drawable, e.Size);
         }
     }

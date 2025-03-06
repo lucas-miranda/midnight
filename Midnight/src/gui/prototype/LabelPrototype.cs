@@ -5,6 +5,7 @@ public class LabelPrototype : Prototype {
     protected override void Build(EntityBuilder builder) {
         builder.Add<Transform>();
         builder.Add<ContentGraphics>();
+        builder.Add<Widget>();
 
         StringDrawable text = new StringDrawable() {
             Font = AssetManager.Get<Font>("accidental president"),

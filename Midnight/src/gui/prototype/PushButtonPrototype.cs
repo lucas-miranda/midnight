@@ -5,6 +5,7 @@ public class PushButtonPrototype : Prototype {
     protected override void Build(EntityBuilder builder) {
         builder.Add<Transform>();
         builder.Add<ContentGraphics>();
+        builder.Add<Widget>();
 
         builder.Add<GUI.Extent>(new() {
             Margin = new(15, 10),

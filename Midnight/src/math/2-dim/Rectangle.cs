@@ -41,12 +41,12 @@ public struct Rectangle {
         );
     }
 
-    public bool IsInside(Vector2 point) {
+    public bool Contains(Vector2 point) {
         return !(point.X < Left || point.X >= Right || point.Y < Top || point.Y >= Bottom);
     }
 
-    public bool IsInside(Vector2I point) {
-        return IsInside(point.ToFloat());
+    public bool Contains(Vector2I point) {
+        return Contains(point.ToFloat());
     }
 
     public RectangleI ToInt() {

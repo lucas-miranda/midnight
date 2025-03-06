@@ -36,6 +36,7 @@ public sealed class EntitySystems {
 
         _isHandlingEvent = true;
 
+        /*
         if (ev is not EngineEvent) {
             Logger.DebugLine($"Sending '{ev.GetType()}':");
             Logger.DebugLine($" {ev}");
@@ -45,6 +46,7 @@ public sealed class EntitySystems {
                 Logger.DebugLine($" > {list.Count} registries");
             }
         }
+        */
 
         foreach (List<LookupRegistry> list in lists) {
             foreach (LookupRegistry systemRegistry in list) {
