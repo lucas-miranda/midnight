@@ -6,8 +6,7 @@ namespace Midnight;
 public sealed class SceneComponents {
     private Components _allComponents = new();
     private List<Component> _buffer = new();
-
-    public Dictionary<Entity, Components> _entityComponents = new();
+    private Dictionary<Entity, Components> _entityComponents = new();
 
     public SceneComponents(Scene scene) {
         Scene = scene;
@@ -118,6 +117,12 @@ public sealed class SceneComponents {
         }
 
         return result;
+    }
+
+    public IEnumerable<KeyValuePair<Entity, Components>> EntityComponents() {
+        foreach (KeyValuePair<Entity, Components> entry in _entityComponents) {
+            yield return entry;
+        }
     }
 
     internal void Register(Component component) {

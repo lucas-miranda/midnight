@@ -4,7 +4,10 @@ public sealed class ExtentRenderSystem : EntitySystem {
     private RectangleDrawable _marginDebug, _paddingDebug;
 
     public override void Setup() {
-        Subscribe<RenderStepEvent, Transform, Extent>(Render);
+        Subscribe<RenderStepEvent>()
+            .With<Transform>()
+            .With<Extent>()
+            .Submit(Render);
 
         const float debugOpacity = .2f;
         _marginDebug = new() {
@@ -20,57 +23,57 @@ public sealed class ExtentRenderSystem : EntitySystem {
         };
     }
 
-    public void Render(RenderStepEvent e, Transform transform, Extent extent) {
+    public void Render(RenderStepEvent e, Query<Transform> transform, Query<Extent> extent) {
         //if (Debug.DrawMargin) {
             // top
-            _marginDebug.Transform.Position = new Vector2(-extent.Margin.Left, -extent.Margin.Top);
-            _marginDebug.Size = new(extent.Size.Width + extent.Margin.Horizontal, extent.Margin.Top);
+            _marginDebug.Transform.Position = new Vector2(-extent.Entry.Margin.Left, -extent.Entry.Margin.Top);
+            _marginDebug.Size = new(extent.Entry.Size.Width + extent.Entry.Margin.Horizontal, extent.Entry.Margin.Top);
 
-            _marginDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Local });
+            _marginDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Entry.Local });
 
             // right
-            _marginDebug.Transform.Position = new Vector2(extent.Size.Width, 0.0f);
-            _marginDebug.Size = new(extent.Margin.Right, extent.Size.Height);
+            _marginDebug.Transform.Position = new Vector2(extent.Entry.Size.Width, 0.0f);
+            _marginDebug.Size = new(extent.Entry.Margin.Right, extent.Entry.Size.Height);
 
-            _marginDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Local });
+            _marginDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Entry.Local });
 
             // bottom
-            _marginDebug.Transform.Position = new Vector2(-extent.Margin.Left, extent.Size.Height);
-            _marginDebug.Size = new(extent.Size.Width + extent.Margin.Horizontal, extent.Margin.Bottom);
+            _marginDebug.Transform.Position = new Vector2(-extent.Entry.Margin.Left, extent.Entry.Size.Height);
+            _marginDebug.Size = new(extent.Entry.Size.Width + extent.Entry.Margin.Horizontal, extent.Entry.Margin.Bottom);
 
-            _marginDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Local });
+            _marginDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Entry.Local });
 
             // left
-            _marginDebug.Transform.Position = new Vector2(-extent.Margin.Left, 0.0f);
-            _marginDebug.Size = new(extent.Margin.Left, extent.Size.Height);
+            _marginDebug.Transform.Position = new Vector2(-extent.Entry.Margin.Left, 0.0f);
+            _marginDebug.Size = new(extent.Entry.Margin.Left, extent.Entry.Size.Height);
 
-            _marginDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Local });
+            _marginDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Entry.Local });
         //}
 
         //if (Debug.DrawPadding) {
             // top
             _paddingDebug.Transform.Position = Vector2.Zero;
-            _paddingDebug.Size = new(extent.Size.Width, extent.Padding.Top);
+            _paddingDebug.Size = new(extent.Entry.Size.Width, extent.Entry.Padding.Top);
 
-            _paddingDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Local });
+            _paddingDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Entry.Local });
 
             // right
-            _paddingDebug.Transform.Position = new Vector2(extent.Size.Width - extent.Padding.Right, extent.Padding.Top);
-            _paddingDebug.Size = new(extent.Padding.Right, extent.Size.Height - extent.Padding.Vertical);
+            _paddingDebug.Transform.Position = new Vector2(extent.Entry.Size.Width - extent.Entry.Padding.Right, extent.Entry.Padding.Top);
+            _paddingDebug.Size = new(extent.Entry.Padding.Right, extent.Entry.Size.Height - extent.Entry.Padding.Vertical);
 
-            _paddingDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Local });
+            _paddingDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Entry.Local });
 
             // bottom
-            _paddingDebug.Transform.Position = new Vector2(0.0f, extent.Size.Height - extent.Padding.Bottom);
-            _paddingDebug.Size = new(extent.Size.Width, extent.Padding.Bottom);
+            _paddingDebug.Transform.Position = new Vector2(0.0f, extent.Entry.Size.Height - extent.Entry.Padding.Bottom);
+            _paddingDebug.Size = new(extent.Entry.Size.Width, extent.Entry.Padding.Bottom);
 
-            _paddingDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Local });
+            _paddingDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Entry.Local });
 
             // left
-            _paddingDebug.Transform.Position = new Vector2(0.0f, extent.Padding.Top);
-            _paddingDebug.Size = new(extent.Padding.Left, extent.Size.Height - extent.Padding.Vertical);
+            _paddingDebug.Transform.Position = new Vector2(0.0f, extent.Entry.Padding.Top);
+            _paddingDebug.Size = new(extent.Entry.Padding.Left, extent.Entry.Size.Height - extent.Entry.Padding.Vertical);
 
-            _paddingDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Local });
+            _paddingDebug.Draw(e.DeltaTime, new DrawParams { Transform = transform.Entry.Local });
         //}
     }
 

@@ -2,11 +2,16 @@ namespace Midnight;
 
 public sealed class RenderSystem : EntitySystem {
     public override void Setup() {
-        Subscribe<UpdateStepEvent, GraphicDisplayer>(Update);
-        Subscribe<RenderStepEvent, GraphicDisplayer>(Render);
+        Subscribe<UpdateStepEvent>()
+            .WithMultiple<GraphicDisplayer>()
+            .Submit(Update);
+
+        Subscribe<RenderStepEvent>()
+            .WithMultiple<GraphicDisplayer>()
+            .Submit(Render);
     }
 
-    public void Update(UpdateStepEvent e, GraphicDisplayer displayer) {
+    public void Update(UpdateStepEvent e, MultiQuery<GraphicDisplayer> displayers) {
         /*
         if (displayer is DrawableDisplayer drawableDisplayer) {
             drawableDisplayer.Drawable.Update(e.DeltaTime);
@@ -14,9 +19,11 @@ public sealed class RenderSystem : EntitySystem {
         */
     }
 
-    public void Render(RenderStepEvent e, GraphicDisplayer displayer) {
-        if (displayer is DrawableDisplayer drawableDisplayer) {
-            drawableDisplayer.Drawable.Draw(e.DeltaTime);
+    public void Render(RenderStepEvent e, MultiQuery<GraphicDisplayer> displayers) {
+        foreach (GraphicDisplayer displayer in displayers) {
+            if (displayer is DrawableDisplayer drawableDisplayer) {
+                drawableDisplayer.Drawable.Draw(e.DeltaTime);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Midnight;
 
 public abstract class EntitySystem {
     private List<SystemSubscribeContract> _contracts = new();
+    private Dictionary<System.Type, SystemSubscribeContractBuilder> _builders = new();
 
     public EntitySystem() {
         Contracts = _contracts.AsReadOnly();
@@ -23,6 +24,11 @@ public abstract class EntitySystem {
         Scene.Current.Systems.Send(ev, entity);
     }
 
+    protected SystemSubscribeContractBuilder<E> Subscribe<E>() where E : Event {
+        return GetContractBuilder<SystemSubscribeContractBuilder<E>>();
+    }
+
+    /*
     protected SystemSubscribeContract<E, C> Subscribe<E, C>(System.Action<E, C> fn, bool matchOriginatorOnly = false)
         where E : Event
         where C : Component
@@ -58,6 +64,7 @@ public abstract class EntitySystem {
         _contracts.Add(contract);
         return contract;
     }
+    */
 
     protected C Query<C>(Entity entity) where C : Component {
         return Scene.Current.Components.Query<C>(entity);
@@ -68,5 +75,21 @@ public abstract class EntitySystem {
         where C2 : Component
     {
         return Scene.Current.Components.Query<C1, C2>(entity);
+    }
+
+    internal B GetContractBuilder<B>() where B : SystemSubscribeContractBuilder, new() {
+        if (!_builders.TryGetValue(typeof(B), out var builder)) {
+            // create builder if it doesn't exists
+            builder = new B();
+            builder.System = this;
+            _builders[typeof(B)] = builder;
+        }
+
+        return (B) builder;
+    }
+
+    internal T RegisterContract<T>(T contract) where T : SystemSubscribeContract {
+        _contracts.Add(contract);
+        return contract;
     }
 }

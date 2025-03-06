@@ -2,10 +2,14 @@ namespace Midnight.GUI;
 
 public sealed class PressableInputSystem : EntitySystem {
     public override void Setup() {
-        Subscribe<MouseButtonEvent, Pressable, Transform, Extent>(HandleMouseButton);
+        Subscribe<MouseButtonEvent>()
+            .With<Pressable>()
+            .With<Transform>()
+            .With<Extent>()
+            .Submit(HandleMouseButton);
     }
 
-    public void HandleMouseButton(MouseButtonEvent e, Pressable pressable, Transform transform, Extent extent) {
+    public void HandleMouseButton(MouseButtonEvent e, Query<Pressable> pressable, Query<Transform> transform, Query<Extent> extent) {
         Logger.DebugLine("PressableInputSystem -> HandleMouseButton");
 
         switch (e) {
@@ -15,14 +19,14 @@ public sealed class PressableInputSystem : EntitySystem {
                 //Logger.DebugLine($"Button Bounds: {Bounds}");
 
                 if (mouseButtonEvent.Button == MouseButton.Left
-                 && extent.GetBounds(transform.Global).IsInside(mouseButtonEvent.Position)
+                 && extent.Entry.GetBounds(transform.Entry.Global).IsInside(mouseButtonEvent.Position)
                 ) {
                     switch (mouseButtonEvent.State) {
                         case ButtonState.JustPressed:
-                            pressable.Pressed = true;
+                            pressable.Entry.Pressed = true;
                             break;
                         case ButtonState.JustReleased:
-                            pressable.Pressed = false;
+                            pressable.Entry.Pressed = false;
                             break;
                         default:
                             break;

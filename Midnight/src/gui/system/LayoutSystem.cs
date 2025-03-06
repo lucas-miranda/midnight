@@ -2,13 +2,16 @@ namespace Midnight.GUI;
 
 public sealed class LayoutSystem : EntitySystem {
     public override void Setup() {
-        Subscribe<UpdateStepEvent, Transform, Extent>(Layout);
+        Subscribe<UpdateStepEvent>()
+            .With<Transform>()
+            .With<Extent>()
+            .Submit(Layout);
     }
 
-    public void Layout(UpdateStepEvent e, Transform transform, Extent extent) {
-        Logger.DebugLine($"LayoutSystem -> Layout for {transform.Entity}");
+    public void Layout(UpdateStepEvent e, Query<Transform> transform, Query<Extent> extent) {
+        Logger.DebugLine($"LayoutSystem -> Layout for {transform.Entry.Entity}");
         SolveLayout(transform, extent);
-        Logger.DebugLine($"Complete: LayoutSystem -> Layout for {transform.Entity}");
+        Logger.DebugLine($"Complete: LayoutSystem -> Layout for {transform.Entry.Entity}");
     }
 
     private void SolveLayout(Transform transform, Extent extent) {

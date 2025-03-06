@@ -3,12 +3,14 @@ namespace Midnight;
 
 public class TransformSystem : EntitySystem {
     public override void Setup() {
-        Subscribe<UpdateStepEvent, Transform>(Update);
+        Subscribe<UpdateStepEvent>()
+            .With<Transform>()
+            .Submit(Update);
     }
 
-    private void Update(UpdateStepEvent ev, Transform transform) {
-        if (transform.Local.FlushMatrix()) {
-            transform.PropagateChanges();
+    private void Update(UpdateStepEvent ev, Query<Transform> transformQuery) {
+        if (transformQuery.Entry.Local.FlushMatrix()) {
+            transformQuery.Entry.PropagateChanges();
         }
     }
 }

@@ -5,176 +5,120 @@ namespace Midnight.ECS;
 
 public abstract class SystemSubscribeContract {
     public System.Type EventType { get; protected set; }
-    public System.Type[] ComponentTypes { get; protected set; }
+    //public System.Type[] ComponentTypes { get; protected set; }
     public bool MatchOriginatorOnly { get; set; }
 
-    public abstract void Call(Event ev, Component component);
-    public abstract void Call(Event ev, Component component1, Component component2);
-    public abstract void Call(Event ev, Component component1, Component component2, Component component3);
     public abstract void Send(Event ev, Scene scene, Entity? entity = null);
 }
 
-public class SystemSubscribeContract<E, C> : SystemSubscribeContract
-    where E : Event
-    where C : Component
-{
-    private System.Action<E, C> _fn;
-
-    public SystemSubscribeContract(System.Action<E, C> fn) {
-        EventType = typeof(E);
-        ComponentTypes = new[] { typeof(C) };
-        _fn = fn;
-    }
-
-    public override void Call(Event ev, Component component) {
-        Call(ev as E, component as C);
-    }
-
-    public override void Call(Event ev, Component component1, Component component2) {
-        throw new System.NotSupportedException();
-    }
-
-    public override void Call(Event ev, Component component1, Component component2, Component component3) {
-        throw new System.NotSupportedException();
-    }
-
-    public void Call(E ev, C component) {
-        _fn.Invoke(ev, component);
-    }
-
-    public override void Send(Event ev, Scene scene, Entity? entity = null) {
+public abstract class SystemSubscribeContract<E> : SystemSubscribeContract where E : Event {
+    public sealed override void Send(Event ev, Scene scene, Entity? entity = null) {
         Assert.Is<E>(ev);
         Send((E) ev, scene, entity);
     }
 
     public void Send(E ev, Scene scene, Entity? entity = null) {
-        IList<C> components;
-
         if (entity.HasValue) {
-            components = scene.Components.QueryAll<C>(entity.Value);
+            Execute(ev, scene, entity.Value);
         } else if (MatchOriginatorOnly && ev is IEventOriginator<Entity> eventOriginator) {
-            components = scene.Components.QueryAll<C>(eventOriginator.Originator);
+            Execute(ev, scene, eventOriginator.Originator);
         } else {
-            components = scene.Components.QueryAll<C>();
+            foreach (KeyValuePair<Entity, Components> entry in scene.Components.EntityComponents()) {
+                Execute(ev, entry.Value);
+            }
         }
+    }
 
-        //Logger.DebugLine($" {components.Count} Component(s)");
-        foreach (C component in components) {
-            Call(ev, component);
+    protected abstract void Execute(E ev, Components entityComponents);
+
+    protected void Execute(E ev, Scene scene, Entity entity) {
+        Execute(ev, scene.Components.Get(entity));
+    }
+}
+
+public class SystemSubscribeContract<E, Q> : SystemSubscribeContract<E>
+    where E : Event
+    where Q : ComponentQuery, new()
+{
+    private System.Action<E, Q> _fn;
+
+    public SystemSubscribeContract(System.Action<E, Q> fn) {
+        EventType = typeof(E);
+        //ComponentTypes = new[] { typeof(C) };
+        _fn = fn;
+    }
+
+    public Q Query { get; } = new();
+
+    protected override void Execute(E ev, Components entityComponents) {
+        if (Query.Execute(entityComponents)) {
+            _fn.Invoke(ev, Query);
         }
     }
 }
 
-public class SystemSubscribeContract<E, C1, C2> : SystemSubscribeContract
+public class SystemSubscribeContract<E, Q1, Q2> : SystemSubscribeContract<E>
     where E : Event
-    where C1 : Component
-    where C2 : Component
+    where Q1 : ComponentQuery, new()
+    where Q2 : ComponentQuery, new()
 {
-    private System.Action<E, C1, C2> _fn;
+    private System.Action<E, Q1, Q2> _fn;
 
-    public SystemSubscribeContract(System.Action<E, C1, C2> fn) {
+    public SystemSubscribeContract(System.Action<E, Q1, Q2> fn) {
         EventType = typeof(E);
+        /*
         ComponentTypes = new[] {
             typeof(C1),
             typeof(C2),
         };
+        */
 
         _fn = fn;
     }
 
-    public override void Call(Event ev, Component component) {
-        throw new System.NotSupportedException();
-    }
+    public Q1 QueryA { get; } = new();
+    public Q2 QueryB { get; } = new();
 
-    public override void Call(Event ev, Component component1, Component component2) {
-        Call(ev as E, component1 as C1, component2 as C2);
-    }
-
-    public override void Call(Event ev, Component component1, Component component2, Component component3) {
-        throw new System.NotSupportedException();
-    }
-
-    public void Call(E ev, C1 component1, C2 component2) {
-        _fn.Invoke(ev, component1, component2);
-    }
-
-    public override void Send(Event ev, Scene scene, Entity? entity = null) {
-        Assert.Is<E>(ev);
-        Send((E) ev, scene, entity);
-    }
-
-    public void Send(E ev, Scene scene, Entity? entity = null) {
-        if (entity.HasValue) {
-            (C1, C2) component = scene.Components.Query<C1, C2>(entity.Value);
-            Call(ev, component.Item1, component.Item2);
-        } else if (MatchOriginatorOnly && ev is IEventOriginator<Entity> eventOriginator) {
-            (C1, C2) component = scene.Components.Query<C1, C2>(eventOriginator.Originator);
-            Call(ev, component.Item1, component.Item2);
-        } else {
-            IList<(C1, C2)> components = scene.Components.QueryAll<C1, C2>();
-
-            //Logger.DebugLine($" {components.Count} Component(s)");
-            foreach ((C1, C2) component in components) {
-                Call(ev, component.Item1, component.Item2);
-            }
+    protected override void Execute(E ev, Components entityComponents) {
+        if (QueryA.Execute(entityComponents)
+         && QueryB.Execute(entityComponents)
+        ) {
+            _fn.Invoke(ev, QueryA, QueryB);
         }
     }
 }
 
-public class SystemSubscribeContract<E, C1, C2, C3> : SystemSubscribeContract
+public class SystemSubscribeContract<E, Q1, Q2, Q3> : SystemSubscribeContract<E>
     where E : Event
-    where C1 : Component
-    where C2 : Component
-    where C3 : Component
+    where Q1 : ComponentQuery, new()
+    where Q2 : ComponentQuery, new()
+    where Q3 : ComponentQuery, new()
 {
-    private System.Action<E, C1, C2, C3> _fn;
+    private System.Action<E, Q1, Q2, Q3> _fn;
 
-    public SystemSubscribeContract(System.Action<E, C1, C2, C3> fn) {
+    public SystemSubscribeContract(System.Action<E, Q1, Q2, Q3> fn) {
         EventType = typeof(E);
+        /*
         ComponentTypes = new[] {
             typeof(C1),
             typeof(C2),
             typeof(C3),
         };
+        */
 
         _fn = fn;
     }
 
-    public override void Call(Event ev, Component component) {
-        throw new System.NotSupportedException();
-    }
+    public Q1 QueryA { get; } = new();
+    public Q2 QueryB { get; } = new();
+    public Q3 QueryC { get; } = new();
 
-    public override void Call(Event ev, Component component1, Component component2) {
-        throw new System.NotSupportedException();
-    }
-
-    public override void Call(Event ev, Component component1, Component component2, Component component3) {
-        Call(ev as E, component1 as C1, component2 as C2, component3 as C3);
-    }
-
-    public void Call(E ev, C1 component1, C2 component2, C3 component3) {
-        _fn.Invoke(ev, component1, component2, component3);
-    }
-
-    public override void Send(Event ev, Scene scene, Entity? entity = null) {
-        Assert.Is<E>(ev);
-        Send((E) ev, scene, entity);
-    }
-
-    public void Send(E ev, Scene scene, Entity? entity = null) {
-        if (entity.HasValue) {
-            (C1, C2, C3) component = scene.Components.Query<C1, C2, C3>(entity.Value);
-            Call(ev, component.Item1, component.Item2, component.Item3);
-        } else if (MatchOriginatorOnly && ev is IEventOriginator<Entity> eventOriginator) {
-            (C1, C2, C3) component = scene.Components.Query<C1, C2, C3>(eventOriginator.Originator);
-            Call(ev, component.Item1, component.Item2, component.Item3);
-        } else {
-            IList<(C1, C2, C3)> components = scene.Components.QueryAll<C1, C2, C3>();
-
-            //Logger.DebugLine($" {components.Count} Component(s)");
-            foreach ((C1, C2, C3) component in components) {
-                Call(ev, component.Item1, component.Item2, component.Item3);
-            }
+    protected override void Execute(E ev, Components entityComponents) {
+        if (QueryA.Execute(entityComponents)
+         && QueryB.Execute(entityComponents)
+         && QueryC.Execute(entityComponents)
+        ) {
+            _fn.Invoke(ev, QueryA, QueryB, QueryC);
         }
     }
 }
