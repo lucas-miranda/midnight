@@ -1,7 +1,7 @@
 namespace Midnight;
 
 public sealed class RenderSystem : EntitySystem {
-    public override void Setup() {
+    public override void Setup(Scene scene) {
         Subscribe<UpdateStepEvent>()
             .WithMultiple<GraphicDisplayer>()
             .Submit(Update);

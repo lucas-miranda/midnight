@@ -58,6 +58,10 @@ public struct Vector3 : System.IEquatable<Vector3> {
         return ApproxEquals(Zero);
     }
 
+    public Vector2 ToVec2() {
+        return new(X, Y);
+    }
+
     public bool Equals(Vector3 v) {
         return !(X != v.X || Y != v.Y || Z != v.Z);
     }

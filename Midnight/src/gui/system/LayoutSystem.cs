@@ -1,7 +1,8 @@
 namespace Midnight.GUI;
 
+[SystemRegistry]
 public sealed class LayoutSystem : EntitySystem {
-    public override void Setup() {
+    public override void Setup(Scene scene) {
         Subscribe<UpdateStepEvent>()
             .With<Transform>()
             .With<Extent>()

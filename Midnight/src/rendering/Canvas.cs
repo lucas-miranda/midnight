@@ -84,7 +84,7 @@ public class Canvas : Texture2D {
             GraphicsServer.BackBuffer.Format,
             depthFormat.GetValueOrDefault(DepthFormat.None),
             multiSampleCount.GetValueOrDefault(0),
-            RenderTargetUsage.PreserveContents
+            RenderTargetUsage.DiscardContents
         );
     }
 }

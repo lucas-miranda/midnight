@@ -20,6 +20,10 @@ public class SystemSubscribeContractBuilder<E> : SystemSubscribeContractBuilder
     public SystemSubscribeContractBuilder<E, MultiQuery<C>> WithMultiple<C>() where C : Component {
         return System.GetContractBuilder<SystemSubscribeContractBuilder<E, MultiQuery<C>>>();
     }
+
+    public SystemSubscribeContract<E> Submit(System.Action<E> fn) {
+        return System.RegisterContract<SystemSubscribeContract<E>>(new(fn));
+    }
 }
 
 public class SystemSubscribeContractBuilder<E, Q> : SystemSubscribeContractBuilder

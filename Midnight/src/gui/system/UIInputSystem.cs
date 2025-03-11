@@ -1,7 +1,7 @@
 namespace Midnight.GUI;
 
 public sealed class UIInputSystem : EntitySystem {
-    public override void Setup() {
+    public override void Setup(Scene scene) {
         //Subscribe<MouseButtonEvent, GUIDisplayer>(HandleMouseButton);
         Subscribe<MouseButtonEvent>()
             .With<Pressable>()

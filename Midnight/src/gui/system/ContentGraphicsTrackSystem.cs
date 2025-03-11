@@ -1,7 +1,8 @@
 namespace Midnight.GUI;
 
+[SystemRegistry]
 public sealed class ContentGraphicsTrackSystem : EntitySystem {
-    public override void Setup() {
+    public override void Setup(Scene scene) {
         var contract = Subscribe<ECS.ComponentAddedEvent>()
             .With<ContentGraphics>()
             .Submit(ComponentAdded);

@@ -3,7 +3,7 @@ namespace Midnight.GUI;
 public sealed class ExtentRenderSystem : EntitySystem {
     private RectangleDrawable _marginDebug, _paddingDebug;
 
-    public override void Setup() {
+    public override void Setup(Scene scene) {
         Subscribe<RenderStepEvent>()
             .With<Transform>()
             .With<Extent>()

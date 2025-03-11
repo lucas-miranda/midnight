@@ -76,7 +76,7 @@ public abstract class Drawable : ISizeable {
         if (Params.Transform != Transform) {
             Params.Transform.FlushMatrix();
             //System.Console.WriteLine($"Preparing Final Vertices with Custom Transform");
-            PrepareFinalVertices(Params.Transform.Matrix * Transform.Matrix);
+            PrepareFinalVertices(Transform.Matrix * Params.Transform.Matrix);
         } else {
             //System.Console.WriteLine($"Preparing Final Vertices");
             PrepareFinalVertices(Transform.Matrix);
@@ -119,7 +119,7 @@ public abstract class Drawable : ISizeable {
             var v = Vertices[i];
             //System.Console.WriteLine($"v[{i}] = Pos: {v.Position}, Pos Scale: {PositionScale}, result: {m * (v.Position * PositionScale)}");
             FinalVertices[i] = new(
-                m * (v.Position * PositionScale),
+                (v.Position * PositionScale) * m,
                 (v.Color.Normalized() * Params.Color).ToByte(),
                 v.TextureCoordinate
             );

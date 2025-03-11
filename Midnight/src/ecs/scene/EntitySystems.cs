@@ -76,7 +76,7 @@ public sealed class EntitySystems {
     public void Register(EntitySystem sys) {
         Assert.NotNull(sys);
         _systems.Add(sys);
-        sys.Setup();
+        sys.Setup(Scene);
 
         foreach (SystemSubscribeContract contract in sys.Contracts) {
             GetOrCreateLookupList(contract.EventType)

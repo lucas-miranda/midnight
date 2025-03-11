@@ -146,8 +146,13 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
     private void FlushGroup(BatchGroup group) {
         // TODO  remove me
         // TODO  iterate through active Shaders and place WVP, extracted from MainCamera
-        if (group.Material.BaseShader is IWVPShader wvpShader && RenderingServer.MainCamera != null) {
-            wvpShader.WorldViewProjection = RenderingServer.MainCamera.ViewProjection;
+        if (group.Material.BaseShader is IWVPShader wvpShader) {
+            if (group.Settings.WorldViewProjection != null) {
+                // using custom wvp
+                wvpShader.WorldViewProjection = group.Settings.WorldViewProjection.Value;
+            } else if (RenderingServer.MainCamera != null) {
+                wvpShader.WorldViewProjection = RenderingServer.MainCamera.WorldViewProjection;
+            }
         }
 
         group.Flush(this);

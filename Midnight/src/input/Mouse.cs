@@ -87,9 +87,10 @@ public sealed class Mouse {
             ButtonState state = _buttons[i],
                         prevState = _prevButtons[i];
 
-            if (state != prevState) {
+            if (state != prevState || state == ButtonState.Down) {
                 Scene.Current.Systems.Send<MouseButtonEvent>(new(
-                    Position,
+                    PreviousPosition,
+                    _position - PreviousPosition,
                     (MouseButton) i,
                     state,
                     prevState

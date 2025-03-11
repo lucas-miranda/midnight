@@ -84,7 +84,7 @@ public struct Matrix : System.IEquatable<Matrix> {
         );
     }
 
-    public static Matrix Ortho(float width, float height, float near, float far) {
+    public static Matrix OrthoRH(float width, float height, float near, float far) {
         // ref: https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixorthorh
         return new(
             new(2.0f / width,                       0.0f,                               0.0f,                   0.0f),
@@ -94,18 +94,71 @@ public struct Matrix : System.IEquatable<Matrix> {
         );
     }
 
-    public static Matrix OrthoOffCenter(float bottom, float top, float left, float right, float near, float far) {
+    public static Matrix OrthoOffCenterRH(float bottom, float top, float left, float right, float near, float far) {
+        // ref: https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixorthooffcenterrh
+        return new(
+            new(
+                (float) (2.0 / ((double) right - (double) left)),
+                0.0f,
+                0.0f,
+                0.0f
+            ),
+            new(
+                0.0f,
+                (float) (2.0 / ((double) top - (double) bottom)),
+                0.0f,
+                0.0f
+            ),
+            new(
+                0.0f,
+                0.0f,
+                (float) (1.0 / ((double) near - (double) far)),
+                0.0f
+            ),
+            new(
+                (float) (((double) left + (double) right) / ((double) left - (double) right)),
+                (float) (((double) bottom + (double) top) / ((double) bottom - (double) top)),
+                (float) ((double) near / ((double) near - (double) far)),
+                1.0f
+            )
+        );
+    }
+
+    public static Matrix LookAtRH(Vector3 eye, Vector3 target, Vector3 up) {
+        Vector3 zAxis = (eye - target).Normalized(),
+                xAxis = up.Cross(zAxis).Normalized(),
+                yAxis = zAxis.Cross(xAxis);
+
+        return new(
+            new(xAxis.X,            yAxis.X,            zAxis.X,            0.0f),
+            new(xAxis.Y,            yAxis.Y,            zAxis.Y,            0.0f),
+            new(xAxis.Z,            yAxis.Z,            zAxis.Z,            0.0f),
+            new(-xAxis.Dot(eye),    -yAxis.Dot(eye),    -zAxis.Dot(eye),    1.0f)
+        );
+    }
+
+    public static Matrix OrthoLH(float width, float height, float near, float far) {
+        // ref: https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixortholh
+        return new(
+            new(2.0f / width,                       0.0f,                               0.0f,                   0.0f),
+            new(0.0f,                               2.0f / height,                      0.0f,                   0.0f),
+            new(0.0f,                               0.0f,                               1.0f / (far - near),    0.0f),
+            new(0.0f,                               0.0f,                               -near / (far - near),   1.0f)
+        );
+    }
+
+    public static Matrix OrthoOffCenterLH(float bottom, float top, float left, float right, float near, float far) {
         // ref: https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dxmatrixorthooffcenterrh
         return new(
             new(2.0f / (right - left),              0.0f,                               0.0f,                   0.0f),
             new(0.0f,                               2.0f / (top - bottom),              0.0f,                   0.0f),
-            new(0.0f,                               0.0f,                               1.0f / (near - far),    0.0f),
+            new(0.0f,                               0.0f,                               1.0f / (far - near),    0.0f),
             new((right + left) / (left - right),    (top + bottom) / (bottom - top),    near / (near - far),    1.0f)
         );
     }
 
-    public static Matrix LookAt(Vector3 eye, Vector3 target, Vector3 up) {
-        Vector3 zAxis = (eye - target).Normalized(),
+    public static Matrix LookAtLH(Vector3 eye, Vector3 target, Vector3 up) {
+        Vector3 zAxis = (target - eye).Normalized(),
                 xAxis = up.Cross(zAxis).Normalized(),
                 yAxis = zAxis.Cross(xAxis);
 
@@ -119,10 +172,10 @@ public struct Matrix : System.IEquatable<Matrix> {
 
     public static Matrix Translation(Vector3 translation) {
         return new(
-            new(1.0f,       0.0f,       0.0f,       translation.X),
-            new(0.0f,       1.0f,       0.0f,       translation.Y),
-            new(0.0f,       0.0f,       1.0f,       translation.Z),
-            new(0.0f,       0.0f,       0.0f,       1.0f)
+            new(1.0f,           0.0f,           0.0f,           0.0f),
+            new(0.0f,           1.0f,           0.0f,           0.0f),
+            new(0.0f,           0.0f,           1.0f,           0.0f),
+            new(translation.X,  translation.Y,  translation.Z,  1.0f)
         );
     }
 
@@ -158,10 +211,28 @@ public struct Matrix : System.IEquatable<Matrix> {
         return Scaling(new Vector3(xyz));
     }
 
-    public static Matrix Rotation(float angle) {
+    public static Matrix RotationX(float angle) {
         return new(
-            new(Math.Cos(angle),    -Math.Sin(angle),   0.0f,       0.0f),
-            new(Math.Sin(angle),    Math.Cos(angle),    0.0f,       0.0f),
+            new(1.0f,   0.0f,               0.0f,               0.0f),
+            new(0.0f,   Math.Cos(angle),    Math.Sin(angle),    0.0f),
+            new(0.0f,   -Math.Sin(angle),   Math.Cos(angle),    0.0f),
+            new(0.0f,   0.0f,               0.0f,               1.0f)
+        );
+    }
+
+    public static Matrix RotationY(float angle) {
+        return new(
+            new(Math.Cos(angle),    0.0f,   -Math.Sin(angle),        0.0f),
+            new(0.0f,               1.0f,               0.0f,        0.0f),
+            new(Math.Sin(angle),    0.0f,    Math.Cos(angle),        0.0f),
+            new(0.0f,               0.0f,               0.0f,        1.0f)
+        );
+    }
+
+    public static Matrix RotationZ(float angle) {
+        return new(
+            new(Math.Cos(angle),    Math.Sin(angle),    0.0f,       0.0f),
+            new(-Math.Sin(angle),   Math.Cos(angle),    0.0f,       0.0f),
             new(0.0f,               0.0f,               1.0f,       0.0f),
             new(0.0f,               0.0f,               0.0f,       1.0f)
         );
@@ -283,7 +354,7 @@ public struct Matrix : System.IEquatable<Matrix> {
     }
 
     public void Decompose(out Vector2 translate, out Vector2 scale, out float rotation) {
-        translate = new(Row0.W, Row1.W);
+        translate = new(Row3.X, Row3.Y);
         scale = new Vector2(
             new Vector2(Row0.X, Row1.X).Length(),
             new Vector2(Row0.Y, Row1.Y).Length()

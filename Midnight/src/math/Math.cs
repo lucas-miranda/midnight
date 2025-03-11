@@ -132,6 +132,10 @@ public static class Math {
         return System.MathF.Round(value);
     }
 
+    public static float Round(float value, System.MidpointRounding mode) {
+        return System.MathF.Round(value, mode);
+    }
+
     /// <summary>Returns value rounded to the nearest integer.</summary>
     public static int RoundI(float value) {
         return (int) System.MathF.Round(value);

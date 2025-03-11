@@ -14,7 +14,7 @@ public abstract class EntitySystem {
 
     internal ReadOnlyCollection<SystemSubscribeContract> Contracts { get; }
 
-    public abstract void Setup();
+    public abstract void Setup(Scene scene);
 
     protected void Emit<E>(E ev) where E : Event {
         Scene.Current.Systems.Send(ev);

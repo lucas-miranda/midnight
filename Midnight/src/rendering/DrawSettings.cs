@@ -11,6 +11,7 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
         DepthStencil = DepthStencilState.Default;
         Rasterizer = RasterizerState.CullNone;
         Primitive = PrimitiveType.TriangleList;
+        WorldViewProjection = null;
         Immediate = false;
     }
 
@@ -19,6 +20,7 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
     public DepthStencilState DepthStencil { get; init; }
     public RasterizerState Rasterizer { get; init; }
     public PrimitiveType Primitive { get; init; }
+    public Matrix? WorldViewProjection { get; init; }
 
     /// <summary>
     /// Should it be submmitted as immediate?
@@ -55,11 +57,12 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
             && DepthStencil.Equals(s.DepthStencil)
             && Rasterizer.Equals(s.Rasterizer)
             && Primitive.Equals(s.Primitive)
-            && Immediate.Equals(s.Immediate);
+            && Immediate.Equals(s.Immediate)
+            && WorldViewProjection.Equals(s.WorldViewProjection);
     }
 
     public override bool Equals([NotNullWhen(true)] object obj) {
-        return obj is RasterizerState s && Equals(s);
+        return obj is DrawSettings s && Equals(s);
     }
 
     public override int GetHashCode() {
@@ -76,6 +79,10 @@ public struct DrawSettings : System.IEquatable<DrawSettings> {
             hashCode = hashCode * 1610612741 + Rasterizer.GetHashCode();
             hashCode = hashCode * 1610612741 + Primitive.GetHashCode();
             hashCode = hashCode * 1610612741 + Immediate.GetHashCode();
+
+            if (WorldViewProjection != null) {
+                hashCode = hashCode * 1610612741 + WorldViewProjection.GetHashCode();
+            }
         }
 
         return hashCode;

@@ -1,7 +1,8 @@
 namespace Midnight.GUI;
 
+[SystemRegistry]
 public sealed class BackgroundBorderResizeSystem : EntitySystem {
-    public override void Setup() {
+    public override void Setup(Scene scene) {
         Subscribe<ResizeEvent>()
             .With<BackgroundBorder>()
             .Submit(Resize);

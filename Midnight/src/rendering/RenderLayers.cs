@@ -72,6 +72,11 @@ public sealed class RenderLayers : IEnumerable<RenderLayer> {
     }
 
     internal void Render(DeltaTime dt) {
+        // ensure we don't use camera wvp, we only need it's projection
+        _displayer.DrawSettings = _displayer.DrawSettings with {
+            WorldViewProjection = RenderingServer.MainCamera.Projection
+        };
+
         foreach (RenderLayer layer in _layers) {
             _displayer.Texture = layer.Canvas;
             _displayer.Render(dt);

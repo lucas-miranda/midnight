@@ -7,6 +7,7 @@ namespace Midnight;
 public class Transform2D {
     public static readonly Transform2D Identity = new();
 
+    private Matrix _matrix = Matrix.Identity;
     private Vector2 _position,
                     _scale = Vector2.One,
                     _scaleOrigin,
@@ -61,7 +62,16 @@ public class Transform2D {
     /// By multiplying it by a vector, applies the stored transformation.
     /// </summary>
     /// <see cref="Apply(Vector3)"/>
-    public Matrix Matrix { get; set; }
+    public Matrix Matrix {
+        get => _matrix;
+        set {
+            _hasChanges = false;
+            _matrix = value;
+            _scaleOrigin = _rotationOrigin = Vector2.Zero;
+            _scaleRotation = 0.0f;
+            _matrix.Decompose(out _position, out _scale, out _rotation);
+        }
+    }
 
     /// <summary>
     /// Origin which should be used when applying Scale.
@@ -117,13 +127,13 @@ public class Transform2D {
         _hasChanges = false;
 
         Matrix mso = Matrix.Translation(_scaleOrigin),
-               msr = Matrix.Rotation(_scaleRotation),
+               msr = Matrix.RotationZ(_scaleRotation),
                ms = Matrix.Scaling(_scale),
                mro = Matrix.Translation(_rotationOrigin),
-               mr = Matrix.Rotation(_rotation),
+               mr = Matrix.RotationZ(_rotation),
                mt = Matrix.Translation(_position);
 
-        Matrix = mt * mro * mr * mro.Invert() * mso * msr * ms * msr.Invert() * mso.Invert();
+        _matrix = mso.Invert() * msr.Invert() * ms * msr * mso * mro.Invert() * mr * mro * mt;
         return true;
     }
 
@@ -131,7 +141,7 @@ public class Transform2D {
     /// Applies transformation to a Vector3.
     /// </summary>
     public Vector3 Apply(Vector3 v) {
-        return Matrix * v;
+        return v * Matrix;
     }
 
     public void CopyFrom(Transform2D transform) {
@@ -142,7 +152,7 @@ public class Transform2D {
         _rotation = transform.Rotation;
         _scaleRotation = transform.ScaleRotation;
         _hasChanges = transform._hasChanges;
-        Matrix = transform.Matrix;
+        _matrix = transform.Matrix;
     }
 
     public void Push(Transform2D transform) {
@@ -150,8 +160,8 @@ public class Transform2D {
         transform.FlushMatrix();
         _scaleOrigin = _rotationOrigin = Vector2.Zero;
         _scaleRotation = 0.0f;
-        Matrix *= transform.Matrix;
-        Matrix.Decompose(out _position, out _scale, out _rotation);
+        _matrix *= transform.Matrix;
+        _matrix.Decompose(out _position, out _scale, out _rotation);
     }
 
     public override string ToString() {

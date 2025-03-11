@@ -3,13 +3,15 @@ using Midnight.Diagnostics;
 namespace Midnight;
 
 public class Camera {
-    public Matrix View = Matrix.Identity,
+    public Matrix World = Matrix.Identity,
+                  View = Matrix.Identity,
                   Projection = Matrix.Identity,
-                  ViewProjection = Matrix.Identity;
+                  WorldViewProjection = Matrix.Identity;
 
     private bool _requireRecalculateView,
                  _requireRecalculateProjection;
 
+    private Matrix _viewProjection = Matrix.Identity;
     private Vector3 _position;
     private Size2I _size;
     private ProjectionKind _projectionKind;
@@ -62,7 +64,9 @@ public class Camera {
                     }
 
                     // TODO  add custom config to near/far planes
-                    Projection = Matrix.Ortho(Size.Width, Size.Height, -100, 100);
+                    //World = Matrix.Translation(-Size.ToVector2() / 2.0f, 0.0f);
+                    //Projection = Matrix.OrthoRH(Size.Width, Size.Height, -100, 100);
+                    Projection = Matrix.OrthoOffCenterRH(Size.Height, 0.0f, 0.0f, Size.Width, 0.0f, 1.0f);
                     break;
 
                 case ProjectionKind.Perspective:
@@ -77,11 +81,13 @@ public class Camera {
 
         if (_requireRecalculateView) {
             // TODO  add custom config to target and up
-            View = Matrix.LookAt(Position, Position + new Vector3(0.0f, 0.0f, 1.0f), new(0.0f, -1.0f, 0.0f));
+            View = Matrix.LookAtRH(Position, Position + new Vector3(0.0f, 0.0f, -1.0f), new(0.0f, 1.0f, 0.0f));
+
             _requireRecalculateView = false;
         }
 
-        ViewProjection = Matrix.Multiply(ref View, ref Projection);
+        _viewProjection = Matrix.Multiply(ref View, ref Projection);
+        WorldViewProjection = Matrix.Multiply(ref World, ref _viewProjection);
     }
 
     public void RequestRecalculate() {

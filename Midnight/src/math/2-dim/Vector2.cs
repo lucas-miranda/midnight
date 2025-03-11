@@ -54,6 +54,22 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return ApproxEquals(Zero);
     }
 
+    public Vector2 Floor() {
+        return new(Math.Floor(X), Math.Floor(Y));
+    }
+
+    public Vector2 Ceil() {
+        return new(Math.Ceil(X), Math.Ceil(Y));
+    }
+
+    public Vector2 Round() {
+        return new(Math.Round(X), Math.Round(Y));
+    }
+
+    public Vector2 Round(System.MidpointRounding mode) {
+        return new(Math.Round(X, mode), Math.Round(Y, mode));
+    }
+
     public Vector2I ToInt() {
         return new((int) X, (int) Y);
     }
@@ -175,6 +191,14 @@ public struct Vector2 : System.IEquatable<Vector2> {
 
     public static Vector2 operator /(Vector2 v, Size2I s) {
         return new(v.X / s.Width, v.Y / s.Height);
+    }
+
+    public static Vector2 operator %(Vector2 a, Vector2 b) {
+        return new(a.X % b.X, a.Y % b.Y);
+    }
+
+    public static Vector2 operator %(Vector2 v, Size2 s) {
+        return new(v.X % s.Width, v.Y % s.Height);
     }
 
     public static bool operator ==(Vector2 a, Vector2 b) {

@@ -1,7 +1,8 @@
 namespace Midnight.GUI;
 
+[SystemRegistry]
 public sealed class PressableInputSystem : EntitySystem {
-    public override void Setup() {
+    public override void Setup(Scene scene) {
         Subscribe<MouseButtonEvent>()
             .With<Pressable>()
             .With<Transform>()
@@ -11,15 +12,17 @@ public sealed class PressableInputSystem : EntitySystem {
     }
 
     public void HandleMouseButton(MouseButtonEvent e, Query<Pressable> pressable, Query<Transform> transform, Query<Extent> extent, Query<Widget> widget) {
-        Logger.DebugLine("PressableInputSystem -> HandleMouseButton");
+        //Logger.DebugLine("PressableInputSystem -> HandleMouseButton");
 
         switch (e) {
             case MouseButtonEvent mouseButtonEvent:
+                /*
                 Logger.DebugLine($"----");
                 Logger.DebugLine($"Button Event: {mouseButtonEvent}");
                 Logger.DebugLine($"Button Global: {transform.Entry.Global}");
                 Logger.DebugLine($"Button Local: {transform.Entry.Local}");
                 Logger.DebugLine($"Button Bounds: {extent.Entry.GetBounds(transform.Entry.Global)}");
+                */
 
                 if (mouseButtonEvent.Button == MouseButton.Left
                  && extent.Entry.GetBounds(transform.Entry.Global).Contains(mouseButtonEvent.Position)

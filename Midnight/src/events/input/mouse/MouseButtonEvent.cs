@@ -1,13 +1,14 @@
 
 namespace Midnight;
 
-public class MouseButtonEvent : MouseEvent {
+public class MouseButtonEvent : MouseMoveEvent {
     public MouseButtonEvent(
         Vector2I position,
+        Vector2I movement,
         MouseButton button,
         ButtonState state,
         ButtonState prevState
-    ) : base(position)
+    ) : base(position, movement)
     {
         Button = button;
         State = state;
@@ -19,6 +20,10 @@ public class MouseButtonEvent : MouseEvent {
     public ButtonState PreviousState { get; }
 
     public override string ToString() {
-        return $"MouseButtonEvent  Pos: {Position}; Button: {Button}; State: {State}; Prev State: {PreviousState}";
+        if (Position == EndPosition) {
+            return $"MouseButtonEvent  Pos: {Position}; Button: {Button}; State: {State}; Prev State: {PreviousState}";
+        }
+
+        return $"MouseButtonEvent  Pos: {Position} -> {EndPosition} (Move: {Movement}); Button: {Button}; State: {State}; Prev State: {PreviousState}";
     }
 }

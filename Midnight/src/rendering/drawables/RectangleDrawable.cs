@@ -42,14 +42,12 @@ public class RectangleDrawable : Drawable {
             settings = settings with {
                 Samplers = new SamplerState[0],
                 Primitive = PrimitiveType.TriangleList,
-                //Immediate = true,
             };
         } else {
             //System.Console.WriteLine("- Hollow");
             settings = settings with {
                 Samplers = new SamplerState[0],
                 Primitive = PrimitiveType.LineStrip,
-                //Immediate = true,
             };
         }
 

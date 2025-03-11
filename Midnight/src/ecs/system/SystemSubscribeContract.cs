@@ -11,7 +11,17 @@ public abstract class SystemSubscribeContract {
     public abstract void Send(Event ev, Scene scene, Entity? entity = null);
 }
 
-public abstract class SystemSubscribeContract<E> : SystemSubscribeContract where E : Event {
+public class SystemSubscribeContract<E> : SystemSubscribeContract where E : Event {
+    private System.Action<E> _fn;
+
+    protected SystemSubscribeContract() {
+    }
+
+    public SystemSubscribeContract(System.Action<E> fn) {
+        EventType = typeof(E);
+        _fn = fn;
+    }
+
     public sealed override void Send(Event ev, Scene scene, Entity? entity = null) {
         Assert.Is<E>(ev);
         Send((E) ev, scene, entity);
@@ -29,7 +39,9 @@ public abstract class SystemSubscribeContract<E> : SystemSubscribeContract where
         }
     }
 
-    protected abstract void Execute(E ev, Components entityComponents);
+    protected virtual void Execute(E ev, Components entityComponents) {
+        _fn.Invoke(ev);
+    }
 
     protected void Execute(E ev, Scene scene, Entity entity) {
         Execute(ev, scene.Components.Get(entity));

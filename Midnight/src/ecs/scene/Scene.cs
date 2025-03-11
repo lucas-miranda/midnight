@@ -17,15 +17,19 @@ public class Scene {
     /// Prepare anything before Start().
     /// </summary>
     public virtual void Prepare() {
-        //Systems.Register(new RenderSystem());
+        // register every system annotated with SystemRegistryAttribute
+        foreach ((System.Type Type, SystemRegistryAttribute Attribute) entry in ReflectionHelper.IterateTypesWithAttribute<SystemRegistryAttribute>()) {
+            Systems.Register((EntitySystem) System.Activator.CreateInstance(entry.Type));
+        }
+
+        /*
         Systems.Register(new TransformSystem());
         Systems.Register(new GUI.ContentGraphicsTrackSystem());
-        //Systems.Register(new GUI.UIInputSystem());
         Systems.Register(new GUI.PressableInputSystem());
         Systems.Register(new GUI.LayoutSystem());
-        //Systems.Register(new GUI.ExtentRenderSystem());
         Systems.Register(new GUI.BackgroundBorderResizeSystem());
         Systems.Register(new GUI.RenderSystem());
+        */
     }
 
     /// <summary>

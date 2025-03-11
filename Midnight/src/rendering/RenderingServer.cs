@@ -116,7 +116,7 @@ public sealed class RenderingServer {
         MainCamera?.Recalculate();
 
         // TODO  add Viewport
-        Clear(ClearOptions.All, Color.Transparent, XnaGraphicsDevice.Viewport.MaxDepth, 0);
+        //Clear(ClearOptions.All, Color.Transparent, XnaGraphicsDevice.Viewport.MaxDepth, 0);
 
         Batcher.ResetStats();
     }
