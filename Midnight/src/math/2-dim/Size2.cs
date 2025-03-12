@@ -27,6 +27,11 @@ public struct Size2 : System.IEquatable<Size2> {
     internal Size2(Xna.Vector2 xnaVector2) : this(xnaVector2.X, xnaVector2.Y) {
     }
 
+    public static Size2 Between(Vector2 a, Vector2 b) {
+        Vector2 diff = b - a;
+        return new(Math.Abs(diff.X), Math.Abs(diff.Y));
+    }
+
     public static Size2 MaxComponents(Size2 a, Size2 b) {
         return new(Math.Max(a.Width, b.Width), Math.Max(a.Height, b.Height));
     }

@@ -70,6 +70,14 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return new(Math.Round(X, mode), Math.Round(Y, mode));
     }
 
+    public Vector2 PerpendicularCCW() {
+        return new Vector2(Y, -X);
+    }
+
+    public Vector2 PerpendicularCW() {
+        return new Vector2(-Y, X);
+    }
+
     public Vector2I ToInt() {
         return new((int) X, (int) Y);
     }
