@@ -400,7 +400,7 @@ public class DrawBatcher<V> where V : struct, XnaGraphics.IVertexType {
                 0,
                 _verticesIndex,
                 batcher._vertexDeclaration.VertexStride,
-                XnaGraphics.SetDataOptions.None
+                XnaGraphics.SetDataOptions.Discard
             );
 
             RenderingServer.XnaGraphicsDevice.SetVertexBuffer(batcher.VertexBuffer);
