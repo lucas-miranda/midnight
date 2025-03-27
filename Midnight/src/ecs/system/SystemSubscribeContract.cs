@@ -30,7 +30,9 @@ public class SystemSubscribeContract<E> : SystemSubscribeContract where E : Even
     public void Send(E ev, Scene scene, Entity? entity = null) {
         if (entity.HasValue) {
             Execute(ev, scene, entity.Value);
-        } else if (MatchOriginatorOnly && ev is IEventOriginator<Entity> eventOriginator) {
+        } else if (MatchOriginatorOnly) {
+            Assert.Is<IEventOriginator<Entity>>(ev, $"Expected to have event originator, but event '{ev.GetType()}' doesn't have it implemented.");
+            IEventOriginator<Entity> eventOriginator = (IEventOriginator<Entity>) ev;
             Execute(ev, scene, eventOriginator.Originator);
         } else {
             foreach (KeyValuePair<Entity, Components> entry in scene.Components.EntityComponents()) {

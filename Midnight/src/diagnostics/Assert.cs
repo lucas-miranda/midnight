@@ -5,7 +5,7 @@ public static class Assert {
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void True(bool condition) {
-        System.Diagnostics.Debug.Assert(condition, "Value is expected to be true.");
+        True(condition, "Value is expected to be true.");
     }
 
     [System.Diagnostics.Conditional("DEBUG"),
@@ -23,7 +23,7 @@ public static class Assert {
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void False(bool condition) {
-        System.Diagnostics.Debug.Assert(!condition, "Value is expected to be false.");
+        False(condition, "Value is expected to be false.");
     }
 
     [System.Diagnostics.Conditional("DEBUG"),
@@ -41,7 +41,7 @@ public static class Assert {
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void NotNull<T>(T something) {
-        System.Diagnostics.Debug.Assert(something != null, "Value is expected to not be null.");
+        NotNull<T>(something, "Value is expected to not be null.");
     }
 
     [System.Diagnostics.Conditional("DEBUG"),
@@ -59,7 +59,7 @@ public static class Assert {
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void Null<T>(T something) {
-        System.Diagnostics.Debug.Assert(something == null, "Value is expected to be null.");
+        Null<T>(something, "Value is expected to be null.");
     }
 
     [System.Diagnostics.Conditional("DEBUG"),
@@ -77,7 +77,7 @@ public static class Assert {
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void Is<T>(object something) {
-        System.Diagnostics.Debug.Assert(something is T, $"Value is expected to have type {typeof(T).Name}.");
+        Is<T>(something, $"Value is expected to have type {typeof(T).Name}.");
     }
 
     [System.Diagnostics.Conditional("DEBUG"),
@@ -95,7 +95,7 @@ public static class Assert {
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void IsNot<T>(object something) {
-        System.Diagnostics.Debug.Assert(!(something is T), $"Value is expected to not have type {typeof(T).Name}.");
+        IsNot<T>(something, $"Value is expected to not have type {typeof(T).Name}.");
     }
 
     [System.Diagnostics.Conditional("DEBUG"),
@@ -113,7 +113,7 @@ public static class Assert {
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void Is<T>(System.Type type) {
-        System.Diagnostics.Debug.Assert(typeof(T).IsAssignableFrom(type), $"Type {type.Name} is expected to be assignable to type {typeof(T).Name}.");
+        Is<T>(type, $"Type {type.Name} is expected to be assignable to type {typeof(T).Name}.");
     }
 
     [System.Diagnostics.Conditional("DEBUG"),
@@ -131,7 +131,7 @@ public static class Assert {
     [System.Diagnostics.Conditional("DEBUG"),
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void IsNot<T>(System.Type type) {
-        System.Diagnostics.Debug.Assert(!typeof(T).IsAssignableFrom(type), $"Type {type.Name} is expected to not be assignable to type {typeof(T).Name}.");
+        IsNot<T>(type, $"Type {type.Name} is expected to not be assignable to type {typeof(T).Name}.");
     }
 
     [System.Diagnostics.Conditional("DEBUG"),
@@ -144,5 +144,23 @@ public static class Assert {
      System.Diagnostics.Conditional("ASSERTIONS")]
     public static void IsNot<T>(System.Type type, string message, string detailedMessage) {
         System.Diagnostics.Debug.Assert(!typeof(T).IsAssignableFrom(type), message, detailedMessage);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void InRange(int value, int min, int max) {
+        InRange(value, min, max, $"Value ({value}) is expected to be in range [{min}, {max}].");
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void InRange(int value, int min, int max, string message) {
+        System.Diagnostics.Debug.Assert(!(value < min || value > max), message);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG"),
+     System.Diagnostics.Conditional("ASSERTIONS")]
+    public static void InRange(int value, int min, int max, string message, string detailedMessage) {
+        System.Diagnostics.Debug.Assert(!(value < min || value > max), message, detailedMessage);
     }
 }

@@ -26,6 +26,8 @@ public struct Size2I : System.IEquatable<Size2I> {
     internal Size2I(Xna.Vector2 xnaVector2) : this((int) xnaVector2.X, (int) xnaVector2.Y) {
     }
 
+    public int Area => Width * Height;
+
     public float Length() {
         return Math.Sqrt(Width * Width + Height * Height);
     }

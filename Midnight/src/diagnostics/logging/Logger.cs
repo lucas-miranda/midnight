@@ -34,6 +34,13 @@ public class Logger {
         });
     }
 
+    public static void Line(object obj, string channel = "default") {
+        _instance.Send(new() {
+            Text = obj.ToString(),
+            Channel = channel,
+        });
+    }
+
     [System.Diagnostics.Conditional("DEBUG")]
     public static void DebugLine(string contents, string channel = "default") {
         _instance.Send(new() {

@@ -32,6 +32,18 @@ public static class ReflectionHelper {
         }
     }
 
+    public static IEnumerable<System.Type> IterateDescendantsTypes<T>(Assembly assembly) {
+        System.Type ancestorType = typeof(T);
+
+        foreach (System.Type type in assembly.GetTypes()) {
+            if (!type.IsSubclassOf(ancestorType)) {
+                continue;
+            }
+
+            yield return type;
+        }
+    }
+
     public static IEnumerable<System.Type> IterateAssignablesTypes<T>() {
         System.Type ancestorType = typeof(T);
 

@@ -23,6 +23,10 @@ public class Texture2D : Texture {
         )) {
     }
 
+    internal Texture2D() : base() {
+    }
+
+
     internal Texture2D(XnaGraphics.Texture2D xnaTexture) : base(xnaTexture) {
     }
 
@@ -30,7 +34,9 @@ public class Texture2D : Texture {
     public int Width => Size.Width;
     public int Height => Size.Height;
 
-    internal override XnaGraphics.Texture2D Underlying { get => (XnaGraphics.Texture2D) base.Underlying; }
+    internal override XnaGraphics.Texture2D Underlying {
+        get => (XnaGraphics.Texture2D) base.Underlying;
+    }
 
     public static Texture2D Load(string filepath) {
         using (FileStream stream = File.OpenRead(filepath)) {
@@ -159,5 +165,9 @@ public class Texture2D : Texture {
         Assert.NotNull(Underlying);
         Assert.NotNull(data);
         Underlying.SetData(level, bounds.ToXna(), data, startIndex, elementCount);
+    }
+
+    public override string ToString() {
+        return $"{base.ToString()}; Size: {Size}";
     }
 }

@@ -11,7 +11,7 @@ public sealed class ContentGraphicsTrackSystem : EntitySystem {
     }
 
     public void ComponentAdded(ECS.ComponentAddedEvent e, Query<ContentGraphics> contentGraphics) {
-        Logger.DebugLine($"{GetType()} -> ComponentAdded '{e.Context.GetType()}' to {contentGraphics.Entry.Entity}");
+        //Logger.DebugLine($"{GetType()} -> ComponentAdded '{e.Context.GetType()}' to {contentGraphics.Entry.Entity}");
 
         switch (e.Context) {
             case GraphicDisplayer graphicDisplayer:
@@ -21,16 +21,16 @@ public sealed class ContentGraphicsTrackSystem : EntitySystem {
 
                         if (backgroundBorder.Background == graphicDisplayer || backgroundBorder.Border == graphicDisplayer) {
                             // ignore background or border
-                            Logger.DebugLine($"Ignore background or border");
+                            //Logger.DebugLine($"Ignore background or border");
                             return;
                         }
                     }
 
                     if (!contentGraphics.Entry.Entries.Contains(graphicDisplayer)) {
                         contentGraphics.Entry.Entries.Add(graphicDisplayer);
-                        Logger.DebugLine($"Registered '{e.Context.GetType()}' to ContentGraphics (total: {contentGraphics.Entry.Entries.Count})");
+                        //Logger.DebugLine($"Registered '{e.Context.GetType()}' to ContentGraphics (total: {contentGraphics.Entry.Entries.Count})");
                     } else {
-                        Logger.DebugLine($"Already registered to ContentGraphics (total: {contentGraphics.Entry.Entries.Count})");
+                        //Logger.DebugLine($"Already registered to ContentGraphics (total: {contentGraphics.Entry.Entries.Count})");
                     }
                 }
                 break;

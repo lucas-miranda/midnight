@@ -6,7 +6,9 @@ namespace Midnight;
 public sealed class SceneComponents {
     private Components _allComponents = new();
     private List<Component> _buffer = new();
+                            //_stagingComponents = new();
     private Dictionary<Entity, Components> _entityComponents = new();
+                                           //_stagingEntityComponents = new();
 
     public SceneComponents(Scene scene) {
         Scene = scene;
@@ -119,17 +121,60 @@ public sealed class SceneComponents {
         return result;
     }
 
+    public void Flush() {
+        /*
+        foreach (Component component in _stagingComponents) {
+            _allComponents.Add(component);
+
+            if (_stagingEntityComponents.TryGetValue(component.Entity, out Components stagingEntityComponents)) {
+                if (!_entityComponents.TryGetValue(component.Entity, out Components entityComponents)) {
+                    entityComponents = new();
+                    _entityComponents[component.Entity] = entityComponents;
+                }
+
+                stagingEntityComponents.CopyTo(entityComponents);
+                stagingEntityComponents.Clear();
+            }
+        }
+
+        _stagingComponents.Clear();
+        */
+    }
+
     public IEnumerable<KeyValuePair<Entity, Components>> EntityComponents() {
         foreach (KeyValuePair<Entity, Components> entry in _entityComponents) {
             yield return entry;
         }
     }
 
+    /*
+    internal void Register(Component component) {
+        Assert.False(_allComponents.Contains(component));
+        Assert.False(_stagingComponents.Contains(component));
+        _stagingComponents.Add(component);
+
+        Components components;
+
+        if (!_entityComponents.TryGetValue(component.Entity, out components)) {
+            if (!_stagingEntityComponents.TryGetValue(component.Entity, out components)) {
+                components = new();
+                _stagingEntityComponents[component.Entity] = components;
+            }
+        }
+
+        Assert.False(components.Contains(component));
+        components.Add(component);
+        Scene.Systems.Send(new ECS.ComponentAddedEvent(component));
+    }
+    */
+
     internal void Register(Component component) {
         Assert.False(_allComponents.Contains(component));
         _allComponents.Add(component);
 
-        if (!_entityComponents.TryGetValue(component.Entity, out Components components)) {
+        Components components;
+
+        if (!_entityComponents.TryGetValue(component.Entity, out components)) {
             components = new();
             _entityComponents[component.Entity] = components;
         }

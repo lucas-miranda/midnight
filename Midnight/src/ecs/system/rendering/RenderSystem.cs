@@ -2,6 +2,7 @@ namespace Midnight;
 
 public sealed class RenderSystem : EntitySystem {
     public override void Setup(Scene scene) {
+        /*
         Subscribe<UpdateStepEvent>()
             .WithMultiple<GraphicDisplayer>()
             .Submit(Update);
@@ -9,21 +10,26 @@ public sealed class RenderSystem : EntitySystem {
         Subscribe<RenderStepEvent>()
             .WithMultiple<GraphicDisplayer>()
             .Submit(Render);
+            */
     }
 
-    public void Update(UpdateStepEvent e, MultiQuery<GraphicDisplayer> displayers) {
         /*
+    public void Update(UpdateStepEvent e, MultiQuery<GraphicDisplayer> displayers) {
         if (displayer is DrawableDisplayer drawableDisplayer) {
             drawableDisplayer.Drawable.Update(e.DeltaTime);
         }
-        */
     }
 
     public void Render(RenderStepEvent e, MultiQuery<GraphicDisplayer> displayers) {
         foreach (GraphicDisplayer displayer in displayers) {
             if (displayer is DrawableDisplayer drawableDisplayer) {
+                Logger.DebugLine("Render drawableDisplayer");
                 drawableDisplayer.Drawable.Draw(e.DeltaTime);
+            } else if (displayer is SpriteDisplayer spriteDisplayer) {
+                Logger.DebugLine("Render sprite displayer");
+                spriteDisplayer.Render(e.DeltaTime);
             }
         }
     }
+        */
 }

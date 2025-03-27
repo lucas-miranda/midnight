@@ -58,6 +58,7 @@ public class Scene {
 
     public virtual void Update(DeltaTime dt) {
         Systems.Send<UpdateStepEvent>(new(dt));
+        Components.Flush();
     }
 
     public virtual void Render(DeltaTime dt) {

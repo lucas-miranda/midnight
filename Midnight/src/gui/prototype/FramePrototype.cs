@@ -1,6 +1,7 @@
 
 namespace Midnight.GUI;
 
+[PrototypeRegistry(typeof(FrameBuilder))]
 public class FramePrototype : Prototype {
     protected override void Build(EntityBuilder builder) {
         builder.Add<Transform>();

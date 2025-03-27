@@ -1,6 +1,7 @@
 
 namespace Midnight.GUI;
 
+[PrototypeRegistry(typeof(Label), typeof(LabelBuilder))]
 public class LabelPrototype : Prototype {
     protected override void Build(EntityBuilder builder) {
         builder.Add<Transform>();

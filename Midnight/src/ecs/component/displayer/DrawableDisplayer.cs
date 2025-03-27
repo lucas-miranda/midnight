@@ -7,4 +7,8 @@ public class DrawableDisplayer : GraphicDisplayer {
 
     public Drawable Drawable { get; set; }
     public override Size2 Size => Drawable.Size;
+
+    public override void Draw(DeltaTime dt, DrawParams drawParams) {
+        Drawable.Draw(dt, drawParams);
+    }
 }

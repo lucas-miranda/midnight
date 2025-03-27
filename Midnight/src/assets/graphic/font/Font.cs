@@ -16,6 +16,16 @@ public abstract class Font : IAsset {
         Glyphs = Typesetting.GenerateGlyphs();
     }
 
+    public Font(Font font) {
+        Assert.NotNull(font);
+        Typesetting = font.Typesetting;
+        Name = font.Name;
+        IsReleased = font.IsReleased;
+        Size = font.Size;
+        Replacement = font.Replacement;
+        Glyphs = new(font.Glyphs);
+    }
+
     public string Name { get; set; }
     public string[] Filepaths => Typesetting.Filepaths;
     public bool IsReleased { get; private set; }
@@ -181,6 +191,9 @@ public abstract class Font : IAsset {
         return output.ToReadOnly();
     }
 
+    public abstract Font WithSize(float size);
+    public abstract Font Clone();
+
     public bool Reload() {
         return Typesetting.Reload();
     }
@@ -200,6 +213,19 @@ public class Font<T> : Font where T : class, IFontTypesetting {
     public Font(T typesetting) : base(typesetting) {
     }
 
+    public Font(Font<T> font) : base(font) {
+    }
+
     /// <inheritdoc/>
     public override T Typesetting => (T) base.Typesetting;
+
+    public override Font<T> WithSize(float size) {
+        return new(this) {
+            Size = size
+        };
+    }
+
+    public override Font<T> Clone() {
+        return new(this);
+    }
 }

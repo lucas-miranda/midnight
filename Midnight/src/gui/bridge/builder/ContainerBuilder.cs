@@ -11,8 +11,9 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
     private int _index;
 
     static ContainerBuilder() {
-        _builder.Add(typeof(FramePrototype), typeof(FrameBuilder));
-        _builder.Add(typeof(PushButtonPrototype), typeof(PushButtonBuilder));
+        foreach ((System.Type PrototypeType, PrototypeRegistryAttribute Attr) entry in ReflectionHelper.IterateTypesWithAttribute<PrototypeRegistryAttribute>()) {
+            _builder.Add(entry.PrototypeType, entry.Attr.BuilderType);
+        }
     }
 
     public ContainerBuilder(DesignBuilder designBuilder) : base(designBuilder) {
@@ -38,33 +39,44 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
         return RetrieveBuilder(typeof(T));
     }
 
-    public FrameBuilder Frame() {
-        return Create<FramePrototype>() as FrameBuilder;
+    public ContainerBuilder With(Layout layout) {
+        Components components = Result.GetComponents();
+        Widget widget = components.Get<Widget>();
+
+        if (widget != null) {
+            widget.Layout = layout;
+        }
+
+        return this;
+    }
+
+    #region Components
+
+    public FrameBuilder Frame(Layout layout = Layout.BoxHorizontal) {
+        Logger.DebugLine("Frame");
+        FrameBuilder b = Create<FramePrototype>() as FrameBuilder;
+        return (FrameBuilder) b.With(layout);
     }
 
     public PushButtonBuilder PushButton(string label) {
+        Logger.DebugLine($"PushButton '{label}'");
         PushButtonBuilder b = Create<PushButtonPrototype>() as PushButtonBuilder;
-        Components components = b.Result.GetComponents();
-        Transform transform = components.Get<Transform>();
-        Label childLabel = transform.FindFirstChildWithComponent<Label>();
-        DrawableDisplayer displayer = null;
-
-        if (childLabel == null) {
-            Entity labelEntity = Prototypes.Instantiate<Label>(b.Result);
-            displayer = labelEntity.Get<DrawableDisplayer>();
-        } else {
-            displayer = childLabel.Entity.Get<DrawableDisplayer>();
-        }
-
-        Assert.NotNull(displayer);
-        Assert.Is<StringDrawable>(displayer.Drawable);
-
-        // set label text value
-        StringDrawable text = (StringDrawable) displayer.Drawable;
-        text.Value = label;
-
-        return b;
+        return b.Label(label);
     }
+
+    public ItemListBuilder ItemList(Layout layout = Layout.BoxHorizontal) {
+        Logger.DebugLine("ItemList");
+        ItemListBuilder b = Create<ItemListPrototype>() as ItemListBuilder;
+        return (ItemListBuilder) b.With(layout);
+    }
+
+    public LabelBuilder Label(string text) {
+        Logger.DebugLine($"Label '{text}'");
+        LabelBuilder b = Create<LabelPrototype>() as LabelBuilder;
+        return b.With(text);
+    }
+
+    #endregion Components
 
     public void Dispose() {
     }

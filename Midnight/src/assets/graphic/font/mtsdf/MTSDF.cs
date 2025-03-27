@@ -67,11 +67,11 @@ public class MTSDF : IFontTypesetting {
     public bool IsReleased { get; private set; }
 
     public static Font<MTSDF> LoadFont(Texture2D texture, string dataFilepath) {
-        return new(new(texture, dataFilepath));
+        return new(new MTSDF(texture, dataFilepath));
     }
 
     public static Font<MTSDF> LoadFont(Texture2D texture, Stream dataStream) {
-        return new(new(texture, dataStream));
+        return new(new MTSDF(texture, dataStream));
     }
 
     public Dictionary<uint, Glyph> GenerateGlyphs() {

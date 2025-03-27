@@ -6,7 +6,7 @@ namespace Midnight;
 
 public sealed class RenderLayers : IEnumerable<RenderLayer> {
     private List<RenderLayer> _layers = new();
-    private SpriteDisplayer _displayer;
+    private RectangleDrawable _displayer;
 
     internal RenderLayers() {
     }
@@ -62,7 +62,7 @@ public sealed class RenderLayers : IEnumerable<RenderLayer> {
     internal void LoadContent() {
         _displayer = new() {
             Texture = null,
-            DrawSettings = SpriteDisplayer.DefaultDrawSettings with {
+            DrawSettings = DrawSettings.Default with {
                 Immediate = true,
             },
         };
@@ -73,13 +73,13 @@ public sealed class RenderLayers : IEnumerable<RenderLayer> {
 
     internal void Render(DeltaTime dt) {
         // ensure we don't use camera wvp, we only need it's projection
-        _displayer.DrawSettings = _displayer.DrawSettings with {
+        _displayer.DrawSettings = _displayer.DrawSettings.Value with {
             WorldViewProjection = RenderingServer.MainCamera.Projection
         };
 
         foreach (RenderLayer layer in _layers) {
             _displayer.Texture = layer.Canvas;
-            _displayer.Render(dt);
+            _displayer.Draw(dt);
         }
 
         _displayer.Texture = null;

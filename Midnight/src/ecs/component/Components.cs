@@ -160,6 +160,10 @@ public class Components : IEnumerable<Component> {
         return _entries.Contains(component);
     }
 
+    public void CopyTo(Components components) {
+        components._entries.AddRange(_entries);
+    }
+
     public void Clear() {
         _entries.Clear();
     }

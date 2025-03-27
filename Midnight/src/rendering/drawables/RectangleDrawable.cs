@@ -2,8 +2,10 @@
 namespace Midnight;
 
 public class RectangleDrawable : Drawable {
-    private bool _filled = true;
+    private bool _filled = true,
+                 _hasCustomSize;
     private Size2 _size;
+    private Texture2D _texture;
 
     public RectangleDrawable() {
     }
@@ -16,6 +18,7 @@ public class RectangleDrawable : Drawable {
             }
 
             _size = value;
+            _hasCustomSize = true;
             RequestRecalculateVertices();
         }
     }
@@ -28,6 +31,23 @@ public class RectangleDrawable : Drawable {
             }
 
             _filled = value;
+            RequestRecalculateVertices();
+        }
+    }
+
+    public Texture2D Texture {
+        get => _texture;
+        set {
+            if (value == _texture) {
+                return;
+            }
+
+            _texture = value;
+
+            if (!_hasCustomSize && _texture != null) {
+                _size = _texture.Size.ToFloat();
+            }
+
             RequestRecalculateVertices();
         }
     }
@@ -51,8 +71,14 @@ public class RectangleDrawable : Drawable {
             };
         }
 
+        if (Texture != null) {
+            settings = settings with {
+                Samplers = new SamplerState[] { SamplerState.PointClamp },
+            };
+        }
+
         RenderingServer.Draw(
-            null,
+            Texture,
             FinalVertices,
             0,
             FinalVertices.Length,
