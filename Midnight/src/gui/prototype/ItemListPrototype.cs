@@ -1,7 +1,8 @@
 
 namespace Midnight.GUI;
 
-[PrototypeRegistry(typeof(ItemList), typeof(ItemListBuilder))]
+[PrototypeRegistry(typeof(ItemList))]
+[WidgetPrototypeRegistry(typeof(ItemListBuilder))]
 public class ItemListPrototype : Prototype {
     protected override void Build(EntityBuilder builder) {
         builder.Add<Transform>();

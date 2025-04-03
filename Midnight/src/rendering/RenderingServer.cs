@@ -102,7 +102,9 @@ public sealed class RenderingServer {
 
         // set default shader material for Batcher
         SpriteShader shader = Shader.Load<SpriteShader>(Embedded.Resources.Shaders.Sprite);
-        Batcher.DefaultMaterial = new SpriteShaderMaterial(shader);
+        Batcher.DefaultMaterial = new SpriteShaderMaterial(shader) {
+            UseDepthBuffer = true,
+        };
 
         Batcher.LoadContent();
     }

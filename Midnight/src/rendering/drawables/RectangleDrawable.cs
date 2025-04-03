@@ -4,6 +4,7 @@ namespace Midnight;
 public class RectangleDrawable : Drawable {
     private bool _filled = true,
                  _hasCustomSize;
+
     private Size2 _size;
     private Texture2D _texture;
 

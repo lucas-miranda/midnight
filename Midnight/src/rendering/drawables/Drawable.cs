@@ -3,6 +3,8 @@ using Midnight.Diagnostics;
 namespace Midnight;
 
 public abstract class Drawable : ISizeable {
+    public const int Layers = 1 << 24 - 1; // 24 bits precision [-8388608, +8388608]
+
     private VertexPositionColorTexture[] _vertices, _finalVertices;
     private ShaderMaterial _material;
 
@@ -30,6 +32,13 @@ public abstract class Drawable : ISizeable {
     }
 
     public DrawParams Params { get; private set; }
+    public DrawableLayer Layer { get; set; }
+
+    public DrawableDepthLayer LayerDepth {
+        get => Layer.ToDepth();
+        set => Layer = value.ToLayer();
+    }
+
     public bool IsRecalculateRequested { get; private set; } = true;
 
     protected VertexPositionColorTexture[] Vertices {
@@ -119,7 +128,7 @@ public abstract class Drawable : ISizeable {
             var v = Vertices[i];
             //System.Console.WriteLine($"v[{i}] = Pos: {v.Position}, Pos Scale: {PositionScale}, result: {m * (v.Position * PositionScale)}");
             FinalVertices[i] = new(
-                (v.Position * PositionScale) * m,
+                new Vector3((v.Position.ToVec2() * PositionScale) * m, LayerDepth.Value),
                 (v.Color.Normalized() * Params.Color).ToByte(),
                 v.TextureCoordinate
             );

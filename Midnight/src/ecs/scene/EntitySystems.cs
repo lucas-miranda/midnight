@@ -6,7 +6,7 @@ namespace Midnight;
 
 public sealed class EntitySystems {
     private readonly System.Type EventBaseType = typeof(Event).BaseType;
-    private List<EntitySystem> _systems = new();
+    private Dictionary<System.Type, EntitySystem> _systems = new();
     private Dictionary<System.Type, List<LookupRegistry>> _lookup = new();
     private List<List<LookupRegistry>> _buffer = new();
     private Queue<(Event, Entity?)> _eventQueue = new();
@@ -73,9 +73,13 @@ public sealed class EntitySystems {
         Send((Event) new E(), entity);
     }
 
+    public S Get<S>() where S : EntitySystem {
+        return _systems[typeof(S)] as S;
+    }
+
     public void Register(EntitySystem sys) {
         Assert.NotNull(sys);
-        _systems.Add(sys);
+        _systems.Add(sys.GetType(), sys);
         sys.Setup(Scene);
 
         foreach (SystemSubscribeContract contract in sys.Contracts) {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Midnight.Diagnostics;
 
-namespace Midnight.GUI;
+namespace Midnight;
 
 public class Prototypes {
     private static Prototypes _instance;

@@ -457,6 +457,20 @@ public struct Matrix : System.IEquatable<Matrix> {
         );
     }
 
+    public static Vector2 operator *(Matrix m, Vector2 v) {
+        return new(
+            m.Row0.X * v.X + m.Row1.X * v.Y + m.Row2.X * 1.0f + m.Row3.X * 1.0f,
+            m.Row0.Y * v.X + m.Row1.Y * v.Y + m.Row2.Y * 1.0f + m.Row3.Y * 1.0f
+        );
+    }
+
+    public static Vector2 operator *(Vector2 v, Matrix m) {
+        return new(
+            m.Row0.X * v.X + m.Row1.X * v.Y + m.Row2.X * 1.0f + m.Row3.X * 1.0f,
+            m.Row0.Y * v.X + m.Row1.Y * v.Y + m.Row2.Y * 1.0f + m.Row3.Y * 1.0f
+        );
+    }
+
     public static Matrix operator *(float n, Matrix m) {
         return new(n * m.Row0, n * m.Row1, n * m.Row2, n * m.Row3);
     }

@@ -1,7 +1,8 @@
 
 namespace Midnight.GUI;
 
-[PrototypeRegistry(typeof(PushButtonBuilder))]
+[PrototypeRegistry]
+[WidgetPrototypeRegistry(typeof(PushButtonBuilder))]
 public class PushButtonPrototype : Prototype {
     protected override void Build(EntityBuilder builder) {
         builder.Add<Transform>();

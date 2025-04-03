@@ -11,7 +11,7 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
     private int _index;
 
     static ContainerBuilder() {
-        foreach ((System.Type PrototypeType, PrototypeRegistryAttribute Attr) entry in ReflectionHelper.IterateTypesWithAttribute<PrototypeRegistryAttribute>()) {
+        foreach ((System.Type PrototypeType, WidgetPrototypeRegistryAttribute Attr) entry in ReflectionHelper.IterateTypesWithAttribute<WidgetPrototypeRegistryAttribute>()) {
             _builder.Add(entry.PrototypeType, entry.Attr.BuilderType);
         }
     }

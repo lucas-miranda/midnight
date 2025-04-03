@@ -1,7 +1,7 @@
 namespace Midnight;
 
-public record class SpriteShaderMaterial(SpriteShader Shader)
-    : ShaderMaterial<SpriteShader>(Shader),
+public record class BaseSpriteShaderMaterial(BaseSpriteShader Shader)
+    : ShaderMaterial<BaseSpriteShader>(Shader),
       IColorUniform,
       ITextureUniform<Texture2D>,
       IWVPUniform
@@ -9,7 +9,6 @@ public record class SpriteShaderMaterial(SpriteShader Shader)
     public ColorF? ColorF { get; set; }
     public Texture2D Texture { get; set; }
     public Matrix? WorldViewProjection { get; set; }
-    public bool UseDepthBuffer { get; set; }
 
     protected override void Applied() {
         if (ColorF.HasValue) {
@@ -21,18 +20,13 @@ public record class SpriteShaderMaterial(SpriteShader Shader)
         if (WorldViewProjection.HasValue) {
             Shader.WorldViewProjection = WorldViewProjection.Value;
         }
-
-        Shader.Settings = Shader.Settings with {
-            DepthWriteEnabled = UseDepthBuffer,
-        };
     }
 
-    protected override SpriteShaderMaterial Duplicated() {
+    protected override BaseSpriteShaderMaterial Duplicated() {
         return new(Shader) {
             ColorF = ColorF,
             Texture = Texture,
             WorldViewProjection = WorldViewProjection,
-            UseDepthBuffer = UseDepthBuffer,
         };
     }
 }
