@@ -24,6 +24,18 @@ public sealed class SceneComponents {
         return components;
     }
 
+    public C Add<C>(Entity entity, C component) where C : Component {
+        Assert.NotNull(component);
+        Assert.False(component.Entity.IsDefined);
+        component.Entity = entity;
+        Register(component);
+        return component;
+    }
+
+    public C Add<C>(Entity entity) where C : Component, new() {
+        return Add(entity, new C());
+    }
+
     public C Query<C>(Entity entity) where C : Component {
         C result;
 

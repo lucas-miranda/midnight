@@ -1,6 +1,8 @@
 namespace Midnight;
 
 public struct Rectangle {
+    public static readonly Rectangle Unit = new(0, 0, 1.0f, 1.0f);
+
     public Vector2 Position;
     public Size2 Size;
 
@@ -9,16 +11,20 @@ public struct Rectangle {
         Size = size;
     }
 
-    public Rectangle(Vector2 topLeft, Vector2 bottomRight) : this(
-        topLeft,
-        new Size2(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y)
-    ) {
+    public Rectangle(Vector2 topLeft, Vector2 bottomRight)
+        : this(
+            topLeft,
+            new Size2(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y)
+        )
+    {
     }
 
-    public Rectangle(float x, float y, float width, float height) : this (
-        new Vector2(x, y),
-        new Size2(width, height)
-    ) {
+    public Rectangle(float x, float y, float width, float height)
+        : this (
+            new Vector2(x, y),
+            new Size2(width, height)
+        )
+    {
     }
 
     public float X => Position.X;
@@ -55,5 +61,21 @@ public struct Rectangle {
 
     public override string ToString() {
         return $"{X}, {Y}, {Width} x {Height}";
+    }
+
+    public static Rectangle operator /(Rectangle r, Size2 s) {
+        return new(r.Position / s, r.Size / s);
+    }
+
+    public static Rectangle operator /(Rectangle r, Size2I s) {
+        return new(r.Position / s, r.Size / s);
+    }
+
+    public static Rectangle operator *(Rectangle r, Size2 s) {
+        return new(r.Position * s, r.Size * s);
+    }
+
+    public static Rectangle operator *(Rectangle r, Size2I s) {
+        return new(r.Position * s, r.Size * s);
     }
 }

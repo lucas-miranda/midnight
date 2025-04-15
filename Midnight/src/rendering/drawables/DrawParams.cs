@@ -2,10 +2,11 @@
 namespace Midnight;
 
 public struct DrawParams {
-    public Transform2D _transform;
-    public ShaderMaterial _material;
-    public DrawSettings? _drawSettings;
-    public Color _color;
+    private Transform2D _transform;
+    private ShaderMaterial _material;
+    private DrawSettings? _drawSettings;
+    private Color _color;
+    private DrawableLayer _layer;
 
     public DrawParams() {
         _color = Color.White;
@@ -43,8 +44,17 @@ public struct DrawParams {
         }
     }
 
+    public DrawableLayer Layer {
+        get => _layer;
+        set {
+            _layer = value;
+            IsLayerDefined = true;
+        }
+    }
+
     public bool IsTransformDefined { get; private set; }
     public bool IsMaterialDefined { get; private set; }
     public bool IsDrawSettingsDefined { get; private set; }
     public bool IsColorDefined { get; private set; }
+    public bool IsLayerDefined { get; private set; }
 }

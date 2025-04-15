@@ -6,6 +6,7 @@ public abstract class GraphicDisplayer : Component, ISizeable {
     /// </summary>
     public DrawSettings DrawSettings { get; set; } = DrawSettings.Default;
     public abstract Size2 Size { get; }
+    public bool Visible { get; set; } = true;
 
     public abstract void Draw(DeltaTime dt, DrawParams drawParams);
 }

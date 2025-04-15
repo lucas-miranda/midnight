@@ -22,9 +22,7 @@ public sealed class Entities {
         _nextUid += 1;
 
         foreach (Component component in builder.Components) {
-            Assert.False(component.Entity.IsDefined);
-            component.Entity = e;
-            Scene.Components.Register(component);
+            Scene.Components.Add(e, component);
         }
 
         // register

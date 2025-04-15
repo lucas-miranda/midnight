@@ -15,4 +15,8 @@ public struct DrawableLayer {
     public override string ToString() {
         return $"{Value} ({ToDepth().Value})";
     }
+
+    public static implicit operator DrawableLayer(int value) {
+        return new(value);
+    }
 }

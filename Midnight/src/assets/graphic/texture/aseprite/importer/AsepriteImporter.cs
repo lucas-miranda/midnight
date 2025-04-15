@@ -49,7 +49,7 @@ public class AsepriteImporter {
 
     public void Import(PathBuf filepath) {
         Data = new();
-        Logger.Line("Start importing Aseprite file...", "importer");
+        //Logger.Line("Start importing Aseprite file...", "importer");
 
         using (var fileStream = File.OpenRead(filepath)) {
             using (var reader = new BinaryReader(fileStream, System.Text.Encoding.UTF8, false)) {
@@ -59,12 +59,12 @@ public class AsepriteImporter {
                 }
 
                 for (ushort i = 0; i < frames; i++) {
-                    Logger.Line($"Frame #{i}", "importer");
+                    //Logger.Line($"Frame #{i}", "importer");
                     ReadFrame(reader);
                 }
             }
         }
-        Logger.Line("Complete importing Aseprite file!", "importer");
+        //Logger.Line("Complete importing Aseprite file!", "importer");
     }
 
     private bool ReadHeader(BinaryReader reader, out ushort frames) {
@@ -74,7 +74,7 @@ public class AsepriteImporter {
         long realSize = reader.BaseStream.Position;
         reader.BaseStream.Seek(pos, SeekOrigin.Begin);
 
-        Logger.Line($"File size: {fileSize}, Real size: {realSize}", "importer");
+        //Logger.Line($"File size: {fileSize}, Real size: {realSize}", "importer");
 
         ushort magicNumber = reader.ReadUInt16();
 
@@ -116,7 +116,7 @@ public class AsepriteImporter {
         Data.GridSize = new(gridWidth, gridHeight);
         //reader.ReadBytes(84); // future
         Skip(reader, 84); // future
-        Logger.Line("File Header done!", "importer");
+        //Logger.Line("File Header done!", "importer");
         return true;
     }
 
@@ -127,7 +127,7 @@ public class AsepriteImporter {
 
         if (magicNumber != 0xF1FA) {
             // skip bytes in this frame
-            Logger.Line($"Skipping frame", "importer");
+            //Logger.Line($"Skipping frame", "importer");
             reader.BaseStream.Seek(bytes - sizeof(ushort), SeekOrigin.Current);
             return;
         }
@@ -140,7 +140,7 @@ public class AsepriteImporter {
         // Chunks
         uint chunkCount = newChunkCount == 0 ? oldChunkCount : newChunkCount;
 
-        Logger.Line($"Reading {chunkCount} chunks...", "importer");
+        //Logger.Line($"Reading {chunkCount} chunks...", "importer");
         for (int i = 0; i < chunkCount; i++) {
             ReadFrameChunk(reader);
         }
@@ -152,7 +152,7 @@ public class AsepriteImporter {
         _chunkEndPos = chunkEndPos;
         ChunkType type = (ChunkType) reader.ReadUInt16();
         bool success = false;
-        Logger.Line($"-> {type}", "importer");
+        //Logger.Line($"-> {type}", "importer");
 
         switch (type) {
             case ChunkType.OldPalette:
@@ -174,7 +174,7 @@ public class AsepriteImporter {
 
         if (!success) {
             // skip chunk
-            Logger.Line("Skipping chunk", "importer");
+            //Logger.Line("Skipping chunk", "importer");
             reader.BaseStream.Seek(chunkEndPos, SeekOrigin.Begin);
         }
     }
@@ -200,7 +200,7 @@ public class AsepriteImporter {
             }
         }
 
-        Logger.Line(Data.Palette, "importer");
+        //Logger.Line(Data.Palette, "importer");
         return true;
     }
 
@@ -251,9 +251,9 @@ public class AsepriteImporter {
             tilemapLayer.TilesetIndex = reader.ReadUInt32();
         }
 
-        Logger.Line(layer, "importer");
+        //Logger.Line(layer, "importer");
         layer.Id = Data.Layers.Count;
-        Logger.Line($"With id: {layer.Id}");
+        //Logger.Line($"With id: {layer.Id}");
         Data.Layers.Add(layer);
         return true;
     }
@@ -326,7 +326,7 @@ public class AsepriteImporter {
                 break;
         }
 
-        Logger.Line(cel, "importer");
+        //Logger.Line(cel, "importer");
 
         // register to layer
         Data.Place(layerIndex, cel);

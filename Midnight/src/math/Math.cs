@@ -77,6 +77,10 @@ public static class Math {
         return step * Round(value / step);
     }
 
+    public static double Clamp(double value, double min, double max) {
+        return System.Math.Clamp(value, min, max);
+    }
+
     /// <summary>
     /// Clamps the given value between the given minimum float and maximum float values. Returns the given value if it is within the minimum and maximum range.
     /// </summary>
@@ -125,6 +129,10 @@ public static class Math {
 
     public static int FloorI(float value) {
         return (int) System.MathF.Floor(value);
+    }
+
+    public static double Round(double value) {
+        return System.Math.Round(value);
     }
 
     /// <summary>Returns value rounded to the nearest integer.</summary>

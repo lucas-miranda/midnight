@@ -39,6 +39,11 @@ public class Camera {
         }
     }
 
+    public Vector2 Center {
+        get => Position.ToVec2() + Size / 2.0f;
+        set => Position = new(value - Size / 2.0f, Position.Z);
+    }
+
     public ProjectionKind ProjectionKind {
         get => _projectionKind;
         set {
@@ -49,6 +54,10 @@ public class Camera {
             _projectionKind = value;
             RequestRecalculateProjection();
         }
+    }
+
+    public void FocusOrigin() {
+        Center = Vector2.Zero;
     }
 
     public void Recalculate() {

@@ -59,4 +59,33 @@ public static class Random {
             list[j] = value;
         }
     }
+
+    public static T Choose<T>(IList<T> list) {
+        if (list.Count == 0) {
+            throw new System.ArgumentException($"Can't choose an element from an empty IList<{typeof(T)}>");
+        } else if (list.Count == 1) {
+            return list[0];
+        }
+
+        return list[Int(0, list.Count - 1)];
+    }
+
+    public static T Choose<T>(ICollection<T> collection) {
+        if (collection.Count == 0) {
+            throw new System.ArgumentException($"Can't choose an element from a empty ICollection<{typeof(T)}>");
+        }
+
+        IEnumerator<T> enumerator = collection.GetEnumerator();
+        int i = Int(0, collection.Count - 1);
+
+        while (enumerator.MoveNext()) {
+            if (i == 0) {
+                return enumerator.Current;
+            }
+
+            i--;
+        }
+
+        return default;
+    }
 }

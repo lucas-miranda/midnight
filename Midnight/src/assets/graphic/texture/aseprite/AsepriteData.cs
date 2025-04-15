@@ -96,7 +96,7 @@ public class AsepriteData {
         }
 
         cel.Layer = Layers[layer];
-        Logger.Line($"To Layer: {layer}");
+        //Logger.Line($"To Layer: {layer}");
         cel.Layer.Add(frameIndex, cel);
         frame.Cels.Add((cel.Layer, cel));
     }

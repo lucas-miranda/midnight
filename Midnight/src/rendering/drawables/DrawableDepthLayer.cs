@@ -15,4 +15,8 @@ public struct DrawableDepthLayer {
     public override string ToString() {
         return $"{Value} ({ToLayer().Value})";
     }
+
+    public static implicit operator DrawableDepthLayer(float value) {
+        return new(value);
+    }
 }

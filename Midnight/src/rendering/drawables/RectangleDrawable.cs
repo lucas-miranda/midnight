@@ -3,16 +3,24 @@ namespace Midnight;
 
 public class RectangleDrawable : Drawable {
     private bool _filled = true,
-                 _hasCustomSize;
+                 _hasCustomSize,
+                 _hasCustomClippingRegion;
 
     private Size2 _size;
     private Texture2D _texture;
+    private RectangleI _clipRegion;
 
     public RectangleDrawable() {
     }
 
     public override Size2 Size {
-        get => _size;
+        get {
+            if (!_hasCustomSize && _texture != null) {
+                return ClipRegion.Size.ToFloat();
+            }
+
+            return _size;
+        }
         set {
             if (value == _size) {
                 return;
@@ -45,27 +53,38 @@ public class RectangleDrawable : Drawable {
 
             _texture = value;
 
-            if (!_hasCustomSize && _texture != null) {
-                _size = _texture.Size.ToFloat();
+            if (_texture != null) {
+                if (!_hasCustomSize) {
+                    _size = _texture.Size.ToFloat();
+                }
+
+                if (!_hasCustomClippingRegion) {
+                    _clipRegion = new(_texture.Size);
+                }
             }
 
             RequestRecalculateVertices();
         }
     }
 
+    public RectangleI ClipRegion {
+        get => _clipRegion;
+        set {
+            _clipRegion = value;
+            _hasCustomClippingRegion = true;
+            RequestRecalculateVertices();
+        }
+    }
+
     protected override void Paint(DeltaTime dt) {
-        //System.Console.WriteLine($"Rectangle Draw Begin (global pos: {Params.Transform.GlobalPosition}; pos: {Params.Transform.Position}; has parent? {(Params.Transform.Parent != null).ToString()})");
-        //System.Console.WriteLine($"- Vertices: {Vertices.Length}, Final Vertices: {FinalVertices.Length}");
         DrawSettings settings = Params.DrawSettings.GetValueOrDefault(Midnight.DrawSettings.Default);
 
         if (Filled) {
-            //System.Console.WriteLine("- Filled");
             settings = settings with {
                 Samplers = new SamplerState[0],
                 Primitive = PrimitiveType.TriangleList,
             };
         } else {
-            //System.Console.WriteLine("- Hollow");
             settings = settings with {
                 Samplers = new SamplerState[0],
                 Primitive = PrimitiveType.LineStrip,
@@ -89,28 +108,35 @@ public class RectangleDrawable : Drawable {
             Params.Material,
             settings
         );
-        //System.Console.WriteLine("Rectangle Draw End");
     }
 
     protected override void UpdateVertices() {
+        Rectangle uv;
+
+        if (Texture != null) {
+            uv = ClipRegion.ToFloat() / Texture.Size;
+        } else {
+            uv = Rectangle.Unit;
+        }
+
         if (Filled) {
             ResizeVertices(6);
 
-            Vertices[0] = new(new(Vector2.Zero, 0.0f), Color.White, Vector2.Zero);
-            Vertices[1] = new(new(Size.Width, 0.0f, 0.0f), Color.White, Vector2.Right);
-            Vertices[2] = new(new(0.0f, Size.Height, 0.0f), Color.White, Vector2.Down);
+            Vertices[0] = new(new(Vector2.Zero, 0.0f), Color.White, uv.TopLeft);
+            Vertices[1] = new(new(Size.Width, 0.0f, 0.0f), Color.White, uv.TopRight);
+            Vertices[2] = new(new(0.0f, Size.Height, 0.0f), Color.White, uv.BottomLeft);
 
-            Vertices[3] = new(new(0.0f, Size.Height, 0.0f), Color.White, Vector2.Down);
-            Vertices[4] = new(new(Size.Width, 0.0f, 0.0f), Color.White, Vector2.Right);
-            Vertices[5] = new(new(Size.ToVector2(), 0.0f), Color.White, Vector2.DownRight);
+            Vertices[3] = new(new(0.0f, Size.Height, 0.0f), Color.White, uv.BottomLeft);
+            Vertices[4] = new(new(Size.Width, 0.0f, 0.0f), Color.White, uv.TopRight);
+            Vertices[5] = new(new(Size.ToVector2(), 0.0f), Color.White, uv.BottomRight);
         } else {
             ResizeVertices(5);
 
-            Vertices[0] = new(new(Vector2.Zero, 0.0f), Color.White, Vector2.Zero);
-            Vertices[1] = new(new(Size.Width, 0.0f, 0.0f), Color.White, Vector2.Right);
-            Vertices[2] = new(new(Size.ToVector2(), 0.0f), Color.White, Vector2.DownRight);
-            Vertices[3] = new(new(0.0f, Size.Height, 0.0f), Color.White, Vector2.Down);
-            Vertices[4] = new(new(Vector2.Zero, 0.0f), Color.White, Vector2.Zero);
+            Vertices[0] = new(new(Vector2.Zero, 0.0f), Color.White, uv.TopLeft);
+            Vertices[1] = new(new(Size.Width, 0.0f, 0.0f), Color.White, uv.TopRight);
+            Vertices[2] = new(new(Size.ToVector2(), 0.0f), Color.White, uv.BottomRight);
+            Vertices[3] = new(new(0.0f, Size.Height, 0.0f), Color.White, uv.BottomLeft);
+            Vertices[4] = new(new(Vector2.Zero, 0.0f), Color.White, uv.TopLeft);
         }
     }
 }

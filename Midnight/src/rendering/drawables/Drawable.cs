@@ -3,7 +3,7 @@ using Midnight.Diagnostics;
 namespace Midnight;
 
 public abstract class Drawable : ISizeable {
-    public const int Layers = 1 << 24 - 1; // 24 bits precision [-8388608, +8388608]
+    public const int Layers = 1 << 24 - 1; // 24 bits precision [-8388607, +8388607]
 
     private VertexPositionColorTexture[] _vertices, _finalVertices;
     private ShaderMaterial _material;

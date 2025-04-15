@@ -105,7 +105,15 @@ public struct Size2I : System.IEquatable<Size2I> {
         return new(a.Width * b.Width, a.Height * b.Height);
     }
 
+    public static Size2 operator *(Size2I a, Size2 b) {
+        return new(a.Width * b.Width, a.Height * b.Height);
+    }
+
     public static Size2I operator *(Size2I s, int n) {
+        return new(s.Width * n, s.Height * n);
+    }
+
+    public static Size2 operator *(Size2I s, float n) {
         return new(s.Width * n, s.Height * n);
     }
 
@@ -113,11 +121,23 @@ public struct Size2I : System.IEquatable<Size2I> {
         return new(n * s.Width, n * s.Height);
     }
 
+    public static Size2 operator *(float n, Size2I s) {
+        return new(n * s.Width, n * s.Height);
+    }
+
     public static Size2I operator /(Size2I a, Size2I b) {
         return new(a.Width / b.Width, a.Height / b.Height);
     }
 
+    public static Size2 operator /(Size2I a, Size2 b) {
+        return new(a.Width / b.Width, a.Height / b.Height);
+    }
+
     public static Size2I operator /(Size2I s, int n) {
+        return new(s.Width / n, s.Height / n);
+    }
+
+    public static Size2 operator /(Size2I s, float n) {
         return new(s.Width / n, s.Height / n);
     }
 

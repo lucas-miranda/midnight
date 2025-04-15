@@ -10,8 +10,8 @@ public class AsepriteTexture : Texture2D {
     private AsepriteTexture(AsepriteData data) : base() {
         Assert.NotNull(data);
         Data = data;
-        LoadFrame(1);
-        Logger.Line($"Timeline:\n{data.TimelineToString()}");
+        LoadFrame(0);
+        //Logger.Line($"Timeline:\n{data.TimelineToString()}");
     }
 
     public AsepriteData Data { get; }
@@ -47,6 +47,7 @@ public class AsepriteTexture : Texture2D {
             index += Data.Frames.Count;
         }
 
+        Assert.True(Data.Frames.Count > 0);
         Assert.InRange(index, 0, Data.Frames.Count - 1);
         _frame = index;
         Underlying = Data.Frames[index].Extract().Underlying;

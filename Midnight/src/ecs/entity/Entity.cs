@@ -1,5 +1,5 @@
-
 using System.Diagnostics.CodeAnalysis;
+using Midnight.Diagnostics;
 
 namespace Midnight;
 
@@ -19,6 +19,23 @@ public struct Entity : System.IEquatable<Entity> {
 
     public Components GetComponents() {
         return Scene.Current.Components.Get(this);
+    }
+
+    public C Add<C>(C component) where C : Component {
+        return Scene.Current.Components.Add<C>(this, component);
+    }
+
+    public C Add<C>() where C : Component, new() {
+        return Scene.Current.Components.Add<C>(this);
+    }
+
+    public void AddChild(Entity child) {
+        Assert.NotNull(child);
+        Transform transform = Get<Transform>();
+        Assert.NotNull(transform, "Parent entity doesn't have Transform component.");
+        Transform childTransform = child.Get<Transform>();
+        Assert.NotNull(childTransform, "Child entity doesn't have Transform component.");
+        childTransform.Parent = transform;
     }
 
     public C Get<C>() where C : Component {
