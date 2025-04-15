@@ -79,6 +79,10 @@ public class StringDrawable : Drawable {
             return;
         }
 
+        if (Font == null) {
+            Font = Midnight.Font.Default();
+        }
+
         if (Font is Font<MTSDF> font) {
             TextTypesetting text = font.Build(Value);
             ResizeVertices(text.Length * 3 * 2); // (3 vertices * 2 triangles) / codepoint

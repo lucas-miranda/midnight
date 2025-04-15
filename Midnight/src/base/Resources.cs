@@ -20,7 +20,9 @@ public sealed class Resources {
         Texture2D fontTexture = Texture2D.Load(Midnight.Embedded.Resources.Fonts.AccidentalPresident.Texture);
 
         using (MemoryStream dataStream = new(Midnight.Embedded.Resources.Fonts.AccidentalPresident.Data, false)) {
-            AssetManager.Register("accidental president", MTSDF.LoadFont(fontTexture, dataStream));
+            Font<MTSDF> defaultFont = MTSDF.LoadFont(fontTexture, dataStream);
+            AssetManager.Register("accidental president", defaultFont);
+            AssetManager.Register("default", defaultFont);
         }
     }
 

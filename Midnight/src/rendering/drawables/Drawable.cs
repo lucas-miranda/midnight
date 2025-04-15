@@ -116,6 +116,10 @@ public abstract class Drawable : ISizeable {
     }
 
     private void PrepareFinalVertices(Matrix m) {
+        if (Vertices == null) {
+            return;
+        }
+
         Assert.NotNull(Vertices, "Vertices must be resized first.");
 
         if (FinalVertices == null) {

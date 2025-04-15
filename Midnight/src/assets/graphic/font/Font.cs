@@ -54,6 +54,10 @@ public abstract class Font : IAsset {
     /// </summary>
     private Dictionary<uint, Glyph> Glyphs { get; }
 
+    public static Font Default() {
+        return AssetManager.Get<Font<MTSDF>>("default");
+    }
+
     /// <summary>
     /// Get a Glyph by it's unicode.
     /// </summary>

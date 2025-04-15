@@ -78,6 +78,14 @@ public struct Vector2 : System.IEquatable<Vector2> {
         return new Vector2(-Y, X);
     }
 
+    public Vector2 WithX(float x) {
+        return new(x, Y);
+    }
+
+    public Vector2 WithY(float y) {
+        return new(X, y);
+    }
+
     public Vector2I ToInt() {
         return new((int) X, (int) Y);
     }
