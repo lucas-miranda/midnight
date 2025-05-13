@@ -15,10 +15,9 @@
         <DefineConstants>$(DefineConstants);</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
     </PropertyGroup>
-    <Target Name="BuildEmbeddedAssets" BeforeTargets="BeforeBuild">
-        <Message Text="Building embedded assets" Importance="High" />
-        <Exec Command="sh scripts/BuildAssets.sh obj/assets" />
-    </Target>
+    <ItemGroup>
+        <ProjectReference Include="../FNA/FNA.Core.csproj"/>
+    </ItemGroup>
     <ItemGroup>
         <!-- Shaders -->
         <EmbeddedResource Include="obj/assets/SpriteShader.fxc">
@@ -37,8 +36,26 @@
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../FNA/FNA.Core.csproj"/>
+        <!-- FNA Native Libs -->
+        <Content Include="obj/libs/fna/x64/*" Condition=" '$(OS)' == 'Windows_NT' ">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <PublishState>Include</PublishState>
+            <Link>%(Filename)%(Extension)</Link>
+        </Content>
+        <Content Include="obj/libs/fna/lib64/*" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <PublishState>Include</PublishState>
+            <Link>%(Filename)%(Extension)</Link>
+        </Content>
     </ItemGroup>
+    <Target Name="PrepareFNANativeLibs" BeforeTargets="BeforeBuild">
+        <Message Text="Preparing FNA native libs" Importance="High" />
+        <Exec Command="sh scripts/PrepareFNANativeLibs.sh obj/libs" />
+    </Target>
+    <Target Name="BuildEmbeddedAssets" BeforeTargets="BeforeBuild">
+        <Message Text="Building embedded assets" Importance="High" />
+        <Exec Command="sh scripts/BuildAssets.sh obj/assets" />
+    </Target>
     <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
         <Message Text="Restoring dotnet tools" Importance="High" />
         <Exec Command="dotnet tool restore" />
