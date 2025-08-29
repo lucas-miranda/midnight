@@ -7,7 +7,6 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
     private static Dictionary<System.Type, System.Type> _builder = new();
 
     private List<WidgetBuilder> _children = new();
-    private int _index;
 
     static ContainerBuilder() {
         foreach ((System.Type PrototypeType, WidgetPrototypeRegistryAttribute Attr) entry in ReflectionHelper.IterateTypesWithAttribute<WidgetPrototypeRegistryAttribute>()) {
@@ -20,7 +19,6 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
 
     public override void Reset() {
         base.Reset();
-        _index = 0;
 
         foreach (WidgetBuilder b in _children) {
             b.Reset();
@@ -81,29 +79,32 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
     }
 
     private WidgetBuilder RetrieveBuilder(System.Type prototypeType) {
-        WidgetBuilder b;
+        WidgetBuilder b = null;
+        System.Type builderType = _builder[prototypeType];
 
-        if (DesignBuilder.IsBuilded) {
-            Assert.True(_index < _children.Count);
-            b = _children[_index];
+        // try to find an inactive builder which matches builderType
+        foreach (WidgetBuilder builder in _children) {
+            if (!builder.IsActive && builder.GetType() == builderType) {
+                b = builder;
+                break;
+            }
+        }
 
-            Assert.True(
-                b.Result.Prototype != null && b.Result.Prototype.GetType().IsAssignableTo(prototypeType),
-                $"Expected '{prototypeType.Name}', but get '{b.Result.GetType().Name}'"
-            );
-            _index += 1;
-
-            b.Prepare();
-        } else {
+        if (b == null) {
             b = System.Activator.CreateInstance(
-                    _builder[prototypeType],
+                    builderType,
                     new object[] { DesignBuilder }
                 ) as WidgetBuilder;
 
             _children.Add(b);
-
-            b.Prepare();
         }
+
+        b.Prepare();
+
+        Assert.True(
+            b.Result.Prototype != null && b.Result.Prototype.GetType().IsAssignableTo(prototypeType),
+            $"Expected '{prototypeType.Name}', but get '{b.Result.GetType().Name}'"
+        );
 
         // register as child
         Transform transform = Result.Get<Transform>();
