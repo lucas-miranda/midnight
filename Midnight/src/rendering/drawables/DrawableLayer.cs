@@ -19,4 +19,20 @@ public struct DrawableLayer {
     public static implicit operator DrawableLayer(int value) {
         return new(value);
     }
+
+    public static DrawableLayer operator +(DrawableLayer layer, int n) {
+        return new(layer.Value + n);
+    }
+
+    public static DrawableLayer operator +(int n, DrawableLayer layer) {
+        return new(n + layer.Value);
+    }
+
+    public static DrawableLayer operator -(DrawableLayer layer, int n) {
+        return new(layer.Value - n);
+    }
+
+    public static DrawableLayer operator -(int n, DrawableLayer layer) {
+        return new(n - layer.Value);
+    }
 }

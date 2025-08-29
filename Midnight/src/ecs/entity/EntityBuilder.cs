@@ -2,7 +2,7 @@ using Midnight.Diagnostics;
 
 namespace Midnight;
 
-public sealed class EntityBuilder {
+public class EntityBuilder {
     private Entities _entities;
     private Components _components = new();
     private bool _submitted;
@@ -48,6 +48,7 @@ public sealed class EntityBuilder {
         }
 
         _submitted = true;
-        return _entities.Submit(this, prototype);
+        Assert.NotNull(_components);
+        return _entities.Submit(this, prototype, _components);
     }
 }

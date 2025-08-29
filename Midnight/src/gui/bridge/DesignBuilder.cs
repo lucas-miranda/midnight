@@ -3,10 +3,14 @@ using Midnight.Diagnostics;
 
 namespace Midnight.GUI;
 
+/// <summary>
+/// Starter builder, it's where an UI design starts.
+/// It belongs to a <see cref="Design"/>.
+/// </summary>
 public class DesignBuilder : ContainerBuilder {
     private System.Action<DesignBuilder> _fn;
 
-    public DesignBuilder() : base(null) {
+    internal DesignBuilder() : base(null) {
         DesignBuilder = this;
     }
 
@@ -15,15 +19,14 @@ public class DesignBuilder : ContainerBuilder {
 
     public override Entity Build() {
         Entity frame = Prototypes.Instantiate<FramePrototype>();
-        Components frameComponents = frame.GetComponents();
 
-        var extent = frameComponents.Get<Extent>();
+        var extent = frame.Get<Extent>();
         extent.Padding = Spacing.Empty;
         extent.Margin = Spacing.Empty;
 
-        var backgroundBorder = frameComponents.Get<BackgroundBorder>();
-        backgroundBorder.Background.Drawable.Opacity = 0.0f;
-        backgroundBorder.Border.Drawable.Opacity = 0.0f;
+        var backgroundBorder = frame.Get<BackgroundBorder>();
+        backgroundBorder.Background.Opacity = 0.0f;
+        backgroundBorder.Border.Opacity = 0.0f;
 
         return frame;
     }
@@ -52,7 +55,7 @@ public class DesignBuilder : ContainerBuilder {
         while (!stack.IsEmpty()) {
             (Transform transform, int level) = stack.Pop();
             string tab = new string(' ', level * 2);
-            Logger.DebugLine($"{tab}- {transform.Entity.GetComponents().ToString()} ({transform.ChildCount})");
+            Logger.DebugLine($"{tab}- {transform.Entity.Components.ToString()} ({transform.ChildCount})");
 
             foreach (Transform child in transform) {
                 stack.Push((child, level + 1));
@@ -72,7 +75,15 @@ public class DesignBuilder : ContainerBuilder {
         //Logger.Line($"Result:\n{Result.TreeToString()}");
     }
 
-    public void Start() {
+    public void BuildEvaluate(System.Action<DesignBuilder> fn) {
+        if (!IsBuilded) {
+            Build(fn);
+        } else {
+            Evaluate();
+        }
+    }
+
+    private void Start() {
         if (IsBuilded) {
             Reset();
         }
@@ -81,13 +92,8 @@ public class DesignBuilder : ContainerBuilder {
         IsBuilding = true;
     }
 
-    public void End() {
+    private void End() {
+        Ended();
         IsBuilding = false;
     }
-
-    /*
-    public void Reset() {
-        IsBuilding = false;
-    }
-    */
 }

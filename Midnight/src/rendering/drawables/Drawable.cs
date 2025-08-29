@@ -2,7 +2,7 @@ using Midnight.Diagnostics;
 
 namespace Midnight;
 
-public abstract class Drawable : ISizeable {
+public abstract class Drawable : Component, ISizeable {
     public const int Layers = 1 << 24 - 1; // 24 bits precision [-8388607, +8388607]
 
     private VertexPositionColorTexture[] _vertices, _finalVertices;
@@ -14,6 +14,7 @@ public abstract class Drawable : ISizeable {
 
     public Transform2D Transform { get; }
     public abstract Size2 Size { get; set; }
+    public bool Visible { get; set; } = true;
 
     public ShaderMaterial Material {
         get => _material;
@@ -55,6 +56,10 @@ public abstract class Drawable : ISizeable {
     protected Vector2 PositionScale { get; set; } = Vector2.One;
 
     public void Draw(DeltaTime dt) {
+        if (!Visible) {
+            return;
+        }
+
         Params = new() {
             Transform = Transform,
             Material = Material,
@@ -66,6 +71,10 @@ public abstract class Drawable : ISizeable {
     }
 
     public void Draw(DeltaTime dt, DrawParams drawParams) {
+        if (!Visible) {
+            return;
+        }
+
         //System.Console.WriteLine($"Drawable '{GetType().Name}' Draw Begin");
         Params = new() {
             Transform = drawParams.IsTransformDefined ? drawParams.Transform : Transform,

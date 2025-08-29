@@ -21,15 +21,6 @@ public class Scene {
         foreach ((System.Type Type, SystemRegistryAttribute Attribute) entry in ReflectionHelper.IterateTypesWithAttribute<SystemRegistryAttribute>()) {
             Systems.Register((EntitySystem) System.Activator.CreateInstance(entry.Type));
         }
-
-        /*
-        Systems.Register(new TransformSystem());
-        Systems.Register(new GUI.ContentGraphicsTrackSystem());
-        Systems.Register(new GUI.PressableInputSystem());
-        Systems.Register(new GUI.LayoutSystem());
-        Systems.Register(new GUI.BackgroundBorderResizeSystem());
-        Systems.Register(new GUI.RenderSystem());
-        */
     }
 
     /// <summary>
@@ -58,7 +49,6 @@ public class Scene {
 
     public virtual void Update(DeltaTime dt) {
         Systems.Send<UpdateStepEvent>(new(dt));
-        Components.Flush();
     }
 
     public virtual void Render(DeltaTime dt) {

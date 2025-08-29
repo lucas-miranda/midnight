@@ -5,11 +5,33 @@ using Midnight.ECS;
 namespace Midnight;
 
 public sealed class EntitySystems {
+    /// <summary>
+    /// Type marking where we should stop looking hierarchically to events.
+    /// </summary>
     private readonly System.Type EventBaseType = typeof(Event).BaseType;
+
+    /// <summary>
+    /// Holds EntitySystem by it's type, so we can quickly find it's instance.
+    /// <summary>
     private Dictionary<System.Type, EntitySystem> _systems = new();
+
+    /// <summary>
+    /// Associate an event with a list of entity system's registry.
+    /// So we can quickly get who are subscribed to any event.
+    /// </summary>
     private Dictionary<System.Type, List<LookupRegistry>> _lookup = new();
+
+    /// <summary>
+    /// It stores every list related to an event.
+    /// It's used on Send.
+    /// </summary>
     private List<List<LookupRegistry>> _buffer = new();
+
+    /// <summary>
+    /// Queue of events waiting to be sended.
+    /// </summary>
     private Queue<(Event, Entity?)> _eventQueue = new();
+
     private bool _isHandlingEvent, _isHandlingEventQueue;
 
     public EntitySystems(Scene scene) {
@@ -50,7 +72,7 @@ public sealed class EntitySystems {
 
         foreach (List<LookupRegistry> list in lists) {
             foreach (LookupRegistry systemRegistry in list) {
-                systemRegistry.Contract.Send(ev, Scene, entity);
+                systemRegistry.Contract.Handle(ev, Scene, entity);
             }
         }
 
@@ -82,6 +104,7 @@ public sealed class EntitySystems {
         _systems.Add(sys.GetType(), sys);
         sys.Setup(Scene);
 
+        // register every contract into a suitable lookup list (by event)
         foreach (SystemSubscribeContract contract in sys.Contracts) {
             GetOrCreateLookupList(contract.EventType)
                 .Add(new() {
@@ -127,6 +150,9 @@ public sealed class EntitySystems {
         _isHandlingEventQueue = false;
     }
 
+    /// <summary>
+    /// Entity system and it's contract for quickly lookup.
+    /// </summary>
     private struct LookupRegistry {
         public SystemSubscribeContract Contract;
         public EntitySystem System;

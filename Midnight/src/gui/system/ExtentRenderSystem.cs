@@ -82,7 +82,7 @@ public sealed class ExtentRenderSystem : EntitySystem {
         float h = 0.0f;
 
         foreach (Transform childTransform in transform) {
-            (Transform Transform, Extent Extent) child = Query<Transform, Extent>(childTransform.Entity);
+            (Transform Transform, Extent Extent) child = childTransform.Entity.Get<Transform, Extent>();
             pos += new Vector2(child.Extent.Margin.Left, 0.0f);
             child.Transform.Local.Position = new(pos.X, pos.Y + child.Extent.Margin.Top);
 

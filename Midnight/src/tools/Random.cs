@@ -29,11 +29,11 @@ public static class Random {
         Underlying = new System.Random(Seed);
     }
 
-    public static int Int() {
+    public static int Int32() {
         return Underlying.Next();
     }
 
-    public static int Int(int min, int max) {
+    public static int Int32(int min, int max) {
         if (max < min) {
             throw new System.ArgumentException($"{nameof(max)} should be greater or equals {nameof(min)}.\nMin: {min}, Max: {max}");
         } else if (min == max) {
@@ -53,7 +53,7 @@ public static class Random {
         T value;
 
         for (int i = list.Count - 1; i >= 0; i--) {
-            j = Random.Int(0, i);
+            j = Random.Int32(0, i);
             value = list[i];
             list[i] = list[j];
             list[j] = value;
@@ -67,7 +67,7 @@ public static class Random {
             return list[0];
         }
 
-        return list[Int(0, list.Count - 1)];
+        return list[Int32(0, list.Count - 1)];
     }
 
     public static T Choose<T>(ICollection<T> collection) {
@@ -76,7 +76,7 @@ public static class Random {
         }
 
         IEnumerator<T> enumerator = collection.GetEnumerator();
-        int i = Int(0, collection.Count - 1);
+        int i = Int32(0, collection.Count - 1);
 
         while (enumerator.MoveNext()) {
             if (i == 0) {

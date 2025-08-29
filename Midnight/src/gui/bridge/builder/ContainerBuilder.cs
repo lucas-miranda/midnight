@@ -6,7 +6,6 @@ namespace Midnight.GUI;
 public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
     private static Dictionary<System.Type, System.Type> _builder = new();
 
-    //private Dictionary<int, ObjectBuilder> _components = new();
     private List<WidgetBuilder> _children = new();
     private int _index;
 
@@ -17,11 +16,6 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
     }
 
     public ContainerBuilder(DesignBuilder designBuilder) : base(designBuilder) {
-        /*
-        if (!(Result is IContainer)) {
-            throw new System.InvalidOperationException("Result must be an IContainer.");
-        }
-        */
     }
 
     public override void Reset() {
@@ -31,8 +25,14 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
         foreach (WidgetBuilder b in _children) {
             b.Reset();
         }
+    }
 
-        //_children.Clear();
+    public override void Ended() {
+        foreach (WidgetBuilder builder in _children) {
+            builder.Ended();
+        }
+
+        base.Ended();
     }
 
     public WidgetBuilder Create<T>() where T : Prototype, new() {
@@ -40,8 +40,7 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
     }
 
     public ContainerBuilder With(Layout layout) {
-        Components components = Result.GetComponents();
-        Widget widget = components.Get<Widget>();
+        Widget widget = Result.Get<Widget>();
 
         if (widget != null) {
             widget.Layout = layout;
@@ -87,7 +86,7 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
         if (DesignBuilder.IsBuilded) {
             Assert.True(_index < _children.Count);
             b = _children[_index];
-            //System.Type builderType = _builder[type];
+
             Assert.True(
                 b.Result.Prototype != null && b.Result.Prototype.GetType().IsAssignableTo(prototypeType),
                 $"Expected '{prototypeType.Name}', but get '{b.Result.GetType().Name}'"
@@ -104,17 +103,17 @@ public abstract class ContainerBuilder : WidgetBuilder, System.IDisposable {
             _children.Add(b);
 
             b.Prepare();
-
-            // register as child
-            Transform transform = Result.Get<Transform>();
-            Transform childTransform = b.Result.Get<Transform>();
-
-            Assert.NotNull(transform);
-            Assert.NotNull(childTransform);
-            Assert.True(transform != childTransform, $"{Result} != {b.Result}");
-
-            childTransform.Parent = transform;
         }
+
+        // register as child
+        Transform transform = Result.Get<Transform>();
+        Transform childTransform = b.Result.Get<Transform>();
+
+        Assert.NotNull(transform);
+        Assert.NotNull(childTransform);
+        Assert.True(transform != childTransform, $"{Result} != {b.Result}");
+
+        childTransform.Parent = transform;
 
         return b;
     }

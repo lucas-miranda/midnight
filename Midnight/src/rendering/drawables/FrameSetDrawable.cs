@@ -37,15 +37,16 @@ public class FrameSetDrawable : RectangleDrawable {
 
     public Size2I? DefaultFrameSize { get; set; }
 
-    public void AutoRegisterGrid(Size2I frameSize) {
+    public void AutoRegisterGrid(Size2I frameSize, Vector2I? startPos = null) {
         Assert.NotNull(Texture);
         DefaultFrameSize = frameSize;
-        Size2I amount = Texture.Size / frameSize;
+        Vector2I pos = startPos.GetValueOrDefault();
+        Size2I amount = (Texture.Size - new Size2I(pos)) / frameSize;
 
         for (int y = 0; y < amount.Height; y++) {
             for (int x = 0; x < amount.Width; x++) {
                 RegisterFrame(new(
-                    new Vector2I(x, y) * frameSize,
+                    pos + new Vector2I(x, y) * frameSize,
                     frameSize
                 ));
             }
@@ -58,6 +59,10 @@ public class FrameSetDrawable : RectangleDrawable {
         if (FrameIndex < 0) {
             FrameIndex = 0;
         }
+
+        if (!DefaultFrameSize.HasValue) {
+            DefaultFrameSize = bounds.Size;
+        }
     }
 
     public void RegisterFrameAt(Vector2I position) {
@@ -65,7 +70,33 @@ public class FrameSetDrawable : RectangleDrawable {
         RegisterFrame(new(position, DefaultFrameSize.Value));
     }
 
+    public void RegisterFrames(RectangleI bounds, Size2I frameSize) {
+        int columns = bounds.Width / frameSize.Width,
+            rows = bounds.Height / frameSize.Height;
+
+        Vector2I pos = bounds.TopLeft;
+
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < columns; x++) {
+                RegisterFrame(new(
+                    bounds.TopLeft + new Vector2I(x, y) * frameSize,
+                    frameSize
+                ));
+            }
+        }
+    }
+
+    public void RegisterFrames(Vector2I startPos, Size2I frameSize, Size2I cells) {
+        RegisterFrames(new(startPos, frameSize * cells), frameSize);
+    }
+
     public void Clear() {
         _frames.Clear();
+    }
+
+    public void Centralize() {
+        Assert.True(_frameIndex >= 0);
+        RectangleI frame = _frames[FrameIndex];
+        Transform.Position = -(frame.Size / 2).ToVector2();
     }
 }

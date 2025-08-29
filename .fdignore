@@ -1,3 +1,6 @@
 Midnight/bin/
 Midnight/obj/
 FNA/
+Midnight.Test/bin/
+Midnight.Test/obj/
+Midnight.Test/TestResults/

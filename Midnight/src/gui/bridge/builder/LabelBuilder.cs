@@ -34,9 +34,7 @@ public class LabelBuilder : WidgetBuilder {
     }
 
     private StringDrawable GetStringDrawable() {
-        Components components = Result.GetComponents();
-        DrawableDisplayer displayer = components.Get<DrawableDisplayer>();
-        return displayer.Drawable as StringDrawable;
+        return Result.Components.Get<Drawable>() as StringDrawable;
     }
 
     private Font GetFont(StringDrawable drawable) {

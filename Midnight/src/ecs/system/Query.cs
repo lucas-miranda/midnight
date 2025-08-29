@@ -3,15 +3,26 @@ using System.Collections;
 
 namespace Midnight;
 
+/// <summary>
+/// Holds information about <see cref="Component"/> query.
+/// </summary>
 public abstract class ComponentQuery {
+    /// <summary>
+    /// Runs a query over <paramref name="components"/> and retrieve a result.
+    /// </summary>
+    /// <returns>True, if query succeeded, otherwise, false.</returns>
     public abstract bool Execute(Components components);
 }
 
+/// <summary>
+/// Holds information about a single <see cref="Component"/> query.
+/// </summary>
 public class Query<C> : ComponentQuery where C : Component {
     private C _entry;
 
     public C Entry => _entry;
 
+    /// <inheritdoc/>
     public override bool Execute(Components components) {
         _entry = components.Get<C>();
         return _entry != null;
@@ -22,6 +33,9 @@ public class Query<C> : ComponentQuery where C : Component {
     }
 }
 
+/// <summary>
+/// Holds information about a multiple <see cref="Component"/> query.
+/// </summary>
 public class MultiQuery<C> : ComponentQuery, IEnumerable<C>
     where C : Component
 {
@@ -29,6 +43,7 @@ public class MultiQuery<C> : ComponentQuery, IEnumerable<C>
 
     public List<C> Entries => _entries;
 
+    /// <inheritdoc/>
     public override bool Execute(Components components) {
         _entries.Clear();
         components.GetAll<C>(ref _entries);

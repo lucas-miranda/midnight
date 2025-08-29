@@ -4,7 +4,7 @@ namespace Midnight.GUI;
 public sealed class RenderSystem : EntitySystem {
     public override void Setup(Scene scene) {
         Subscribe<RenderStepEvent>()
-            .WithMultiple<DrawableDisplayer>()
+            .WithMultiple<Drawable>()
             .With<Transform>()
             .Submit(Render);
     }
@@ -17,9 +17,9 @@ public sealed class RenderSystem : EntitySystem {
     }
         */
 
-    public void Render(RenderStepEvent e, MultiQuery<DrawableDisplayer> displayers, Query<Transform> transform) {
-        foreach (DrawableDisplayer displayer in displayers) {
-            displayer.Draw(
+    public void Render(RenderStepEvent e, MultiQuery<Drawable> displayers, Query<Transform> transform) {
+        foreach (Drawable drawable in displayers) {
+            drawable.Draw(
                 e.DeltaTime,
                 new DrawParams {
                     Transform = transform.Entry.Global

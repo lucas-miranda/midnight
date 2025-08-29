@@ -12,7 +12,7 @@ public sealed class PressableInputSystem : EntitySystem {
 
         Subscribe<PressableInteractEvent>()
             .Submit(HandlePressableInteract)
-            .MatchOriginatorOnly = true;
+            .HandleOnce();
     }
 
     private void HandleMouseButton(MouseButtonEvent e, Query<Pressable> pressable, Query<Transform> transform, Query<Extent> extent, Query<Widget> widget) {
@@ -59,12 +59,12 @@ public sealed class PressableInputSystem : EntitySystem {
         BackgroundBorder backgroundBorder = ev.Pressable.Entity.Get<BackgroundBorder>();
 
         if (ev.Pressable.Pressed) {
-            if (backgroundBorder.Background.Drawable != null) {
-                backgroundBorder.Background.Drawable.Color = 0x384252FF;
+            if (backgroundBorder.Background != null) {
+                backgroundBorder.Background.Color = 0x384252FF;
             }
         } else {
-            if (backgroundBorder.Background.Drawable != null) {
-                backgroundBorder.Background.Drawable.Color = 0x57606FFF;
+            if (backgroundBorder.Background != null) {
+                backgroundBorder.Background.Color = 0x57606FFF;
             }
         }
     }

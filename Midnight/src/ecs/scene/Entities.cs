@@ -1,11 +1,12 @@
+using System.Collections;
 using System.Collections.Generic;
 using Midnight.Diagnostics;
 
 namespace Midnight;
 
-public sealed class Entities {
+public sealed class Entities : IEnumerable<Entity> {
     private ulong _nextUid = 1;
-    private List<Entity> _entries = new();
+    private HashSet<Entity> _entries = new();
 
     public Entities(Scene scene) {
         Scene = scene;
@@ -17,17 +18,46 @@ public sealed class Entities {
         return new(this);
     }
 
-    internal Entity Submit(EntityBuilder builder, Prototype prototype = null) {
-        Entity e = new(_nextUid, prototype);
-        _nextUid += 1;
-
-        foreach (Component component in builder.Components) {
-            Scene.Components.Add(e, component);
+    public void Register(Entity e) {
+        if (!_entries.Add(e)) {
+            throw new System.InvalidOperationException($"{e} already registered.");
         }
 
-        // register
-        _entries.Add(e);
+        Scene.Components.EntityCreated(e);
+    }
 
+    public void RegisterOnce(Entity e) {
+        if (_entries.Add(e)) {
+            Scene.Components.EntityCreated(e);
+        }
+    }
+
+    public bool Remove(Entity e) {
+        if (!_entries.Remove(e)) {
+            return false;
+        }
+
+        Scene.Components.EntityRemoved(e);
+        return true;
+    }
+
+    public bool Has(Entity entity) {
+        return _entries.Contains(entity);
+    }
+
+    public IEnumerator<Entity> GetEnumerator() {
+        return _entries.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator() {
+        return GetEnumerator();
+    }
+
+    internal Entity Submit(EntityBuilder builder, Prototype prototype, Components components) {
+        Assert.NotNull(components);
+        Entity e = new(_nextUid, prototype, components);
+        _nextUid += 1;
+        Register(e);
         return e;
     }
 }

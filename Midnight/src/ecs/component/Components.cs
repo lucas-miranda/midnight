@@ -5,39 +5,42 @@ using Midnight.Diagnostics;
 namespace Midnight;
 
 public class Components : IEnumerable<Component> {
-    private List<Component> _entries = new();
+    public event System.Action<Component> OnAdded, OnRemoved;
 
-    public int Count => _entries.Count;
+    private Dictionary<System.Type, List<Component>> _entries = new();
+
+    public Components() {
+    }
+
+    public Components(Entity entity) {
+        Entity = entity;
+    }
+
+    public Entity? Entity { get; internal set; }
+    public int Count { get; private set; }
 
     public C Get<C>() where C : Component {
-        foreach (Component component in _entries) {
-            if (component is C c) {
-                return c;
-            }
+        List<Component> components = GetOrCreateComponentList(typeof(C));
+
+        if (components.IsEmpty()) {
+            return null;
         }
 
-        return null;
+        return (C) components[0];
     }
 
     public (C1, C2)? Get<C1, C2>()
         where C1 : Component
         where C2 : Component
     {
-        (C1, C2) result = default;
+        List<Component> componentsA = GetOrCreateComponentList(typeof(C1)),
+                        componentsB = GetOrCreateComponentList(typeof(C2));
 
-        foreach (Component component in _entries) {
-            if (component is C1 c1) {
-                result = (c1, result.Item2);
-            } else if (component is C2 c2) {
-                result = (result.Item1, c2);
-            }
-        }
-
-        if (result.Item1 == null || result.Item2 == null) {
+        if (componentsA.IsEmpty() || componentsB.IsEmpty()) {
             return null;
         }
 
-        return result;
+        return ((C1) componentsA[0], (C2) componentsB[0]);
     }
 
     public (C1, C2, C3)? Get<C1, C2, C3>()
@@ -45,41 +48,73 @@ public class Components : IEnumerable<Component> {
         where C2 : Component
         where C3 : Component
     {
-        (C1, C2, C3) result = default;
+        List<Component> componentsA = GetOrCreateComponentList(typeof(C1)),
+                        componentsB = GetOrCreateComponentList(typeof(C2)),
+                        componentsC = GetOrCreateComponentList(typeof(C3));
 
-        foreach (Component component in _entries) {
-            if (component is C1 c1) {
-                result = (c1, result.Item2, result.Item3);
-            } else if (component is C2 c2) {
-                result = (result.Item1, c2, result.Item3);
-            } else if (component is C3 c3) {
-                result = (result.Item1, result.Item2, c3);
-            }
-        }
-
-        if (result.Item1 == null || result.Item2 == null || result.Item3 == null) {
+        if (componentsA.IsEmpty() || componentsB.IsEmpty() || componentsC.IsEmpty()) {
             return null;
         }
 
-        return result;
+        return ((C1) componentsA[0], (C2) componentsB[0], (C3) componentsC[0]);
+    }
+
+    public bool TryGet<C>(out C c) where C : Component {
+        if (!TryGetComponentList(typeof(C), out List<Component> list) || list.IsEmpty()) {
+            c = null;
+            return false;
+        }
+
+        c = (C) list[0];
+        return true;
     }
 
     public C Add<C>(C c) where C : Component {
-        _entries.Add(c);
+        System.Type type = c.GetType(),
+                    endType = typeof(Component).BaseType;
+
+        while (type != endType) {
+            List<Component> components = GetOrCreateComponentList(type);
+            components.Add(c);
+            type = type.BaseType;
+        }
+
+        if (Entity.HasValue) {
+            c.Entity = Entity.Value;
+        }
+
+        OnAdded?.Invoke(c);
         return c;
     }
 
     public bool Remove<C>(C c) where C : Component {
-        return _entries.Remove(c);
+        bool removed = false;
+        System.Type type = c.GetType(),
+                    endType = typeof(Component).BaseType;
+
+        while (type != endType) {
+            if (TryGetComponentList(type, out List<Component> components)) {
+                if (components.Remove(c)) {
+                    removed = true;
+                }
+            }
+
+            type = type.BaseType;
+        }
+
+        OnRemoved?.Invoke(c);
+        c.Entity = Midnight.Entity.None;
+        return removed;
     }
 
     public List<C> GetAll<C>() where C : Component {
-        List<C> buffer = new();
+        List<C> buffer;
 
-        foreach (Component component in _entries) {
-            if (component is C c) {
-                buffer.Add(c);
-            }
+        if (TryGetComponentList(typeof(C), out List<Component> components)) {
+            buffer = new(components.Count);
+            buffer.AddRange(components);
+        } else {
+            buffer = new();
         }
 
         return buffer;
@@ -88,13 +123,12 @@ public class Components : IEnumerable<Component> {
     public void GetAll<C>(ref List<C> buffer) where C : Component {
         if (buffer == null) {
             buffer = new();
+        } else {
+            buffer.Clear();
         }
 
-        buffer.Clear();
-        foreach (Component component in _entries) {
-            if (component is C c) {
-                buffer.Add(c);
-            }
+        if (TryGetComponentList(typeof(C), out List<Component> components)) {
+            buffer.AddRange(components);
         }
     }
 
@@ -104,10 +138,12 @@ public class Components : IEnumerable<Component> {
     {
         List<Component> buffer = new();
 
-        foreach (Component component in _entries) {
-            if (component is C1 || component is C2) {
-                buffer.Add(component);
-            }
+        if (TryGetComponentList(typeof(C1), out List<Component> components)) {
+            buffer.AddRange(components);
+        }
+
+        if (TryGetComponentList(typeof(C2), out components)) {
+            buffer.AddRange(components);
         }
 
         return buffer;
@@ -119,25 +155,28 @@ public class Components : IEnumerable<Component> {
     {
         if (buffer == null) {
             buffer = new();
+        } else {
+            buffer.Clear();
         }
 
-        buffer.Clear();
-        foreach (Component component in _entries) {
-            if (component is C1 || component is C2) {
-                buffer.Add(component);
-            }
+        if (TryGetComponentList(typeof(C1), out List<Component> components)) {
+            buffer.AddRange(components);
+        }
+
+        if (TryGetComponentList(typeof(C2), out components)) {
+            buffer.AddRange(components);
         }
     }
 
     public List<Component> GetAll(System.Type componentType) {
         Assert.NotNull(componentType);
         Assert.Is<Component>(componentType);
-        List<Component> buffer = new();
+        List<Component> buffer;
 
-        foreach (Component component in _entries) {
-            if (componentType.IsAssignableFrom(component.GetType())) {
-                buffer.Add(component);
-            }
+        if (TryGetComponentList(componentType, out List<Component> components)) {
+            buffer = new(components);
+        } else {
+            buffer = new();
         }
 
         return buffer;
@@ -146,22 +185,29 @@ public class Components : IEnumerable<Component> {
     public void GetAll(System.Type componentType, ref List<Component> buffer) {
         if (buffer == null) {
             buffer = new();
+        } else {
+            buffer.Clear();
         }
 
-        buffer.Clear();
-        foreach (Component component in _entries) {
-            if (componentType.IsAssignableFrom(component.GetType())) {
-                buffer.Add(component);
-            }
+        if (TryGetComponentList(componentType, out List<Component> components)) {
+            buffer.AddRange(components);
         }
     }
 
     public bool Contains(Component component) {
-        return _entries.Contains(component);
+        Assert.NotNull(component);
+        if (!TryGetComponentList(component.GetType(), out List<Component> components)) {
+            return false;
+        }
+
+        return components.Contains(component);
     }
 
-    public void CopyTo(Components components) {
-        components._entries.AddRange(_entries);
+    public void CopyTo(Components other) {
+        foreach (KeyValuePair<System.Type, List<Component>> entry in _entries) {
+            List<Component> components = other.GetOrCreateComponentList(entry.Key);
+            components.AddRange(entry.Value);
+        }
     }
 
     public void Clear() {
@@ -173,7 +219,7 @@ public class Components : IEnumerable<Component> {
     }
 
     public IEnumerator<Component> GetEnumerator() {
-        return _entries.GetEnumerator();
+        return GetOrCreateComponentList(typeof(Component)).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() {
@@ -183,10 +229,23 @@ public class Components : IEnumerable<Component> {
     public override string ToString() {
         string s = "";
 
-        foreach (Component c in _entries) {
+        foreach (Component c in GetOrCreateComponentList(typeof(Component))) {
             s += c.GetType().Name + ";";
         }
 
         return s;
+    }
+
+    private List<Component> GetOrCreateComponentList(System.Type componentType) {
+        if (!_entries.TryGetValue(componentType, out List<Component> componentList)) {
+            componentList = new();
+            _entries[componentType] = componentList;
+        }
+
+        return componentList;
+    }
+
+    private bool TryGetComponentList(System.Type componentType,  out List<Component> componentList) {
+        return _entries.TryGetValue(componentType, out componentList);
     }
 }

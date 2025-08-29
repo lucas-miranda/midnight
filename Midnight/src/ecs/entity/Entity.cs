@@ -4,29 +4,32 @@ using Midnight.Diagnostics;
 namespace Midnight;
 
 public struct Entity : System.IEquatable<Entity> {
-    public static readonly Entity None = new(0, null);
+    public static readonly Entity None = new();
 
     public ulong Uid;
 
-    public Entity(ulong uid, Prototype prototype) {
+    public Entity() : this(0, null) {
+    }
+
+    public Entity(ulong uid, Prototype prototype, Components components = null) {
         Uid = uid;
         Prototype = prototype;
+        Components = components != null ? components : new();
+        Assert.NotNull(Components);
+        Components.Entity = this;
     }
 
     public bool IsDefined => Uid != None.Uid;
     public bool IsUndefined => Uid == None.Uid;
-    public Prototype Prototype { get; internal set; }
-
-    public Components GetComponents() {
-        return Scene.Current.Components.Get(this);
-    }
+    public Prototype Prototype { get; }
+    public Components Components { get; }
 
     public C Add<C>(C component) where C : Component {
-        return Scene.Current.Components.Add<C>(this, component);
+        return Components.Add<C>(component);
     }
 
     public C Add<C>() where C : Component, new() {
-        return Scene.Current.Components.Add<C>(this);
+        return Components.Add<C>(new());
     }
 
     public void AddChild(Entity child) {
@@ -39,12 +42,26 @@ public struct Entity : System.IEquatable<Entity> {
     }
 
     public C Get<C>() where C : Component {
-        return Scene.Current.Components.Query<C>(this);
+        return Components.Get<C>();
     }
 
-    public bool TryGet<C>(out C component) where C : Component {
-        component = Scene.Current.Components.Query<C>(this);
-        return component != null;
+    public (C1, C2) Get<C1, C2>()
+        where C1 : Component
+        where C2 : Component
+    {
+        return (Components.Get<C1>(), Components.Get<C2>());
+    }
+
+    public (C1, C2, C3) Get<C1, C2, C3>()
+        where C1 : Component
+        where C2 : Component
+        where C3 : Component
+    {
+        return (Components.Get<C1>(), Components.Get<C2>(), Components.Get<C3>());
+    }
+
+    public bool TryGet<C>(out C c) where C : Component {
+        return Components.TryGet<C>(out c);
     }
 
     public override string ToString() {

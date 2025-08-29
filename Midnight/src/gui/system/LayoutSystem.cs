@@ -34,9 +34,9 @@ public sealed class LayoutSystem : EntitySystem {
         ContentGraphics contents = transform.Entity.Get<ContentGraphics>();
         //Logger.DebugLine($"Solving content size for entity '{transform.Entity}' using {contents.Entries.Count} entries");
 
-        foreach (GraphicDisplayer displayer in contents.Entries) {
+        foreach (Drawable drawable in contents.Entries) {
             //Logger.DebugLine($"- {displayer.GetType()}");
-            size = Size2.MaxComponents(size, displayer.Size);
+            size = Size2.MaxComponents(size, drawable.Size);
         }
 
         //Logger.DebugLine($"{transform.Entity} content size is: {size}");
@@ -50,7 +50,7 @@ public sealed class LayoutSystem : EntitySystem {
 
         foreach (Transform childTransform in transform) {
             //Logger.DebugLine($"- child: {childTransform.Entity} (child count: {childTransform.ChildCount})");
-            (Widget Widget, Extent Extent) child = Query<Widget, Extent>(childTransform.Entity);
+            (Widget Widget, Extent Extent) child = childTransform.Entity.Get<Widget, Extent>();
 
             pos += new Vector2(child.Extent.Margin.Left, 0.0f);
             childTransform.Local.Position = new(pos.X, pos.Y + child.Extent.Margin.Top);
@@ -81,7 +81,7 @@ public sealed class LayoutSystem : EntitySystem {
         float w = 0.0f;
 
         foreach (Transform childTransform in transform) {
-            (Widget Widget, Extent Extent) child = Query<Widget, Extent>(childTransform.Entity);
+            (Widget Widget, Extent Extent) child = childTransform.Entity.Get<Widget, Extent>();
             pos += new Vector2(0.0f, child.Extent.Margin.Top);
             childTransform.Local.Position = new(pos.X + child.Extent.Margin.Left, pos.Y);
 

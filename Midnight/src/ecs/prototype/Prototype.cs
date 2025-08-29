@@ -1,42 +1,38 @@
 namespace Midnight;
 
-public class Prototype {
-    private System.Action<EntityBuilder> _builderFn;
-
+public abstract class Prototype {
     public Prototype() {
     }
 
-    public Prototype(System.Action<EntityBuilder> builderFn) {
-        _builderFn = builderFn;
-    }
+    public EntityBuilder Builder { get; private set; }
 
     public Entity Instantiate() {
-        /*
-        // create button prototype
-        Prototype buttonProto = new();
-        buttonProto.Add<Transform>();
-
-        GUI.Extent extent = buttonProto.Add<GUI.Extent>();
-        extent.Margin = new(15, 10);
-        extent.Padding = new(5);
-
-        DrawableDisplayer background = buttonProto.Add<DrawableDisplayer>();
-        background.Drawable = new RectangleDrawable() {
-            Color = 0x57606FFF,
-        };
-
-        // instantiate button from prototype
-        Entity buttonEntity = buttonProto.Instantiate();
-        */
-
-        EntityBuilder builder = Scene.Current.Entities.Create();
-
-        _builderFn?.Invoke(builder);
-        Build(builder);
-
-        return builder.Submit(this);
+        Builder = Scene.Current.Entities.Create();
+        Build();
+        Entity e = Builder.Submit(this);
+        Builder = null;
+        return e;
     }
 
-    protected virtual void Build(EntityBuilder builder) {
+    protected abstract void Build();
+
+    protected C Add<C>() where C : Component, new() {
+        return Builder.Add<C>();
+    }
+
+    protected C Add<C>(C component) where C : Component, new() {
+        return Builder.Add(component);
+    }
+
+    protected EntityBuilder With<C>() where C : Component, new() {
+        return Builder.With<C>();
+    }
+
+    protected EntityBuilder With<C>(C component) where C : Component {
+        return Builder.With(component);
+    }
+
+    protected EntityBuilder With<C>(out C component) where C : Component, new() {
+        return Builder.With<C>(out component);
     }
 }

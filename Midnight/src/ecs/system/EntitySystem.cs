@@ -28,55 +28,6 @@ public abstract class EntitySystem {
         return GetContractBuilder<SystemSubscribeContractBuilder<E>>();
     }
 
-    /*
-    protected SystemSubscribeContract<E, C> Subscribe<E, C>(System.Action<E, C> fn, bool matchOriginatorOnly = false)
-        where E : Event
-        where C : Component
-    {
-        Logger.DebugLine($"Subscribe to event '{typeof(E)}', expecting component '{typeof(C)}'");
-        SystemSubscribeContract<E, C> contract = new(fn) {
-            MatchOriginatorOnly = matchOriginatorOnly,
-        };
-
-        _contracts.Add(contract);
-        return contract;
-    }
-
-    protected SystemSubscribeContract<E, C1, C2> Subscribe<E, C1, C2>(System.Action<E, C1, C2> fn)
-        where E : Event
-        where C1 : Component
-        where C2 : Component
-    {
-        Logger.DebugLine($"Subscribe to event '{typeof(E)}', expecting component '{typeof(C1)}' and '{typeof(C2)}'");
-        SystemSubscribeContract<E, C1, C2> contract = new(fn);
-        _contracts.Add(contract);
-        return contract;
-    }
-
-    protected SystemSubscribeContract<E, C1, C2, C3> Subscribe<E, C1, C2, C3>(System.Action<E, C1, C2, C3> fn)
-        where E : Event
-        where C1 : Component
-        where C2 : Component
-        where C3 : Component
-    {
-        Logger.DebugLine($"Subscribe to event '{typeof(E)}', expecting component '{typeof(C1)}', '{typeof(C2)}' and '{typeof(C3)}'");
-        SystemSubscribeContract<E, C1, C2, C3> contract = new(fn);
-        _contracts.Add(contract);
-        return contract;
-    }
-    */
-
-    protected C Query<C>(Entity entity) where C : Component {
-        return Scene.Current.Components.Query<C>(entity);
-    }
-
-    protected (C1, C2) Query<C1, C2>(Entity entity)
-        where C1 : Component
-        where C2 : Component
-    {
-        return Scene.Current.Components.Query<C1, C2>(entity);
-    }
-
     internal B GetContractBuilder<B>() where B : SystemSubscribeContractBuilder, new() {
         if (!_builders.TryGetValue(typeof(B), out var builder)) {
             // create builder if it doesn't exists

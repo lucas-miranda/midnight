@@ -12,12 +12,12 @@ public sealed class BackgroundBorderResizeSystem : EntitySystem {
         //Logger.DebugLine($"{GetType()} -> Resize at {backgroundBorder.Entry.Entity}");
         if (backgroundBorder.Entry.Background != null) {
             //Logger.DebugLine("Applying to Background");
-            ResizeDrawable(backgroundBorder.Entry.Background.Drawable, e.Size);
+            ResizeDrawable(backgroundBorder.Entry.Background, e.Size);
         }
 
         if (backgroundBorder.Entry.Border != null) {
             //Logger.DebugLine("Applying to Border");
-            ResizeDrawable(backgroundBorder.Entry.Border.Drawable, e.Size);
+            ResizeDrawable(backgroundBorder.Entry.Border, e.Size);
         }
     }
 

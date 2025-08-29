@@ -19,23 +19,22 @@ public class PushButtonBuilder : WidgetBuilder {
     }
 
     public PushButtonBuilder Label(string label) {
-        Components components = Result.GetComponents();
-        Transform transform = components.Get<Transform>();
+        Transform transform = Result.Get<Transform>();
         Label childLabel = transform.FindFirstChildWithComponent<Label>();
-        DrawableDisplayer displayer = null;
+        Drawable drawable = null;
 
         if (childLabel == null) {
             Entity labelEntity = Prototypes.Instantiate<Label>(Result);
-            displayer = labelEntity.Get<DrawableDisplayer>();
+            drawable = labelEntity.Get<Drawable>();
         } else {
-            displayer = childLabel.Entity.Get<DrawableDisplayer>();
+            drawable = childLabel.Entity.Get<Drawable>();
         }
 
-        Assert.NotNull(displayer);
-        Assert.Is<StringDrawable>(displayer.Drawable);
+        Assert.NotNull(drawable);
+        Assert.Is<StringDrawable>(drawable);
 
         // set label text value
-        StringDrawable text = (StringDrawable) displayer.Drawable;
+        StringDrawable text = (StringDrawable) drawable;
         text.Value = label;
 
         return this;

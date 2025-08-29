@@ -3,31 +3,30 @@ namespace Midnight.GUI;
 [SystemRegistry]
 public sealed class ContentGraphicsTrackSystem : EntitySystem {
     public override void Setup(Scene scene) {
-        var contract = Subscribe<ECS.ComponentAddedEvent>()
+        Subscribe<ECS.ComponentAddedEvent>()
             .With<ContentGraphics>()
-            .Submit(ComponentAdded);
-
-        contract.MatchOriginatorOnly = true;
+            .Submit(ComponentAdded)
+            .HandleOnce();
     }
 
     public void ComponentAdded(ECS.ComponentAddedEvent e, Query<ContentGraphics> contentGraphics) {
         //Logger.DebugLine($"{GetType()} -> ComponentAdded '{e.Context.GetType()}' to {contentGraphics.Entry.Entity}");
 
         switch (e.Context) {
-            case GraphicDisplayer graphicDisplayer:
+            case Drawable drawable:
                 {
                     if (contentGraphics.Entry.Entity.TryGet<BackgroundBorder>(out BackgroundBorder backgroundBorder)) {
                         Upkeep(contentGraphics.Entry, backgroundBorder);
 
-                        if (backgroundBorder.Background == graphicDisplayer || backgroundBorder.Border == graphicDisplayer) {
+                        if (backgroundBorder.Background == drawable || backgroundBorder.Border == drawable) {
                             // ignore background or border
                             //Logger.DebugLine($"Ignore background or border");
                             return;
                         }
                     }
 
-                    if (!contentGraphics.Entry.Entries.Contains(graphicDisplayer)) {
-                        contentGraphics.Entry.Entries.Add(graphicDisplayer);
+                    if (!contentGraphics.Entry.Entries.Contains(drawable)) {
+                        contentGraphics.Entry.Entries.Add(drawable);
                         //Logger.DebugLine($"Registered '{e.Context.GetType()}' to ContentGraphics (total: {contentGraphics.Entry.Entries.Count})");
                     } else {
                         //Logger.DebugLine($"Already registered to ContentGraphics (total: {contentGraphics.Entry.Entries.Count})");

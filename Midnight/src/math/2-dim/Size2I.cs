@@ -23,6 +23,9 @@ public struct Size2I : System.IEquatable<Size2I> {
     public Size2I(Vector2 vec2) : this((int) vec2.X, (int) vec2.Y) {
     }
 
+    public Size2I(Vector2I vec2) : this(vec2.X, vec2.Y) {
+    }
+
     internal Size2I(Xna.Vector2 xnaVector2) : this((int) xnaVector2.X, (int) xnaVector2.Y) {
     }
 
